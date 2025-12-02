@@ -60,6 +60,7 @@ TextEditor::TextEditor(QWidget* parent)
 
     updateLineNumberAreaWidth(0);
     highlightCurrentLine();
+    updateTabStopDistance();
 }
 
 void TextEditor::setLineNumbersVisible(bool visible)

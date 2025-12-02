@@ -64,7 +64,6 @@ MainWindow::MainWindow(QWidget* parent)
 void MainWindow::buildEditor()
 {
     m_editor = new TextEditor(this);
-    m_editor->updateTabStopDistance();
     m_editor->setWordWrapMode(QTextOption::NoWrap);
     setCentralWidget(m_editor);
 }
