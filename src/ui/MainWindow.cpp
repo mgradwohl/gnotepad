@@ -242,19 +242,19 @@ void MainWindow::handleFind()
     dialog.setWindowTitle(tr("Find"));
     dialog.setModal(true);
 
-    QFormLayout form(&dialog);
+    auto* form = new QFormLayout(&dialog);
     auto* findField = new QLineEdit(m_lastSearchTerm, &dialog);
     auto* matchCase = new QCheckBox(tr("Match case"), &dialog);
     matchCase->setChecked(m_lastCaseSensitivity == Qt::CaseSensitive);
 
-    form.addRow(tr("Find what:"), findField);
-    form.addRow(QString(), matchCase);
+    form->addRow(tr("Find what:"), findField);
+    form->addRow(QString(), matchCase);
 
-    QDialogButtonBox buttons(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal, &dialog);
-    form.addWidget(&buttons);
+    auto* buttons = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal, &dialog);
+    form->addWidget(buttons);
 
-    connect(&buttons, &QDialogButtonBox::accepted, &dialog, &QDialog::accept);
-    connect(&buttons, &QDialogButtonBox::rejected, &dialog, &QDialog::reject);
+    connect(buttons, &QDialogButtonBox::accepted, &dialog, &QDialog::accept);
+    connect(buttons, &QDialogButtonBox::rejected, &dialog, &QDialog::reject);
 
     if(dialog.exec() != QDialog::Accepted)
     {
