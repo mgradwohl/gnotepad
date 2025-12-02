@@ -17,6 +17,7 @@
 #include <QInputDialog>
 #include <QLabel>
 #include <QLineEdit>
+#include <QFontDatabase>
 #include <QMessageBox>
 #include <QMenu>
 #include <QMenuBar>
@@ -64,10 +65,44 @@ MainWindow::MainWindow(QWidget* parent)
 void MainWindow::buildEditor()
 {
     m_editor = new TextEditor(this);
-    const QFontMetricsF metrics(m_editor->font());
-    m_editor->setTabStopDistance(metrics.horizontalAdvance(QStringLiteral("    ")));
+    applyDefaultEditorFont();
     m_editor->setWordWrapMode(QTextOption::NoWrap);
     setCentralWidget(m_editor);
+}
+
+void MainWindow::applyDefaultEditorFont()
+{
+    if(!m_editor)
+    {
+        return;
+    }
+
+    QStringList preferredFamilies;
+#if defined(Q_OS_WIN)
+    preferredFamilies << QStringLiteral("Consolas") << QStringLiteral("Cascadia Mono");
+#elif defined(Q_OS_LINUX)
+    preferredFamilies << QStringLiteral("Noto Sans Mono") << QStringLiteral("DejaVu Sans Mono");
+#elif defined(Q_OS_MACOS)
+    preferredFamilies << QStringLiteral("SF Mono") << QStringLiteral("Menlo") << QStringLiteral("Monaco");
+#else
+    preferredFamilies << QStringLiteral("Monaco") << QStringLiteral("Menlo");
+#endif
+
+    QFont defaultFont = QFontDatabase::systemFont(QFontDatabase::FixedFont);
+    for(const auto& family : preferredFamilies)
+    {
+        if(QFontDatabase::hasFamily(family))
+        {
+            defaultFont.setFamily(family);
+            break;
+        }
+    }
+
+    defaultFont.setStyleHint(QFont::Monospace);
+    m_editor->applyEditorFont(defaultFont);
+
+    const QFontMetricsF metrics(defaultFont);
+    m_editor->setTabStopDistance(metrics.horizontalAdvance(QStringLiteral("    ")));
 }
 
 void MainWindow::buildMenus()
@@ -124,6 +159,7 @@ void MainWindow::buildMenus()
 
     m_lineNumberToggle = viewMenu->addAction(tr("Line &Numbers"), this, &MainWindow::handleToggleLineNumbers);
     m_lineNumberToggle->setCheckable(true);
+    m_lineNumberToggle->setChecked(m_editor ? m_editor->lineNumbersVisible() : false);
 
     auto* zoomMenu = viewMenu->addMenu(tr("&Zoom"));
     zoomMenu->addAction(tr("Zoom &In"), QKeySequence::ZoomIn, this, &MainWindow::handleZoomIn);
@@ -443,7 +479,7 @@ void MainWindow::handleInsertTimeDate()
         return;
     }
 
-    const QString stamp = QDateTime::currentDateTime().toString(QStringLiteral("h:mm AP M/d/yyyy"));
+    const QString stamp = QDateTime::currentDateTime().toString(QStringLiteral("h:mm A M/d/yyyy"));
     m_editor->insertPlainText(stamp);
 }
 
@@ -850,9 +886,9 @@ int MainWindow::replaceAllOccurrences(const QString& term, const QString& replac
     while(m_editor->find(term, flags))
     {
         QTextCursor matchCursor = m_editor->textCursor();
-        matchCursor.insertText(replacement);
-        // Move cursor to the end of the replacement to avoid re-matching just-inserted text
-        matchCursor.movePosition(QTextCursor::NextCharacter, QTextCursor::MoveAnchor, replacement.length());
+            matchCursor.insertText(replacement);
+            // Move cursor to the end of the replacement to avoid re-matching just-inserted text
+            matchCursor.movePosition(QTextCursor::NextCharacter, QTextCursor::MoveAnchor, static_cast<int>(replacement.length()));
         m_editor->setTextCursor(matchCursor);
         ++replacedCount;
     }

@@ -56,6 +56,7 @@ private:
     void updateWindowTitle();
     void updateDocumentStats();
     void updateZoomLabel(int percentage);
+    void applyDefaultEditorFont();
 
     bool loadDocumentFromPath(const QString& filePath);
     bool saveDocumentToPath(const QString& filePath);
