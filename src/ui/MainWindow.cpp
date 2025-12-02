@@ -851,6 +851,8 @@ int MainWindow::replaceAllOccurrences(const QString& term, const QString& replac
     {
         QTextCursor matchCursor = m_editor->textCursor();
         matchCursor.insertText(replacement);
+        // Move cursor to the end of the replacement to avoid re-matching just-inserted text
+        matchCursor.movePosition(QTextCursor::NextCharacter, QTextCursor::MoveAnchor, replacement.length());
         m_editor->setTextCursor(matchCursor);
         ++replacedCount;
     }
