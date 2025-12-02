@@ -1,7 +1,5 @@
 #pragma once
 
-#include <memory>
-
 #include <QByteArray>
 #include <QCloseEvent>
 #include <QMainWindow>
@@ -46,6 +44,7 @@ private slots:
     void handleGoToLine();
     void handleInsertTimeDate();
     void handleUpdateCursorStatus();
+    void showAboutDialog();
 
 private:
     void buildMenus();
@@ -68,6 +67,7 @@ private:
     void resetDocumentState();
     bool performFind(const QString& term, QTextDocument::FindFlags flags = {});
     int replaceAllOccurrences(const QString& term, const QString& replacement, QTextDocument::FindFlags flags = {});
+    QIcon brandIcon() const;
 
     void closeEvent(QCloseEvent* event) override;
 

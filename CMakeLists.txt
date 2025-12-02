@@ -30,7 +30,7 @@ else()
     message(WARNING "GnotePad is validated primarily with clang; proceeding with ${CMAKE_CXX_COMPILER_ID}.")
 endif()
 
-find_package(Qt6 6.4 REQUIRED COMPONENTS Core Gui Widgets PrintSupport)
+find_package(Qt6 6.4 REQUIRED COMPONENTS Core Gui Widgets PrintSupport Svg SvgWidgets)
 
 FetchContent_Declare(
     spdlog
@@ -101,6 +101,8 @@ target_link_libraries(GnotePad PRIVATE
     Qt6::Gui
     Qt6::Widgets
     Qt6::PrintSupport
+    Qt6::Svg
+    Qt6::SvgWidgets
     spdlog::spdlog_header_only
 )
 
