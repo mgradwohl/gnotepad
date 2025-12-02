@@ -76,6 +76,13 @@ if(GNOTE_ENABLE_WARNINGS)
     )
 endif()
 
+if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+    target_compile_options(GnotePad PRIVATE
+        $<$<CONFIG:Debug>:-glldb>
+        $<$<CONFIG:RelWithDebInfo>:-glldb>
+    )
+endif()
+
 if(WIN32)
     target_compile_definitions(GnotePad PRIVATE NOMINMAX WIN32_LEAN_AND_MEAN)
 endif()
