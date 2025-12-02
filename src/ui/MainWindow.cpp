@@ -1,26 +1,43 @@
 #include "ui/MainWindow.h"
+#include "ui/TextEditor.h"
 
+#include <array>
 #include <QAction>
+#include <QCheckBox>
+#include <QCloseEvent>
 #include <QDesktopServices>
+#include <QDateTime>
+#include <QDialog>
+#include <QDialogButtonBox>
 #include <QFile>
 #include <QFileDialog>
 #include <QFileInfo>
 #include <QFontDialog>
+#include <QFormLayout>
+#include <QInputDialog>
 #include <QLabel>
+#include <QLineEdit>
 #include <QMessageBox>
 #include <QMenu>
 #include <QMenuBar>
 #include <QKeySequence>
+#include <QPushButton>
 #include <QPlainTextEdit>
 #include <QPrinter>
 #include <QSaveFile>
+#include <QTextBlock>
+#include <QTextCursor>
+#include <QHBoxLayout>
 #include <QStatusBar>
 #include <QStringDecoder>
 #include <QStringEncoder>
 #include <QStringConverter>
+#include <QStringList>
 #include <QTextDocument>
 #include <QTextOption>
+#include <QVBoxLayout>
 #include <QUrl>
+#include <algorithm>
 
 #include <spdlog/spdlog.h>
 
@@ -46,8 +63,9 @@ MainWindow::MainWindow(QWidget* parent)
 
 void MainWindow::buildEditor()
 {
-    m_editor = new QPlainTextEdit(this);
-    m_editor->setTabStopDistance(fontMetrics().horizontalAdvance(QStringLiteral(" ")) * 4);
+    m_editor = new TextEditor(this);
+    const QFontMetricsF metrics(m_editor->font());
+    m_editor->setTabStopDistance(metrics.horizontalAdvance(QStringLiteral("    ")));
     m_editor->setWordWrapMode(QTextOption::NoWrap);
     setCentralWidget(m_editor);
 }
@@ -64,6 +82,7 @@ void MainWindow::buildMenus()
     auto* openAction = fileMenu->addAction(tr("&Open…"), QKeySequence::Open, this, &MainWindow::handleOpenFile);
     auto* saveAction = fileMenu->addAction(tr("&Save"), QKeySequence::Save, this, &MainWindow::handleSaveFile);
     auto* saveAsAction = fileMenu->addAction(tr("Save &As…"), QKeySequence::SaveAs, this, &MainWindow::handleSaveFileAs);
+    fileMenu->addAction(tr("E&ncoding…"), this, &MainWindow::handleChangeEncoding);
     fileMenu->addSeparator();
     auto* printAction = fileMenu->addAction(tr("&Print to PDF…"), QKeySequence::Print, this, &MainWindow::handlePrintToPdf);
     fileMenu->addSeparator();
@@ -75,14 +94,14 @@ void MainWindow::buildMenus()
     editMenu->addAction(tr("&Paste"), QKeySequence::Paste, m_editor, &QPlainTextEdit::paste);
     editMenu->addAction(tr("De&lete"), m_editor, &QPlainTextEdit::cut);
     editMenu->addSeparator();
-    editMenu->addAction(tr("&Find…"), QKeySequence::Find, this, [] { spdlog::info("Find placeholder triggered"); });
-    editMenu->addAction(tr("Find &Next"), this, [] { spdlog::info("Find next placeholder triggered"); });
-    editMenu->addAction(tr("Find &Previous"), this, [] { spdlog::info("Find previous placeholder triggered"); });
-    editMenu->addAction(tr("&Replace…"), QKeySequence::Replace, this, [] { spdlog::info("Replace placeholder triggered"); });
-    editMenu->addAction(tr("&Go To…"), QKeySequence(Qt::CTRL | Qt::Key_G), this, [] { spdlog::info("Go To placeholder triggered"); });
+    editMenu->addAction(tr("&Find…"), QKeySequence::Find, this, &MainWindow::handleFind);
+    editMenu->addAction(tr("Find &Next"), QKeySequence::FindNext, this, &MainWindow::handleFindNext);
+    editMenu->addAction(tr("Find &Previous"), QKeySequence::FindPrevious, this, &MainWindow::handleFindPrevious);
+    editMenu->addAction(tr("&Replace…"), QKeySequence::Replace, this, &MainWindow::handleReplace);
+    editMenu->addAction(tr("&Go To…"), QKeySequence(Qt::CTRL | Qt::Key_G), this, &MainWindow::handleGoToLine);
     editMenu->addSeparator();
     editMenu->addAction(tr("Select &All"), QKeySequence::SelectAll, m_editor, &QPlainTextEdit::selectAll);
-    editMenu->addAction(tr("Time/&Date"), this, [] { spdlog::info("Time/Date placeholder triggered"); });
+    editMenu->addAction(tr("Time/&Date"), QKeySequence(Qt::Key_F5), this, &MainWindow::handleInsertTimeDate);
 
     auto* wordWrapAction = formatMenu->addAction(tr("&Word Wrap"));
     wordWrapAction->setCheckable(true);
@@ -95,7 +114,7 @@ void MainWindow::buildMenus()
         const auto selectedFont = QFontDialog::getFont(&accepted, m_editor->font(), this, tr("Choose Font"));
         if(accepted)
         {
-            m_editor->setFont(selectedFont);
+            m_editor->applyEditorFont(selectedFont);
         }
     });
 
@@ -105,6 +124,11 @@ void MainWindow::buildMenus()
 
     m_lineNumberToggle = viewMenu->addAction(tr("Line &Numbers"), this, &MainWindow::handleToggleLineNumbers);
     m_lineNumberToggle->setCheckable(true);
+
+    auto* zoomMenu = viewMenu->addMenu(tr("&Zoom"));
+    zoomMenu->addAction(tr("Zoom &In"), QKeySequence::ZoomIn, this, &MainWindow::handleZoomIn);
+    zoomMenu->addAction(tr("Zoom &Out"), QKeySequence::ZoomOut, this, &MainWindow::handleZoomOut);
+    zoomMenu->addAction(tr("Restore &Default Zoom"), QKeySequence(Qt::CTRL | Qt::Key_0), this, &MainWindow::handleZoomReset);
 
     helpMenu->addAction(tr("View &Help"), QKeySequence::HelpContents, this, [] { spdlog::info("Help placeholder triggered"); });
     helpMenu->addAction(tr("&About GnotePad"), this, [] { spdlog::info("About dialog placeholder triggered"); });
@@ -121,19 +145,25 @@ void MainWindow::buildStatusBar()
     m_statusBar = statusBar();
 
     m_cursorLabel = new QLabel(tr("Ln 1, Col 1"), this);
+    m_documentStatsLabel = new QLabel(tr("Length: 0  Lines: 1"), this);
     m_encodingLabel = new QLabel(tr("UTF-8"), this);
     m_zoomLabel = new QLabel(tr("100%"), this);
 
     m_statusBar->addPermanentWidget(m_cursorLabel);
+    m_statusBar->addPermanentWidget(m_documentStatsLabel);
     m_statusBar->addPermanentWidget(m_encodingLabel);
     m_statusBar->addPermanentWidget(m_zoomLabel);
 
     updateEncodingDisplay(encodingLabel());
+    updateDocumentStats();
+    updateZoomLabel(100);
 }
 
 void MainWindow::wireSignals()
 {
     connect(m_editor, &QPlainTextEdit::cursorPositionChanged, this, &MainWindow::handleUpdateCursorStatus);
+    connect(m_editor, &QPlainTextEdit::textChanged, this, &MainWindow::updateDocumentStats);
+    connect(m_editor, &TextEditor::zoomPercentageChanged, this, &MainWindow::updateZoomLabel);
     if(m_editor && m_editor->document())
     {
         connect(m_editor->document(), &QTextDocument::modificationChanged, this, [this](bool) {
@@ -149,12 +179,22 @@ void MainWindow::handleNewFile()
         return;
     }
 
+    if(!confirmReadyForDestructiveAction())
+    {
+        return;
+    }
+
     resetDocumentState();
     spdlog::info("New document created");
 }
 
 void MainWindow::handleOpenFile()
 {
+    if(!confirmReadyForDestructiveAction())
+    {
+        return;
+    }
+
     const auto filePath = QFileDialog::getOpenFileName(this, tr("Open"), QString(), tr("Text Files (*.txt);;All Files (*.*)"));
     if(filePath.isEmpty())
     {
@@ -169,13 +209,7 @@ void MainWindow::handleOpenFile()
 
 void MainWindow::handleSaveFile()
 {
-    if(m_currentFilePath.isEmpty())
-    {
-        saveDocumentAsDialog();
-        return;
-    }
-
-    if(saveDocumentToPath(m_currentFilePath))
+    if(saveCurrentDocument())
     {
         spdlog::info("Saved file {}", m_currentFilePath.toStdString());
     }
@@ -183,7 +217,234 @@ void MainWindow::handleSaveFile()
 
 void MainWindow::handleSaveFileAs()
 {
-    saveDocumentAsDialog();
+    saveCurrentDocument(true);
+}
+
+void MainWindow::handleChangeEncoding()
+{
+    QStringConverter::Encoding desiredEncoding = m_currentEncoding;
+    bool desiredBom = m_hasBom;
+    if(promptEncodingSelection(desiredEncoding, desiredBom))
+    {
+        applyEncodingSelection(desiredEncoding, desiredBom);
+        spdlog::info("Encoding preference updated to {}", encodingLabel().toStdString());
+    }
+}
+
+void MainWindow::handleFind()
+{
+    if(!m_editor)
+    {
+        return;
+    }
+
+    QDialog dialog(this);
+    dialog.setWindowTitle(tr("Find"));
+    dialog.setModal(true);
+
+    QFormLayout form(&dialog);
+    auto* findField = new QLineEdit(m_lastSearchTerm, &dialog);
+    auto* matchCase = new QCheckBox(tr("Match case"), &dialog);
+    matchCase->setChecked(m_lastCaseSensitivity == Qt::CaseSensitive);
+
+    form.addRow(tr("Find what:"), findField);
+    form.addRow(QString(), matchCase);
+
+    QDialogButtonBox buttons(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal, &dialog);
+    form.addWidget(&buttons);
+
+    connect(&buttons, &QDialogButtonBox::accepted, &dialog, &QDialog::accept);
+    connect(&buttons, &QDialogButtonBox::rejected, &dialog, &QDialog::reject);
+
+    if(dialog.exec() != QDialog::Accepted)
+    {
+        return;
+    }
+
+    const QString term = findField->text();
+    if(term.isEmpty())
+    {
+        return;
+    }
+
+    m_lastSearchTerm = term;
+    m_lastCaseSensitivity = matchCase->isChecked() ? Qt::CaseSensitive : Qt::CaseInsensitive;
+
+    if(!performFind(term))
+    {
+        QMessageBox::information(this, tr("Find"), tr("Cannot find \"%1\".").arg(term));
+    }
+}
+
+void MainWindow::handleFindNext()
+{
+    if(m_lastSearchTerm.isEmpty())
+    {
+        handleFind();
+        return;
+    }
+
+    if(!performFind(m_lastSearchTerm))
+    {
+        QMessageBox::information(this, tr("Find"), tr("Cannot find \"%1\".").arg(m_lastSearchTerm));
+    }
+}
+
+void MainWindow::handleFindPrevious()
+{
+    if(m_lastSearchTerm.isEmpty())
+    {
+        handleFind();
+        return;
+    }
+
+    if(!performFind(m_lastSearchTerm, QTextDocument::FindBackward))
+    {
+        QMessageBox::information(this, tr("Find"), tr("Cannot find \"%1\".").arg(m_lastSearchTerm));
+    }
+}
+
+void MainWindow::handleReplace()
+{
+    if(!m_editor)
+    {
+        return;
+    }
+
+    QDialog dialog(this);
+    dialog.setWindowTitle(tr("Replace"));
+
+    auto* layout = new QVBoxLayout(&dialog);
+    auto* formLayout = new QFormLayout();
+    layout->addLayout(formLayout);
+
+    auto* findField = new QLineEdit(m_lastSearchTerm, &dialog);
+    auto* replaceField = new QLineEdit(m_lastReplaceText, &dialog);
+    auto* matchCase = new QCheckBox(tr("Match case"), &dialog);
+    matchCase->setChecked(m_lastCaseSensitivity == Qt::CaseSensitive);
+
+    formLayout->addRow(tr("Find what:"), findField);
+    formLayout->addRow(tr("Replace with:"), replaceField);
+    formLayout->addRow(QString(), matchCase);
+
+    auto* buttonsLayout = new QHBoxLayout();
+    layout->addLayout(buttonsLayout);
+
+    auto* findNextButton = new QPushButton(tr("Find Next"), &dialog);
+    auto* replaceButton = new QPushButton(tr("Replace"), &dialog);
+    auto* replaceAllButton = new QPushButton(tr("Replace All"), &dialog);
+    auto* closeButton = new QPushButton(tr("Close"), &dialog);
+
+    buttonsLayout->addWidget(findNextButton);
+    buttonsLayout->addWidget(replaceButton);
+    buttonsLayout->addWidget(replaceAllButton);
+    buttonsLayout->addWidget(closeButton);
+
+    const auto applyDialogState = [this, findField, replaceField, matchCase]() {
+        m_lastSearchTerm = findField->text();
+        m_lastReplaceText = replaceField->text();
+        m_lastCaseSensitivity = matchCase->isChecked() ? Qt::CaseSensitive : Qt::CaseInsensitive;
+    };
+
+    const auto replaceSingle = [this](const QString& term, const QString& replacement) -> bool {
+        if(term.isEmpty())
+        {
+            return false;
+        }
+
+        QTextCursor cursor = m_editor->textCursor();
+        const bool selectionMatches = cursor.hasSelection() && QString::compare(cursor.selectedText(), term, m_lastCaseSensitivity) == 0;
+        if(!selectionMatches)
+        {
+            if(!performFind(term))
+            {
+                return false;
+            }
+            cursor = m_editor->textCursor();
+        }
+
+        cursor.insertText(replacement);
+        m_editor->setTextCursor(cursor);
+        return true;
+    };
+
+    connect(findNextButton, &QPushButton::clicked, &dialog, [this, applyDialogState]() {
+        applyDialogState();
+        if(m_lastSearchTerm.isEmpty())
+        {
+            return;
+        }
+        if(!performFind(m_lastSearchTerm))
+        {
+            QMessageBox::information(this, tr("Replace"), tr("Cannot find \"%1\".").arg(m_lastSearchTerm));
+        }
+    });
+
+    connect(replaceButton, &QPushButton::clicked, &dialog, [this, applyDialogState, replaceSingle]() {
+        applyDialogState();
+        if(m_lastSearchTerm.isEmpty())
+        {
+            return;
+        }
+        if(!replaceSingle(m_lastSearchTerm, m_lastReplaceText))
+        {
+            QMessageBox::information(this, tr("Replace"), tr("Cannot find \"%1\".").arg(m_lastSearchTerm));
+        }
+    });
+
+    connect(replaceAllButton, &QPushButton::clicked, &dialog, [this, applyDialogState]() {
+        applyDialogState();
+        if(m_lastSearchTerm.isEmpty())
+        {
+            return;
+        }
+        const int count = replaceAllOccurrences(m_lastSearchTerm, m_lastReplaceText);
+        QMessageBox::information(this, tr("Replace"), tr("Replaced %1 occurrence(s).").arg(count));
+    });
+
+    connect(closeButton, &QPushButton::clicked, &dialog, &QDialog::reject);
+
+    dialog.exec();
+}
+
+void MainWindow::handleGoToLine()
+{
+    if(!m_editor)
+    {
+        return;
+    }
+
+    const auto* document = m_editor->document();
+    const int maxLine = std::max(1, document ? document->blockCount() : 1);
+    bool accepted = false;
+    const int currentLine = m_editor->textCursor().blockNumber() + 1;
+    const int targetLine = QInputDialog::getInt(this, tr("Go To"), tr("Line number:"), currentLine, 1, maxLine, 1, &accepted);
+    if(!accepted)
+    {
+        return;
+    }
+
+    QTextBlock block = document->findBlockByNumber(targetLine - 1);
+    if(!block.isValid())
+    {
+        return;
+    }
+
+    QTextCursor cursor(block);
+    cursor.movePosition(QTextCursor::StartOfLine);
+    m_editor->setTextCursor(cursor);
+    m_editor->centerCursor();
+}
+
+void MainWindow::handleInsertTimeDate()
+{
+    if(!m_editor)
+    {
+        return;
+    }
+
+    const QString stamp = QDateTime::currentDateTime().toString(QStringLiteral("h:mm AP M/d/yyyy"));
+    m_editor->insertPlainText(stamp);
 }
 
 void MainWindow::handlePrintToPdf()
@@ -212,7 +473,35 @@ void MainWindow::handleToggleStatusBar(bool checked)
 
 void MainWindow::handleToggleLineNumbers(bool checked)
 {
+    if(m_editor)
+    {
+        m_editor->setLineNumbersVisible(checked);
+    }
     spdlog::info("Line numbers toggled: {}", checked);
+}
+
+void MainWindow::handleZoomIn()
+{
+    if(m_editor)
+    {
+        m_editor->increaseZoom();
+    }
+}
+
+void MainWindow::handleZoomOut()
+{
+    if(m_editor)
+    {
+        m_editor->decreaseZoom();
+    }
+}
+
+void MainWindow::handleZoomReset()
+{
+    if(m_editor)
+    {
+        m_editor->resetZoom();
+    }
 }
 
 void MainWindow::handleUpdateCursorStatus()
@@ -236,6 +525,27 @@ void MainWindow::updateEncodingDisplay(const QString& encodingLabel)
     }
 }
 
+void MainWindow::updateDocumentStats()
+{
+    if(!m_editor || !m_documentStatsLabel)
+    {
+        return;
+    }
+
+    const auto* document = m_editor->document();
+    const int lines = document ? document->blockCount() : 0;
+    const int characters = document ? std::max(0, document->characterCount() - 1) : 0;
+    m_documentStatsLabel->setText(tr("Length: %1  Lines: %2").arg(characters).arg(std::max(1, lines)));
+}
+
+void MainWindow::updateZoomLabel(int percentage)
+{
+    if(m_zoomLabel)
+    {
+        m_zoomLabel->setText(tr("%1%").arg(percentage));
+    }
+}
+
 void MainWindow::updateWindowTitle()
 {
     const auto baseName = m_currentFilePath.isEmpty() ? tr(UntitledDocumentTitle) : QFileInfo(m_currentFilePath).fileName();
@@ -246,6 +556,18 @@ void MainWindow::updateWindowTitle()
     }
 
     setWindowTitle(tr("%1 - GnotePad").arg(decoratedName));
+}
+
+void MainWindow::closeEvent(QCloseEvent* event)
+{
+    if(confirmReadyForDestructiveAction())
+    {
+        event->accept();
+    }
+    else
+    {
+        event->ignore();
+    }
 }
 
 bool MainWindow::loadDocumentFromPath(const QString& filePath)
@@ -278,10 +600,9 @@ bool MainWindow::loadDocumentFromPath(const QString& filePath)
     }
 
     m_currentFilePath = filePath;
-    m_currentEncoding = encoding;
-    m_hasBom = bomLength > 0;
-    updateEncodingDisplay(encodingLabel());
+    applyEncodingSelection(encoding, bomLength > 0);
     updateWindowTitle();
+    updateDocumentStats();
     return true;
 }
 
@@ -348,6 +669,15 @@ bool MainWindow::saveDocumentAsDialog()
         return false;
     }
 
+    QStringConverter::Encoding desiredEncoding = m_currentEncoding;
+    bool desiredBom = m_hasBom;
+    if(!promptEncodingSelection(desiredEncoding, desiredBom))
+    {
+        return false;
+    }
+
+    applyEncodingSelection(desiredEncoding, desiredBom);
+
     if(saveDocumentToPath(target))
     {
         spdlog::info("Saved file {}", target.toStdString());
@@ -356,18 +686,177 @@ bool MainWindow::saveDocumentAsDialog()
     return false;
 }
 
+bool MainWindow::saveCurrentDocument(bool forceSaveAs)
+{
+    if(forceSaveAs || m_currentFilePath.isEmpty())
+    {
+        return saveDocumentAsDialog();
+    }
+    return saveDocumentToPath(m_currentFilePath);
+}
+
 void MainWindow::resetDocumentState()
 {
     m_currentFilePath.clear();
-    m_currentEncoding = QStringConverter::Utf8;
-    m_hasBom = false;
     if(m_editor)
     {
         m_editor->document()->clear();
         m_editor->document()->setModified(false);
     }
-    updateEncodingDisplay(encodingLabel());
+    applyEncodingSelection(QStringConverter::Utf8, false);
     updateWindowTitle();
+    updateDocumentStats();
+}
+
+bool MainWindow::confirmReadyForDestructiveAction()
+{
+    if(!m_editor || !m_editor->document()->isModified())
+    {
+        return true;
+    }
+
+    const auto title = m_currentFilePath.isEmpty() ? tr(UntitledDocumentTitle) : QFileInfo(m_currentFilePath).fileName();
+        QMessageBox prompt(this);
+        prompt.setIcon(QMessageBox::Warning);
+        prompt.setWindowTitle(tr("GnotePad"));
+        prompt.setText(tr("Do you want to save changes to %1?").arg(title));
+        prompt.setStandardButtons(QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel);
+        prompt.setDefaultButton(QMessageBox::Save);
+
+        const auto result = static_cast<QMessageBox::StandardButton>(prompt.exec());
+        if(result == QMessageBox::Save)
+        {
+            return saveCurrentDocument();
+        }
+        if(result == QMessageBox::Discard)
+        {
+            return true;
+        }
+
+        return false;
+}
+
+bool MainWindow::promptEncodingSelection(QStringConverter::Encoding& encoding, bool& bom)
+{
+    struct EncodingChoice
+    {
+        QString label;
+        QStringConverter::Encoding encoding;
+        bool includeBom;
+    };
+
+    const std::array<EncodingChoice, 4> choices {
+        EncodingChoice {tr("UTF-8 (no BOM)"), QStringConverter::Utf8, false},
+        EncodingChoice {tr("UTF-8 with BOM"), QStringConverter::Utf8, true},
+        EncodingChoice {tr("UTF-16 LE"), QStringConverter::Utf16LE, true},
+        EncodingChoice {tr("UTF-16 BE"), QStringConverter::Utf16BE, true},
+    };
+
+    QStringList labels;
+    labels.reserve(static_cast<int>(choices.size()));
+    int currentIndex = 0;
+    for(std::size_t i = 0; i < choices.size(); ++i)
+    {
+        labels.append(choices[i].label);
+        if(choices[i].encoding == encoding && choices[i].includeBom == bom)
+        {
+            currentIndex = static_cast<int>(i);
+        }
+    }
+
+    bool accepted = false;
+    const auto selection = QInputDialog::getItem(this, tr("Select Encoding"), tr("Encoding:"), labels, currentIndex, false, &accepted);
+    if(!accepted)
+    {
+        return false;
+    }
+
+    const auto match = std::find_if(choices.cbegin(), choices.cend(), [&](const auto& choice) {
+        return choice.label == selection;
+    });
+
+    if(match == choices.cend())
+    {
+        return false;
+    }
+
+    encoding = match->encoding;
+    bom = match->includeBom;
+    return true;
+}
+
+void MainWindow::applyEncodingSelection(QStringConverter::Encoding encoding, bool bom)
+{
+    m_currentEncoding = encoding;
+    m_hasBom = bom;
+    updateEncodingDisplay(encodingLabel());
+}
+
+bool MainWindow::performFind(const QString& term, QTextDocument::FindFlags flags)
+{
+    if(!m_editor || term.isEmpty())
+    {
+        return false;
+    }
+
+    if(m_lastCaseSensitivity == Qt::CaseSensitive)
+    {
+        flags |= QTextDocument::FindCaseSensitively;
+    }
+
+    QTextCursor originalCursor = m_editor->textCursor();
+    if(m_editor->find(term, flags))
+    {
+        return true;
+    }
+
+    QTextCursor searchCursor = originalCursor;
+    if(flags.testFlag(QTextDocument::FindBackward))
+    {
+        searchCursor.movePosition(QTextCursor::End);
+    }
+    else
+    {
+        searchCursor.movePosition(QTextCursor::Start);
+    }
+    m_editor->setTextCursor(searchCursor);
+
+    const bool foundAfterWrap = m_editor->find(term, flags);
+    if(!foundAfterWrap)
+    {
+        m_editor->setTextCursor(originalCursor);
+    }
+    return foundAfterWrap;
+}
+
+int MainWindow::replaceAllOccurrences(const QString& term, const QString& replacement, QTextDocument::FindFlags flags)
+{
+    if(!m_editor || term.isEmpty())
+    {
+        return 0;
+    }
+
+    if(m_lastCaseSensitivity == Qt::CaseSensitive)
+    {
+        flags |= QTextDocument::FindCaseSensitively;
+    }
+
+    QTextCursor originalCursor = m_editor->textCursor();
+    QTextCursor searchCursor = originalCursor;
+    searchCursor.movePosition(QTextCursor::Start);
+    m_editor->setTextCursor(searchCursor);
+
+    int replacedCount = 0;
+    while(m_editor->find(term, flags))
+    {
+        QTextCursor matchCursor = m_editor->textCursor();
+        matchCursor.insertText(replacement);
+        m_editor->setTextCursor(matchCursor);
+        ++replacedCount;
+    }
+
+    m_editor->setTextCursor(originalCursor);
+    return replacedCount;
 }
 
 QString MainWindow::encodingLabel() const

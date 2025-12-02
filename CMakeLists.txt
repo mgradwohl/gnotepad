@@ -51,11 +51,13 @@ set(GNOTE_SOURCES
     src/gnotepad.cpp
     src/app/Application.cpp
     src/ui/MainWindow.cpp
+    src/ui/TextEditor.cpp
 )
 
 set(GNOTE_HEADERS
     src/app/Application.h
     src/ui/MainWindow.h
+    src/ui/TextEditor.h
 )
 
 qt_add_resources(GNOTE_RESOURCES resources/gnotepad.qrc)
