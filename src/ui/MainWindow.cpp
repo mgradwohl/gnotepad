@@ -753,7 +753,7 @@ bool MainWindow::promptEncodingSelection(QStringConverter::Encoding& encoding, b
     };
 
     QStringList labels;
-    labels.reserve(static_cast<int>(choices.size()));
+    labels.reserve(choices.size());
     int currentIndex = 0;
     for(std::size_t i = 0; i < choices.size(); ++i)
     {
