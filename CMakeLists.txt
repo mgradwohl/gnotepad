@@ -104,5 +104,14 @@ install(TARGETS GnotePad
     RUNTIME DESTINATION bin
 )
 
+if(UNIX AND NOT APPLE)
+    set(GNOTE_DESKTOP_FILE ${CMAKE_CURRENT_BINARY_DIR}/gnotepad.desktop)
+    configure_file(${CMAKE_CURRENT_SOURCE_DIR}/packaging/linux/gnotepad.desktop.in ${GNOTE_DESKTOP_FILE} @ONLY)
+    install(FILES ${GNOTE_DESKTOP_FILE} DESTINATION share/applications)
+    install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/resources/icons/gnotepad-icon.svg
+        DESTINATION share/icons/hicolor/scalable/apps
+        RENAME gnotepad.svg)
+endif()
+
 enable_testing()
 add_subdirectory(tests)

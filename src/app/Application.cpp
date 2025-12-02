@@ -3,6 +3,7 @@
 #include <QCoreApplication>
 #include <QGuiApplication>
 #include <QString>
+#include <QIcon>
 
 #include <spdlog/spdlog.h>
 
@@ -42,11 +43,22 @@ void Application::configureMetadata()
     QCoreApplication::setOrganizationDomain("gnotepad.app");
     QCoreApplication::setApplicationName("GnotePad");
     QCoreApplication::setApplicationVersion(QString::fromLatin1(GNOTE_VERSION));
+#if defined(Q_OS_LINUX)
+    QGuiApplication::setDesktopFileName(QStringLiteral("gnotepad.desktop"));
+#endif
 }
 
 void Application::configureIcon()
 {
+#if defined(Q_OS_LINUX)
+    m_applicationIcon = QIcon::fromTheme(QStringLiteral("gnotepad"));
+    if(m_applicationIcon.isNull())
+    {
+        m_applicationIcon = QIcon(QStringLiteral(":/gnotepad-icon.svg"));
+    }
+#else
     m_applicationIcon = QIcon(QStringLiteral(":/gnotepad-icon.svg"));
+#endif
     if(m_applicationIcon.isNull())
     {
         spdlog::warn("Failed to load embedded application icon; UI will fall back to default icons");
