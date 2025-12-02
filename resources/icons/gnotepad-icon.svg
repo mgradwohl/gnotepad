@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="256" height="256" viewBox="0 0 256 256" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="GnotePad icon">
+    <defs>
+        <linearGradient id="paper" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stop-color="#fefefe"/>
+            <stop offset="100%" stop-color="#e2ecff"/>
+        </linearGradient>
+        <linearGradient id="tab" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stop-color="#5ba1ff"/>
+            <stop offset="100%" stop-color="#1d5fd1"/>
+        </linearGradient>
+    </defs>
+    <rect x="36" y="24" width="184" height="208" rx="18" ry="18" fill="url(#paper)" stroke="#2c3e63" stroke-width="6"/>
+    <rect x="60" y="12" width="80" height="40" rx="12" ry="12" fill="url(#tab)" stroke="#1d5fd1" stroke-width="4"/>
+    <rect x="120" y="12" width="80" height="40" rx="12" ry="12" fill="#74c0ff" stroke="#1d5fd1" stroke-width="4"/>
+    <g stroke="#88a6d8" stroke-width="6" stroke-linecap="round">
+        <line x1="64" y1="92" x2="192" y2="92"/>
+        <line x1="64" y1="122" x2="192" y2="122"/>
+        <line x1="64" y1="152" x2="192" y2="152"/>
+        <line x1="64" y1="182" x2="172" y2="182"/>
+    </g>
+    <path d="M172 182 L204 210 L188 224" fill="none" stroke="#1d5fd1" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
