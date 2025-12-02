@@ -270,7 +270,7 @@ void MainWindow::handleFind()
     m_lastSearchTerm = term;
     m_lastCaseSensitivity = matchCase->isChecked() ? Qt::CaseSensitive : Qt::CaseInsensitive;
 
-    if(!performFind(term))
+    if(!performFind(term, buildFindFlags()))
     {
         QMessageBox::information(this, tr("Find"), tr("Cannot find \"%1\".").arg(term));
     }
@@ -284,7 +284,7 @@ void MainWindow::handleFindNext()
         return;
     }
 
-    if(!performFind(m_lastSearchTerm))
+    if(!performFind(m_lastSearchTerm, buildFindFlags()))
     {
         QMessageBox::information(this, tr("Find"), tr("Cannot find \"%1\".").arg(m_lastSearchTerm));
     }
@@ -298,7 +298,7 @@ void MainWindow::handleFindPrevious()
         return;
     }
 
-    if(!performFind(m_lastSearchTerm, QTextDocument::FindBackward))
+    if(!performFind(m_lastSearchTerm, buildFindFlags(QTextDocument::FindBackward)))
     {
         QMessageBox::information(this, tr("Find"), tr("Cannot find \"%1\".").arg(m_lastSearchTerm));
     }
@@ -356,7 +356,7 @@ void MainWindow::handleReplace()
         const bool selectionMatches = cursor.hasSelection() && QString::compare(cursor.selectedText(), term, m_lastCaseSensitivity) == 0;
         if(!selectionMatches)
         {
-            if(!performFind(term))
+            if(!performFind(term, buildFindFlags()))
             {
                 return false;
             }
@@ -374,7 +374,7 @@ void MainWindow::handleReplace()
         {
             return;
         }
-        if(!performFind(m_lastSearchTerm))
+        if(!performFind(m_lastSearchTerm, buildFindFlags()))
         {
             QMessageBox::information(this, tr("Replace"), tr("Cannot find \"%1\".").arg(m_lastSearchTerm));
         }
@@ -398,7 +398,7 @@ void MainWindow::handleReplace()
         {
             return;
         }
-        const int count = replaceAllOccurrences(m_lastSearchTerm, m_lastReplaceText);
+        const int count = replaceAllOccurrences(m_lastSearchTerm, m_lastReplaceText, buildFindFlags());
         QMessageBox::information(this, tr("Replace"), tr("Replaced %1 occurrence(s).").arg(count));
     });
 
@@ -792,16 +792,21 @@ void MainWindow::applyEncodingSelection(QStringConverter::Encoding encoding, boo
     updateEncodingDisplay(encodingLabel());
 }
 
+QTextDocument::FindFlags MainWindow::buildFindFlags(QTextDocument::FindFlags baseFlags) const
+{
+    QTextDocument::FindFlags flags = baseFlags;
+    if(m_lastCaseSensitivity == Qt::CaseSensitive)
+    {
+        flags |= QTextDocument::FindCaseSensitively;
+    }
+    return flags;
+}
+
 bool MainWindow::performFind(const QString& term, QTextDocument::FindFlags flags)
 {
     if(!m_editor || term.isEmpty())
     {
         return false;
-    }
-
-    if(m_lastCaseSensitivity == Qt::CaseSensitive)
-    {
-        flags |= QTextDocument::FindCaseSensitively;
     }
 
     QTextCursor originalCursor = m_editor->textCursor();
@@ -834,11 +839,6 @@ int MainWindow::replaceAllOccurrences(const QString& term, const QString& replac
     if(!m_editor || term.isEmpty())
     {
         return 0;
-    }
-
-    if(m_lastCaseSensitivity == Qt::CaseSensitive)
-    {
-        flags |= QTextDocument::FindCaseSensitively;
     }
 
     QTextCursor originalCursor = m_editor->textCursor();
