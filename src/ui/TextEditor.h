@@ -21,6 +21,7 @@ public:
 
     void resetZoom();
     void applyEditorFont(const QFont& font);
+    void updateTabStopDistance();
     void increaseZoom(int range = 1);
     void decreaseZoom(int range = 1);
 
