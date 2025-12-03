@@ -1,7 +1,5 @@
 #pragma once
 
-#include <memory>
-
 #include <QByteArray>
 #include <QCloseEvent>
 #include <QMainWindow>
@@ -46,6 +44,7 @@ private slots:
     void handleGoToLine();
     void handleInsertTimeDate();
     void handleUpdateCursorStatus();
+    void showAboutDialog();
 
 private:
     void buildMenus();
@@ -56,6 +55,7 @@ private:
     void updateWindowTitle();
     void updateDocumentStats();
     void updateZoomLabel(int percentage);
+    void applyDefaultEditorFont();
 
     bool loadDocumentFromPath(const QString& filePath);
     bool saveDocumentToPath(const QString& filePath);
@@ -65,8 +65,10 @@ private:
     bool promptEncodingSelection(QStringConverter::Encoding& encoding, bool& bom);
     void applyEncodingSelection(QStringConverter::Encoding encoding, bool bom);
     void resetDocumentState();
+    QTextDocument::FindFlags buildFindFlags(QTextDocument::FindFlags baseFlags = {}) const;
     bool performFind(const QString& term, QTextDocument::FindFlags flags = {});
     int replaceAllOccurrences(const QString& term, const QString& replacement, QTextDocument::FindFlags flags = {});
+    QIcon brandIcon() const;
 
     void closeEvent(QCloseEvent* event) override;
 
