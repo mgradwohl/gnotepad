@@ -22,7 +22,6 @@
 #include <QFontDatabase>
 #include <QPixmap>
 #include <QMessageBox>
-#include <QtSvgWidgets/QSvgWidget>
 #include <QMenu>
 #include <QMenuBar>
 #include <QKeySequence>
@@ -42,8 +41,6 @@
 #include <QTextOption>
 #include <QVBoxLayout>
 #include <QUrl>
-#include <QPainter>
-#include <QtSvgWidgets/QSvgWidget>
 #include <algorithm>
 
 #include <qnamespace.h>
