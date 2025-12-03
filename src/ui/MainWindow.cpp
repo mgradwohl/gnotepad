@@ -135,8 +135,8 @@ void MainWindow::buildMenus()
     editMenu->addAction(tr("De&lete"), m_editor, &QPlainTextEdit::cut);
     editMenu->addSeparator();
     editMenu->addAction(tr("&Find…"), QKeySequence::Find, this, &MainWindow::handleFind);
-    editMenu->addAction(tr("Find &Next"), QKeySequence::FindNext, this, &MainWindow::handleFindNext);
-    editMenu->addAction(tr("Find &Previous"), QKeySequence::FindPrevious, this, &MainWindow::handleFindPrevious);
+    editMenu->addAction(tr("Find &Next"), QKeySequence(Qt::Key_F3), this, &MainWindow::handleFindNext);
+    editMenu->addAction(tr("Find &Previous"), QKeySequence(Qt::SHIFT | Qt::Key_F3), this, &MainWindow::handleFindPrevious);
     editMenu->addAction(tr("&Replace…"), QKeySequence::Replace, this, &MainWindow::handleReplace);
     editMenu->addAction(tr("&Go To…"), QKeySequence(Qt::CTRL | Qt::Key_G), this, &MainWindow::handleGoToLine);
     editMenu->addSeparator();
