@@ -32,5 +32,6 @@ compile_commands.json
 .DS_Store
 Thumbs.db
 
-# CodeQL artifacts
-_codeql_*
+# CodeQL
+_codeql_build_dir/
+_codeql_detected_source_root

@@ -30,7 +30,7 @@ else()
     message(WARNING "GnotePad is validated primarily with clang; proceeding with ${CMAKE_CXX_COMPILER_ID}.")
 endif()
 
-find_package(Qt6 6.4 REQUIRED COMPONENTS Core Gui Widgets PrintSupport)
+find_package(Qt6 6.4 REQUIRED COMPONENTS Core Gui Widgets PrintSupport Svg SvgWidgets)
 
 FetchContent_Declare(
     spdlog
@@ -76,6 +76,13 @@ if(GNOTE_ENABLE_WARNINGS)
     )
 endif()
 
+if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+    target_compile_options(GnotePad PRIVATE
+        $<$<CONFIG:Debug>:-glldb>
+        $<$<CONFIG:RelWithDebInfo>:-glldb>
+    )
+endif()
+
 if(WIN32)
     target_compile_definitions(GnotePad PRIVATE NOMINMAX WIN32_LEAN_AND_MEAN)
 endif()
@@ -94,6 +101,8 @@ target_link_libraries(GnotePad PRIVATE
     Qt6::Gui
     Qt6::Widgets
     Qt6::PrintSupport
+    Qt6::Svg
+    Qt6::SvgWidgets
     spdlog::spdlog_header_only
 )
 
@@ -103,6 +112,15 @@ install(TARGETS GnotePad
     BUNDLE DESTINATION .
     RUNTIME DESTINATION bin
 )
+
+if(UNIX AND NOT APPLE)
+    set(GNOTE_DESKTOP_FILE ${CMAKE_CURRENT_BINARY_DIR}/gnotepad.desktop)
+    configure_file(${CMAKE_CURRENT_SOURCE_DIR}/packaging/linux/gnotepad.desktop.in ${GNOTE_DESKTOP_FILE} @ONLY)
+    install(FILES ${GNOTE_DESKTOP_FILE} DESTINATION share/applications)
+    install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/resources/icons/gnotepad-icon.svg
+        DESTINATION share/icons/hicolor/scalable/apps
+        RENAME gnotepad.svg)
+endif()
 
 enable_testing()
 add_subdirectory(tests)
