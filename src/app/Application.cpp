@@ -2,8 +2,9 @@
 
 #include <QCoreApplication>
 #include <QGuiApplication>
-#include <QString>
 #include <QIcon>
+#include <QSettings>
+#include <QString>
 
 #include <spdlog/spdlog.h>
 
@@ -20,6 +21,7 @@ Application::Application(int& argc, char** argv)
     : QApplication(argc, argv)
 {
     configureMetadata();
+    QSettings::setDefaultFormat(QSettings::IniFormat);
     configureIcon();
     spdlog::info("GnotePad Application initialized");
 }
@@ -39,7 +41,7 @@ int Application::run()
 
 void Application::configureMetadata()
 {
-    QCoreApplication::setOrganizationName("GnotePad Project");
+    QCoreApplication::setOrganizationName("GnotePad");
     QCoreApplication::setOrganizationDomain("gnotepad.app");
     QCoreApplication::setApplicationName("GnotePad");
     QCoreApplication::setApplicationVersion(QString::fromLatin1(GNOTE_VERSION));

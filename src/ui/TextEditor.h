@@ -23,6 +23,9 @@ public:
     void applyEditorFont(const QFont& font);
     void increaseZoom(int range = 1);
     void decreaseZoom(int range = 1);
+    void setZoomPercentage(int percent);
+    void setTabSizeSpaces(int spaces);
+    int tabSizeSpaces() const { return m_tabSizeSpaces; }
 
     int lineNumberAreaWidth() const;
     void lineNumberAreaPaintEvent(QPaintEvent* event);
@@ -49,6 +52,7 @@ private:
     bool m_lineNumbersVisible {true};
     QFont m_defaultFont;
     int m_zoomPercentage {100};
+    int m_tabSizeSpaces {4};
 };
 
 class TextEditor::LineNumberArea : public QWidget
