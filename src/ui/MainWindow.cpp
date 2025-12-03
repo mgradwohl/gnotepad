@@ -42,7 +42,6 @@
 #include <QTextOption>
 #include <QVBoxLayout>
 #include <QUrl>
-#include <QPainter>
 #include <QtSvgWidgets/QSvgWidget>
 #include <algorithm>
 
