@@ -889,6 +889,15 @@ void MainWindow::applyEncodingSelection(QStringConverter::Encoding encoding, boo
 }
 
 QTextDocument::FindFlags MainWindow::buildFindFlags(QTextDocument::FindFlags baseFlags) const
+{
+    QTextDocument::FindFlags flags = baseFlags;
+    if(m_lastCaseSensitivity == Qt::CaseSensitive)
+    {
+        flags |= QTextDocument::FindCaseSensitively;
+    }
+    return flags;
+}
+
 QIcon MainWindow::brandIcon() const
 {
     QIcon icon = windowIcon();
@@ -907,16 +916,6 @@ QIcon MainWindow::brandIcon() const
         spdlog::info("brandIcon: returning null icon.");
     }
     return icon;
-}
-
-bool MainWindow::performFind(const QString& term, QTextDocument::FindFlags flags)
-{
-    QTextDocument::FindFlags flags = baseFlags;
-    if(m_lastCaseSensitivity == Qt::CaseSensitive)
-    {
-        flags |= QTextDocument::FindCaseSensitively;
-    }
-    return flags;
 }
 
 bool MainWindow::performFind(const QString& term, QTextDocument::FindFlags flags)
