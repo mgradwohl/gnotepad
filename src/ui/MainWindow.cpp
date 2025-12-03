@@ -42,7 +42,6 @@
 #include <QTextOption>
 #include <QVBoxLayout>
 #include <QUrl>
-#include <QtSvgWidgets/QSvgWidget>
 #include <algorithm>
 
 #include <qnamespace.h>
