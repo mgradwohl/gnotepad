@@ -78,7 +78,6 @@ void MainWindow::buildEditor()
     m_editor = new TextEditor(this);
     applyDefaultEditorFont();
     m_editor->setWordWrapMode(QTextOption::NoWrap);
-    m_editor->setTabSizeSpaces(m_tabSizeSpaces);
     setCentralWidget(m_editor);
 }
 
