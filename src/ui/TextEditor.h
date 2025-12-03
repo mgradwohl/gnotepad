@@ -24,16 +24,15 @@ public:
     void increaseZoom(int range = 1);
     void decreaseZoom(int range = 1);
 
+    int lineNumberAreaWidth() const;
+    void lineNumberAreaPaintEvent(QPaintEvent* event);
+
 signals:
     void zoomPercentageChanged(int percentage);
 
 protected:
     void resizeEvent(QResizeEvent* event) override;
     void wheelEvent(QWheelEvent* event) override;
-
-public:
-    int lineNumberAreaWidth() const;
-    void lineNumberAreaPaintEvent(QPaintEvent* event);
 
 private slots:
     void updateLineNumberAreaWidth(int newBlockCount = 0);
