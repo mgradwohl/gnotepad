@@ -5,6 +5,7 @@
 #include <QAction>
 #include <QCheckBox>
 #include <QCloseEvent>
+#include <QCoreApplication>
 #include <QDesktopServices>
 #include <QDateTime>
 #include <QDialog>
@@ -14,9 +15,12 @@
 #include <QFileInfo>
 #include <QFontDialog>
 #include <QFormLayout>
+#include <QIcon>
 #include <QInputDialog>
 #include <QLabel>
 #include <QLineEdit>
+#include <QFontDatabase>
+#include <QPixmap>
 #include <QMessageBox>
 #include <QMenu>
 #include <QMenuBar>
@@ -39,6 +43,7 @@
 #include <QUrl>
 #include <algorithm>
 
+#include <qnamespace.h>
 #include <spdlog/spdlog.h>
 
 namespace GnotePad::ui
@@ -64,27 +69,62 @@ MainWindow::MainWindow(QWidget* parent)
 void MainWindow::buildEditor()
 {
     m_editor = new TextEditor(this);
-    const QFontMetricsF metrics(m_editor->font());
-    m_editor->setTabStopDistance(metrics.horizontalAdvance(QStringLiteral("    ")));
+    applyDefaultEditorFont();
     m_editor->setWordWrapMode(QTextOption::NoWrap);
     setCentralWidget(m_editor);
 }
 
+void MainWindow::applyDefaultEditorFont()
+{
+    if(!m_editor)
+    {
+        return;
+    }
+
+    QStringList preferredFamilies;
+#if defined(Q_OS_WIN)
+    preferredFamilies << QStringLiteral("Consolas") << QStringLiteral("Cascadia Mono");
+#elif defined(Q_OS_LINUX)
+    preferredFamilies << QStringLiteral("Noto Sans Mono") << QStringLiteral("DejaVu Sans Mono");
+#elif defined(Q_OS_MACOS)
+    preferredFamilies << QStringLiteral("SF Mono") << QStringLiteral("Menlo") << QStringLiteral("Monaco");
+#else
+    preferredFamilies << QStringLiteral("Monaco") << QStringLiteral("Menlo");
+#endif
+
+    QFont defaultFont = QFontDatabase::systemFont(QFontDatabase::FixedFont);
+    for(const auto& family : preferredFamilies)
+    {
+        if(QFontDatabase::hasFamily(family))
+        {
+            defaultFont.setFamily(family);
+            break;
+        }
+    }
+
+    defaultFont.setStyleHint(QFont::Monospace);
+    m_editor->applyEditorFont(defaultFont);
+
+    const QFontMetricsF metrics(defaultFont);
+    m_editor->setTabStopDistance(metrics.horizontalAdvance(QStringLiteral("    ")));
+}
+
 void MainWindow::buildMenus()
 {
-    auto* fileMenu = menuBar()->addMenu(tr("&File"));
+    auto* bar = menuBar();
+    auto* fileMenu = bar->addMenu(tr("&File"));
     auto* editMenu = menuBar()->addMenu(tr("&Edit"));
     auto* formatMenu = menuBar()->addMenu(tr("F&ormat"));
     auto* viewMenu = menuBar()->addMenu(tr("&View"));
     auto* helpMenu = menuBar()->addMenu(tr("&Help"));
 
-    auto* newAction = fileMenu->addAction(tr("&New"), QKeySequence::New, this, &MainWindow::handleNewFile);
-    auto* openAction = fileMenu->addAction(tr("&Open…"), QKeySequence::Open, this, &MainWindow::handleOpenFile);
-    auto* saveAction = fileMenu->addAction(tr("&Save"), QKeySequence::Save, this, &MainWindow::handleSaveFile);
-    auto* saveAsAction = fileMenu->addAction(tr("Save &As…"), QKeySequence::SaveAs, this, &MainWindow::handleSaveFileAs);
+    fileMenu->addAction(tr("&New"), QKeySequence::New, this, &MainWindow::handleNewFile);
+    fileMenu->addAction(tr("&Open…"), QKeySequence::Open, this, &MainWindow::handleOpenFile);
+    fileMenu->addAction(tr("&Save"), QKeySequence::Save, this, &MainWindow::handleSaveFile);
+    fileMenu->addAction(tr("Save &As…"), QKeySequence::SaveAs, this, &MainWindow::handleSaveFileAs);
     fileMenu->addAction(tr("E&ncoding…"), this, &MainWindow::handleChangeEncoding);
     fileMenu->addSeparator();
-    auto* printAction = fileMenu->addAction(tr("&Print to PDF…"), QKeySequence::Print, this, &MainWindow::handlePrintToPdf);
+    fileMenu->addAction(tr("&Print to PDF…"), QKeySequence::Print, this, &MainWindow::handlePrintToPdf);
     fileMenu->addSeparator();
     fileMenu->addAction(tr("E&xit"), QKeySequence::Quit, this, &QWidget::close);
 
@@ -124,6 +164,7 @@ void MainWindow::buildMenus()
 
     m_lineNumberToggle = viewMenu->addAction(tr("Line &Numbers"), this, &MainWindow::handleToggleLineNumbers);
     m_lineNumberToggle->setCheckable(true);
+    m_lineNumberToggle->setChecked(m_editor ? m_editor->lineNumbersVisible() : false);
 
     auto* zoomMenu = viewMenu->addMenu(tr("&Zoom"));
     zoomMenu->addAction(tr("Zoom &In"), QKeySequence::ZoomIn, this, &MainWindow::handleZoomIn);
@@ -131,13 +172,7 @@ void MainWindow::buildMenus()
     zoomMenu->addAction(tr("Restore &Default Zoom"), QKeySequence(Qt::CTRL | Qt::Key_0), this, &MainWindow::handleZoomReset);
 
     helpMenu->addAction(tr("View &Help"), QKeySequence::HelpContents, this, [] { spdlog::info("Help placeholder triggered"); });
-    helpMenu->addAction(tr("&About GnotePad"), this, [] { spdlog::info("About dialog placeholder triggered"); });
-
-    Q_UNUSED(newAction)
-    Q_UNUSED(openAction)
-    Q_UNUSED(saveAction)
-    Q_UNUSED(saveAsAction)
-    Q_UNUSED(printAction)
+    helpMenu->addAction(tr("&About GnotePad"), this, &MainWindow::showAboutDialog);
 }
 
 void MainWindow::buildStatusBar()
@@ -443,8 +478,69 @@ void MainWindow::handleInsertTimeDate()
         return;
     }
 
-    const QString stamp = QDateTime::currentDateTime().toString(QStringLiteral("h:mm AP M/d/yyyy"));
+    const QString stamp = QDateTime::currentDateTime().toString(QStringLiteral("h:mm A M/d/yyyy"));
     m_editor->insertPlainText(stamp);
+}
+
+void MainWindow::showAboutDialog()
+{
+    const QString appName = QCoreApplication::applicationName();
+    const QString version = QCoreApplication::applicationVersion();
+    const QString org = QCoreApplication::organizationName();
+    const QString details = tr("<p><b>%1</b> %2</p>"
+                              "<p>A lightweight Qt-based text editor inspired by Windows Notepad.</p>"
+                              "<p>Qt %3 • %4</p>")
+                                .arg(appName, version, QString::fromLatin1(qVersion()), org);
+    const QIcon icon = brandIcon();
+
+    QDialog dialog(this);
+    dialog.setWindowTitle(tr("About %1").arg(appName));
+    dialog.setModal(true);
+    dialog.setWindowIcon(icon);
+
+    // get the icon as a larger image
+    QLabel* iconLabel = new QLabel(&dialog);
+    QPixmap aboutPixmap;
+    if(!icon.isNull())
+    {
+        spdlog::info("About dialog: using icon for branding.");
+        aboutPixmap = icon.pixmap(64, 64);
+    }
+    if(aboutPixmap.isNull())
+    {
+        spdlog::info("About dialog: creating pixmap from SVG resource.");
+        aboutPixmap = QPixmap(QStringLiteral(":/gnotepad-icon.svg"));
+    }
+
+    if(aboutPixmap.isNull())
+    {
+        spdlog::info("About dialog: failed to resolve icon pixmap.");
+        iconLabel->setVisible(false);
+    }
+    else
+    {
+        iconLabel->setPixmap(aboutPixmap);
+        iconLabel->setFixedSize(aboutPixmap.size());
+    }
+
+    // layout the dialog
+    auto* layout = new QVBoxLayout(&dialog);
+    auto* contentLayout = new QHBoxLayout();
+    layout->addLayout(contentLayout);
+
+    iconLabel->setAlignment(Qt::AlignLeft| Qt:: AlignVCenter);
+    contentLayout->addWidget(iconLabel, 0, Qt::AlignLeft);
+
+    QLabel* textLabel = new QLabel(details, &dialog);
+    textLabel->setTextFormat(Qt::RichText);
+    textLabel->setWordWrap(true);
+    contentLayout->addWidget(textLabel, 1);
+
+    auto* buttons = new QDialogButtonBox(QDialogButtonBox::Ok, Qt::Horizontal, &dialog);
+    connect(buttons, &QDialogButtonBox::accepted, &dialog, &QDialog::accept);
+    layout->addWidget(buttons);
+
+    dialog.exec();
 }
 
 void MainWindow::handlePrintToPdf()
@@ -793,6 +889,27 @@ void MainWindow::applyEncodingSelection(QStringConverter::Encoding encoding, boo
 }
 
 QTextDocument::FindFlags MainWindow::buildFindFlags(QTextDocument::FindFlags baseFlags) const
+QIcon MainWindow::brandIcon() const
+{
+    QIcon icon = windowIcon();
+    if(icon.isNull())
+    {
+        spdlog::info("brandIcon: windowIcon() failed.");
+        icon = QIcon(QStringLiteral(":/gnotepad-icon.svg"));
+    }
+    else
+    {
+        spdlog::info("brandIcon: using windowIcon().");
+    }
+
+    if (icon.isNull())
+    {
+        spdlog::info("brandIcon: returning null icon.");
+    }
+    return icon;
+}
+
+bool MainWindow::performFind(const QString& term, QTextDocument::FindFlags flags)
 {
     QTextDocument::FindFlags flags = baseFlags;
     if(m_lastCaseSensitivity == Qt::CaseSensitive)
@@ -850,9 +967,9 @@ int MainWindow::replaceAllOccurrences(const QString& term, const QString& replac
     while(m_editor->find(term, flags))
     {
         QTextCursor matchCursor = m_editor->textCursor();
-        matchCursor.insertText(replacement);
-        // Move cursor to the end of the replacement to avoid re-matching just-inserted text
-        matchCursor.movePosition(QTextCursor::NextCharacter, QTextCursor::MoveAnchor, replacement.length());
+            matchCursor.insertText(replacement);
+            // Move cursor to the end of the replacement to avoid re-matching just-inserted text
+            matchCursor.movePosition(QTextCursor::NextCharacter, QTextCursor::MoveAnchor, static_cast<int>(replacement.length()));
         m_editor->setTextCursor(matchCursor);
         ++replacedCount;
     }

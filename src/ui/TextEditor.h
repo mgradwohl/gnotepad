@@ -44,6 +44,7 @@ private:
     class LineNumberArea;
 
     void updateZoomPercentageEstimate(int deltaSteps);
+    void updateTabStopDistance();
 
     QWidget* m_lineNumberArea {nullptr};
     bool m_lineNumbersVisible {true};
