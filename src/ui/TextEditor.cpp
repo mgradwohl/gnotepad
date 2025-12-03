@@ -20,6 +20,7 @@ namespace
 constexpr int kZoomStepPercent = 10;
 constexpr int kMinZoomPercent = 10;
 constexpr int kMaxZoomPercent = 500;
+constexpr int kTabSize = 4;
 }
 
 TextEditor::LineNumberArea::LineNumberArea(TextEditor* editor)
@@ -59,6 +60,7 @@ TextEditor::TextEditor(QWidget* parent)
 
     updateLineNumberAreaWidth(0);
     highlightCurrentLine();
+    updateTabStopDistance();
 }
 
 void TextEditor::setLineNumbersVisible(bool visible)
@@ -200,6 +202,7 @@ void TextEditor::increaseZoom(int range)
     
     QPlainTextEdit::zoomIn(range);
     updateZoomPercentageEstimate(range);
+    updateTabStopDistance();
 }
 
 void TextEditor::decreaseZoom(int range)
@@ -213,6 +216,7 @@ void TextEditor::decreaseZoom(int range)
     
     QPlainTextEdit::zoomOut(range);
     updateZoomPercentageEstimate(-range);
+    updateTabStopDistance();
 }
 
 void TextEditor::wheelEvent(QWheelEvent* event)
@@ -240,6 +244,7 @@ void TextEditor::resetZoom()
     m_zoomPercentage = 100;
     emit zoomPercentageChanged(m_zoomPercentage);
     updateLineNumberAreaWidth(0);
+    updateTabStopDistance();
 }
 
 void TextEditor::applyEditorFont(const QFont& font)
@@ -249,6 +254,13 @@ void TextEditor::applyEditorFont(const QFont& font)
     m_zoomPercentage = 100;
     emit zoomPercentageChanged(m_zoomPercentage);
     updateLineNumberAreaWidth(0);
+    updateTabStopDistance();
+}
+
+void TextEditor::updateTabStopDistance()
+{
+    const QFontMetricsF metrics(font());
+    setTabStopDistance(kTabSize * metrics.horizontalAdvance(QStringLiteral(" ")));
 }
 
 void TextEditor::updateZoomPercentageEstimate(int deltaSteps)
