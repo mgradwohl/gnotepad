@@ -1,5 +1,0 @@
-<RCC>
-    <qresource prefix="/">
-        <file alias="gnotepad-icon.svg">icons/gnotepad-icon.svg</file>
-    </qresource>
-</RCC>

@@ -8,6 +8,7 @@
 /release/
 /optimized/
 /.cache/
+/_codeql_build_dir/
 
 # CMake artifacts
 CMakeCache.txt
