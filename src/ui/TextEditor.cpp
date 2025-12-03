@@ -112,14 +112,16 @@ void TextEditor::lineNumberAreaPaintEvent(QPaintEvent* event)
     int top = static_cast<int>(blockBoundingGeometry(block).translated(contentOffset()).top());
     int bottom = top + static_cast<int>(blockBoundingRect(block).height());
 
-    const QColor textColor = palette().color(QPalette::Disabled, QPalette::Text);
+    const QColor inactiveColor = palette().color(QPalette::Disabled, QPalette::Text);
+    const QColor activeColor = palette().color(QPalette::Text);
+    const int currentBlockNumber = textCursor().blockNumber();
 
     while(block.isValid() && top <= event->rect().bottom())
     {
         if(block.isVisible() && bottom >= event->rect().top())
         {
             const QString number = QString::number(blockNumber + 1);
-            painter.setPen(textColor);
+            painter.setPen(blockNumber == currentBlockNumber ? activeColor : inactiveColor);
             painter.drawText(0, top, m_lineNumberArea->width() - 6, fontMetrics().height(), Qt::AlignRight, number);
         }
 
@@ -191,6 +193,13 @@ void TextEditor::highlightCurrentLine()
 
 void TextEditor::increaseZoom(int range)
 {
+    // Check if we would exceed the maximum zoom percentage
+    const int newPercentage = m_zoomPercentage + range * kZoomStepPercent;
+    if(newPercentage > kMaxZoomPercent)
+    {
+        return; // Already at maximum zoom
+    }
+    
     QPlainTextEdit::zoomIn(range);
     updateZoomPercentageEstimate(range);
     updateTabStopDistance();
@@ -198,6 +207,13 @@ void TextEditor::increaseZoom(int range)
 
 void TextEditor::decreaseZoom(int range)
 {
+    // Check if we would go below the minimum zoom percentage
+    const int newPercentage = m_zoomPercentage - range * kZoomStepPercent;
+    if(newPercentage < kMinZoomPercent)
+    {
+        return; // Already at minimum zoom
+    }
+    
     QPlainTextEdit::zoomOut(range);
     updateZoomPercentageEstimate(-range);
     updateTabStopDistance();
