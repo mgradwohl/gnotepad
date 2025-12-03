@@ -20,7 +20,6 @@ namespace
 constexpr int kZoomStepPercent = 10;
 constexpr int kMinZoomPercent = 10;
 constexpr int kMaxZoomPercent = 500;
-constexpr int kTabSize = 4;
 }
 
 TextEditor::LineNumberArea::LineNumberArea(TextEditor* editor)
@@ -257,16 +256,47 @@ void TextEditor::applyEditorFont(const QFont& font)
     updateTabStopDistance();
 }
 
+void TextEditor::setZoomPercentage(int percent)
+{
+    const int clamped = std::clamp(percent, kMinZoomPercent, kMaxZoomPercent);
+    const int snapped = (clamped / kZoomStepPercent) * kZoomStepPercent;
+    const int delta = snapped - m_zoomPercentage;
+    if(delta == 0)
+    {
+        return;
+    }
+
+    if(delta > 0)
+    {
+        increaseZoom(delta / kZoomStepPercent);
+    }
+    else
+    {
+        decreaseZoom((-delta) / kZoomStepPercent);
+    }
+}
+
 void TextEditor::updateTabStopDistance()
 {
     const QFontMetricsF metrics(font());
-    setTabStopDistance(kTabSize * metrics.horizontalAdvance(QStringLiteral(" ")));
+    setTabStopDistance(std::max(1, m_tabSizeSpaces) * metrics.horizontalAdvance(QStringLiteral(" ")));
 }
 
 void TextEditor::updateZoomPercentageEstimate(int deltaSteps)
 {
     m_zoomPercentage = std::clamp(m_zoomPercentage + deltaSteps * kZoomStepPercent, kMinZoomPercent, kMaxZoomPercent);
     emit zoomPercentageChanged(m_zoomPercentage);
+}
+
+void TextEditor::setTabSizeSpaces(int spaces)
+{
+    const int normalized = std::clamp(spaces, 1, 16);
+    if(m_tabSizeSpaces == normalized)
+    {
+        return;
+    }
+    m_tabSizeSpaces = normalized;
+    updateTabStopDistance();
 }
 
 } // namespace GnotePad::ui

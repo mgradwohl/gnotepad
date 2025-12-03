@@ -6,9 +6,11 @@
 #include <QString>
 #include <QStringConverter>
 #include <QTextDocument>
+#include <QStringList>
 
 class QAction;
 class QLabel;
+class QCheckBox;
 class QMenu;
 class QPrinter;
 class QStatusBar;
@@ -45,6 +47,9 @@ private slots:
     void handleInsertTimeDate();
     void handleUpdateCursorStatus();
     void showAboutDialog();
+    void handleSetTabSize();
+    void handleOpenRecentFile();
+    void handleClearRecentFiles();
 
 private:
     void buildMenus();
@@ -69,6 +74,12 @@ private:
     bool performFind(const QString& term, QTextDocument::FindFlags flags = {});
     int replaceAllOccurrences(const QString& term, const QString& replacement, QTextDocument::FindFlags flags = {});
     QIcon brandIcon() const;
+    void loadSettings();
+    void saveSettings() const;
+    void addRecentFile(const QString& path);
+    void refreshRecentFilesMenu();
+    QString dialogDirectory(const QString& lastDir) const;
+    QString defaultDocumentsDirectory() const;
 
     void closeEvent(QCloseEvent* event) override;
 
@@ -85,6 +96,8 @@ private:
 
     QAction* m_statusBarToggle {nullptr};
     QAction* m_lineNumberToggle {nullptr};
+    QAction* m_wordWrapAction {nullptr};
+    QMenu* m_recentFilesMenu {nullptr};
 
     QString m_currentFilePath;
     QStringConverter::Encoding m_currentEncoding {QStringConverter::Utf8};
@@ -92,6 +105,11 @@ private:
     QString m_lastSearchTerm;
     QString m_lastReplaceText;
     Qt::CaseSensitivity m_lastCaseSensitivity {Qt::CaseInsensitive};
+    QStringList m_recentFiles;
+    QString m_lastOpenDirectory;
+    QString m_lastSaveDirectory;
+    int m_tabSizeSpaces {4};
+    int m_currentZoomPercent {100};
 };
 
 } // namespace GnotePad::ui

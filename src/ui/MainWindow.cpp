@@ -13,7 +13,9 @@
 #include <QFile>
 #include <QFileDialog>
 #include <QFileInfo>
+#include <QDir>
 #include <QFontDialog>
+#include <QFont>
 #include <QFormLayout>
 #include <QIcon>
 #include <QInputDialog>
@@ -28,15 +30,18 @@
 #include <QPushButton>
 #include <QPlainTextEdit>
 #include <QPrinter>
+#include <QRect>
 #include <QSaveFile>
+#include <QSignalBlocker>
+#include <QSettings>
 #include <QTextBlock>
 #include <QTextCursor>
 #include <QHBoxLayout>
 #include <QStatusBar>
+#include <QStandardPaths>
 #include <QStringDecoder>
 #include <QStringEncoder>
 #include <QStringConverter>
-#include <QStringList>
 #include <QTextDocument>
 #include <QTextOption>
 #include <QVBoxLayout>
@@ -52,6 +57,7 @@ namespace GnotePad::ui
 namespace
 {
 constexpr auto UntitledDocumentTitle = "Untitled";
+constexpr int MaxRecentFiles = 10;
 }
 
 MainWindow::MainWindow(QWidget* parent)
@@ -62,8 +68,9 @@ MainWindow::MainWindow(QWidget* parent)
     buildStatusBar();
     wireSignals();
 
-    resetDocumentState();
     resize(900, 700);
+    loadSettings();
+    resetDocumentState();
 }
 
 void MainWindow::buildEditor()
@@ -104,9 +111,7 @@ void MainWindow::applyDefaultEditorFont()
 
     defaultFont.setStyleHint(QFont::Monospace);
     m_editor->applyEditorFont(defaultFont);
-
-    const QFontMetricsF metrics(defaultFont);
-    m_editor->setTabStopDistance(metrics.horizontalAdvance(QStringLiteral("    ")));
+    m_editor->setTabSizeSpaces(m_tabSizeSpaces);
 }
 
 void MainWindow::buildMenus()
@@ -120,6 +125,8 @@ void MainWindow::buildMenus()
 
     fileMenu->addAction(tr("&New"), QKeySequence::New, this, &MainWindow::handleNewFile);
     fileMenu->addAction(tr("&Open…"), QKeySequence::Open, this, &MainWindow::handleOpenFile);
+    m_recentFilesMenu = fileMenu->addMenu(tr("Open &Recent"));
+    refreshRecentFilesMenu();
     fileMenu->addAction(tr("&Save"), QKeySequence::Save, this, &MainWindow::handleSaveFile);
     fileMenu->addAction(tr("Save &As…"), QKeySequence::SaveAs, this, &MainWindow::handleSaveFileAs);
     fileMenu->addAction(tr("E&ncoding…"), this, &MainWindow::handleChangeEncoding);
@@ -143,9 +150,9 @@ void MainWindow::buildMenus()
     editMenu->addAction(tr("Select &All"), QKeySequence::SelectAll, m_editor, &QPlainTextEdit::selectAll);
     editMenu->addAction(tr("Time/&Date"), QKeySequence(Qt::Key_F5), this, &MainWindow::handleInsertTimeDate);
 
-    auto* wordWrapAction = formatMenu->addAction(tr("&Word Wrap"));
-    wordWrapAction->setCheckable(true);
-    connect(wordWrapAction, &QAction::toggled, this, [this](bool checked) {
+    m_wordWrapAction = formatMenu->addAction(tr("&Word Wrap"));
+    m_wordWrapAction->setCheckable(true);
+    connect(m_wordWrapAction, &QAction::toggled, this, [this](bool checked) {
         m_editor->setWordWrapMode(checked ? QTextOption::WordWrap : QTextOption::NoWrap);
     });
 
@@ -157,6 +164,8 @@ void MainWindow::buildMenus()
             m_editor->applyEditorFont(selectedFont);
         }
     });
+
+    formatMenu->addAction(tr("Tab &Size…"), this, &MainWindow::handleSetTabSize);
 
     m_statusBarToggle = viewMenu->addAction(tr("Status &Bar"), this, &MainWindow::handleToggleStatusBar);
     m_statusBarToggle->setCheckable(true);
@@ -230,7 +239,7 @@ void MainWindow::handleOpenFile()
         return;
     }
 
-    const auto filePath = QFileDialog::getOpenFileName(this, tr("Open"), QString(), tr("Text Files (*.txt);;All Files (*.*)"));
+    const auto filePath = QFileDialog::getOpenFileName(this, tr("Open"), dialogDirectory(m_lastOpenDirectory), tr("Text Files (*.txt);;All Files (*.*)"));
     if(filePath.isEmpty())
     {
         return;
@@ -240,6 +249,43 @@ void MainWindow::handleOpenFile()
     {
         spdlog::info("Loaded file {}", filePath.toStdString());
     }
+}
+
+void MainWindow::handleOpenRecentFile()
+{
+    auto* action = qobject_cast<QAction*>(sender());
+    if(!action)
+    {
+        return;
+    }
+
+    const QString filePath = action->data().toString();
+    if(filePath.isEmpty())
+    {
+        return;
+    }
+
+    if(!confirmReadyForDestructiveAction())
+    {
+        return;
+    }
+
+    if(loadDocumentFromPath(filePath))
+    {
+        spdlog::info("Loaded recent file {}", filePath.toStdString());
+    }
+}
+
+void MainWindow::handleClearRecentFiles()
+{
+    if(m_recentFiles.isEmpty())
+    {
+        return;
+    }
+
+    m_recentFiles.clear();
+    refreshRecentFilesMenu();
+    spdlog::info("Cleared recent files list");
 }
 
 void MainWindow::handleSaveFile()
@@ -264,6 +310,26 @@ void MainWindow::handleChangeEncoding()
         applyEncodingSelection(desiredEncoding, desiredBom);
         spdlog::info("Encoding preference updated to {}", encodingLabel().toStdString());
     }
+}
+
+void MainWindow::handleSetTabSize()
+{
+    if(!m_editor)
+    {
+        return;
+    }
+    
+    bool accepted = false;
+    const int currentSize = m_editor->tabSizeSpaces();
+    const int newSize = QInputDialog::getInt(this, tr("Tab Size"), tr("Spaces per tab:"), currentSize, 1, 16, 1, &accepted);
+    if(!accepted || newSize == currentSize)
+    {
+        return;
+    }
+
+    m_tabSizeSpaces = newSize;
+    m_editor->setTabSizeSpaces(newSize);
+    spdlog::info("Tab size updated to {} spaces", newSize);
 }
 
 void MainWindow::handleFind()
@@ -547,14 +613,17 @@ void MainWindow::handlePrintToPdf()
 {
     QPrinter printer(QPrinter::HighResolution);
     printer.setOutputFormat(QPrinter::PdfFormat);
-    const auto target = QFileDialog::getSaveFileName(this, tr("Export PDF"), QString(), tr("PDF Files (*.pdf)"));
+    const auto target = QFileDialog::getSaveFileName(this, tr("Export PDF"), dialogDirectory(m_lastSaveDirectory), tr("PDF Files (*.pdf)"));
     if(target.isEmpty())
     {
         return;
     }
 
     printer.setOutputFileName(target);
-    m_editor->print(&printer);
+    if(m_editor)
+    {
+        m_editor->print(&printer);
+    }
     QDesktopServices::openUrl(QUrl::fromLocalFile(target));
     spdlog::info("Exported PDF to {}", target.toStdString());
 }
@@ -564,6 +633,11 @@ void MainWindow::handleToggleStatusBar(bool checked)
     if(m_statusBar)
     {
         m_statusBar->setVisible(checked);
+    }
+    if(m_statusBarToggle && m_statusBarToggle->isChecked() != checked)
+    {
+        const QSignalBlocker blocker(m_statusBarToggle);
+        m_statusBarToggle->setChecked(checked);
     }
 }
 
@@ -636,6 +710,7 @@ void MainWindow::updateDocumentStats()
 
 void MainWindow::updateZoomLabel(int percentage)
 {
+    m_currentZoomPercent = percentage;
     if(m_zoomLabel)
     {
         m_zoomLabel->setText(tr("%1%").arg(percentage));
@@ -658,6 +733,7 @@ void MainWindow::closeEvent(QCloseEvent* event)
 {
     if(confirmReadyForDestructiveAction())
     {
+        saveSettings();
         event->accept();
     }
     else
@@ -697,6 +773,8 @@ bool MainWindow::loadDocumentFromPath(const QString& filePath)
 
     m_currentFilePath = filePath;
     applyEncodingSelection(encoding, bomLength > 0);
+    addRecentFile(filePath);
+    m_lastOpenDirectory = QFileInfo(filePath).absolutePath();
     updateWindowTitle();
     updateDocumentStats();
     return true;
@@ -749,6 +827,8 @@ bool MainWindow::saveDocumentToPath(const QString& filePath)
     }
 
     m_currentFilePath = filePath;
+    m_lastSaveDirectory = QFileInfo(filePath).absolutePath();
+    addRecentFile(filePath);
     if(m_editor)
     {
         m_editor->document()->setModified(false);
@@ -759,7 +839,8 @@ bool MainWindow::saveDocumentToPath(const QString& filePath)
 
 bool MainWindow::saveDocumentAsDialog()
 {
-    const auto target = QFileDialog::getSaveFileName(this, tr("Save As"), m_currentFilePath, tr("Text Files (*.txt);;All Files (*.*)"));
+    const QString initialPath = m_currentFilePath.isEmpty() ? dialogDirectory(m_lastSaveDirectory) : m_currentFilePath;
+    const auto target = QFileDialog::getSaveFileName(this, tr("Save As"), initialPath, tr("Text Files (*.txt);;All Files (*.*)"));
     if(target.isEmpty())
     {
         return false;
@@ -799,7 +880,7 @@ void MainWindow::resetDocumentState()
         m_editor->document()->clear();
         m_editor->document()->setModified(false);
     }
-    applyEncodingSelection(QStringConverter::Utf8, false);
+    updateEncodingDisplay(encodingLabel());
     updateWindowTitle();
     updateDocumentStats();
 }
@@ -886,6 +967,247 @@ void MainWindow::applyEncodingSelection(QStringConverter::Encoding encoding, boo
     m_currentEncoding = encoding;
     m_hasBom = bom;
     updateEncodingDisplay(encodingLabel());
+}
+
+void MainWindow::loadSettings()
+{
+    QSettings settings;
+    const QFileInfo settingsFile(settings.fileName());
+    const bool hasExistingPreferences = settingsFile.exists();
+
+    const bool hasRectKeys = settings.contains("window/posX") && settings.contains("window/posY") && settings.contains("window/width") && settings.contains("window/height");
+    const bool windowMaximized = settings.value("window/maximized", false).toBool();
+
+    if(hasRectKeys)
+    {
+        const int windowX = settings.value("window/posX", x()).toInt();
+        const int windowY = settings.value("window/posY", y()).toInt();
+        const int windowWidth = settings.value("window/width", width()).toInt();
+        const int windowHeight = settings.value("window/height", height()).toInt();
+
+        if(windowWidth > 0 && windowHeight > 0)
+        {
+            resize(windowWidth, windowHeight);
+        }
+        move(windowX, windowY);
+    }
+    else if(settings.contains("window/geometry"))
+    {
+        const QByteArray legacyGeometry = settings.value("window/geometry").toByteArray();
+        restoreGeometry(legacyGeometry);
+    }
+
+    if(windowMaximized)
+    {
+        setWindowState(Qt::WindowMaximized);
+    }
+    else
+    {
+        setWindowState(Qt::WindowNoState);
+    }
+
+    m_lastOpenDirectory = settings.value("paths/lastOpenDirectory").toString();
+    m_lastSaveDirectory = settings.value("paths/lastSaveDirectory").toString();
+
+    m_recentFiles = settings.value("documents/recentFiles").toStringList();
+    while(m_recentFiles.size() > MaxRecentFiles)
+    {
+        m_recentFiles.removeLast();
+    }
+    refreshRecentFilesMenu();
+
+    const QString fontFamily = settings.value("editor/fontFamily").toString();
+    const qreal fontPointSize = settings.value("editor/fontPointSize", -1.0).toDouble();
+    if(m_editor && !fontFamily.isEmpty())
+    {
+        QFont storedFont(fontFamily);
+        if(fontPointSize > 0)
+        {
+            storedFont.setPointSizeF(fontPointSize);
+        }
+        m_editor->applyEditorFont(storedFont);
+    }
+    else if(m_editor && settings.contains("editor/font"))
+    {
+        const QFont legacyFont = settings.value("editor/font").value<QFont>();
+        if(!legacyFont.family().isEmpty())
+        {
+            m_editor->applyEditorFont(legacyFont);
+        }
+    }
+    else if(m_editor && !hasExistingPreferences)
+    {
+        applyDefaultEditorFont();
+    }
+
+    const bool lineNumbersVisible = settings.value("editor/lineNumbersVisible", true).toBool();
+    if(m_editor)
+    {
+        m_editor->setLineNumbersVisible(lineNumbersVisible);
+    }
+    if(m_lineNumberToggle)
+    {
+        m_lineNumberToggle->setChecked(lineNumbersVisible);
+    }
+
+    const bool wrapEnabled = settings.value("editor/wordWrap", false).toBool();
+    if(m_editor)
+    {
+        m_editor->setWordWrapMode(wrapEnabled ? QTextOption::WordWrap : QTextOption::NoWrap);
+    }
+    if(m_wordWrapAction)
+    {
+        const QSignalBlocker blocker(m_wordWrapAction);
+        m_wordWrapAction->setChecked(wrapEnabled);
+    }
+
+    const bool statusBarVisible = settings.value("editor/statusBarVisible", true).toBool();
+    if(m_statusBar)
+    {
+        m_statusBar->setVisible(statusBarVisible);
+    }
+    if(m_statusBarToggle)
+    {
+        m_statusBarToggle->setChecked(statusBarVisible);
+    }
+
+    m_tabSizeSpaces = std::clamp(settings.value("editor/tabSizeSpaces", m_tabSizeSpaces).toInt(), 1, 16);
+    if(m_editor)
+    {
+        m_editor->setTabSizeSpaces(m_tabSizeSpaces);
+    }
+
+    const int encodingValue = settings.value("editor/defaultEncoding", static_cast<int>(m_currentEncoding)).toInt();
+    const bool bom = settings.value("editor/defaultBom", m_hasBom).toBool();
+    applyEncodingSelection(static_cast<QStringConverter::Encoding>(encodingValue), bom);
+
+    const int zoomPercent = settings.value("editor/zoomPercent", 100).toInt();
+    if(m_editor)
+    {
+        m_editor->setZoomPercentage(zoomPercent);
+    }
+    else
+    {
+        updateZoomLabel(zoomPercent);
+    }
+}
+
+void MainWindow::saveSettings() const
+{
+    QSettings settings;
+
+    const QRect windowRect = isMaximized() ? normalGeometry() : geometry();
+    settings.setValue("window/posX", windowRect.x());
+    settings.setValue("window/posY", windowRect.y());
+    settings.setValue("window/width", windowRect.width());
+    settings.setValue("window/height", windowRect.height());
+    settings.setValue("window/maximized", isMaximized());
+
+    settings.setValue("paths/lastOpenDirectory", m_lastOpenDirectory);
+    settings.setValue("paths/lastSaveDirectory", m_lastSaveDirectory);
+    settings.setValue("documents/recentFiles", m_recentFiles);
+
+    if(m_editor)
+    {
+        const QFont editorFont = m_editor->font();
+        settings.setValue("editor/fontFamily", editorFont.family());
+        settings.setValue("editor/fontPointSize", editorFont.pointSizeF());
+        settings.setValue("editor/lineNumbersVisible", m_editor->lineNumbersVisible());
+        settings.setValue("editor/wordWrap", m_editor->wordWrapMode() != QTextOption::NoWrap);
+    }
+    else
+    {
+        settings.remove("editor/fontFamily");
+        settings.remove("editor/fontPointSize");
+        settings.setValue("editor/lineNumbersVisible", true);
+        settings.setValue("editor/wordWrap", false);
+    }
+
+    settings.setValue("editor/tabSizeSpaces", m_tabSizeSpaces);
+    settings.setValue("editor/statusBarVisible", m_statusBar ? m_statusBar->isVisible() : true);
+    settings.setValue("editor/defaultEncoding", static_cast<int>(m_currentEncoding));
+    settings.setValue("editor/defaultBom", m_hasBom);
+    settings.setValue("editor/zoomPercent", m_currentZoomPercent);
+
+    settings.remove("window/geometry");
+    settings.remove("window/state");
+    settings.remove("editor/font");
+}
+
+void MainWindow::addRecentFile(const QString& path)
+{
+    if(path.isEmpty())
+    {
+        return;
+    }
+
+    const QString normalizedPath = QFileInfo(path).absoluteFilePath();
+    if(normalizedPath.isEmpty())
+    {
+        return;
+    }
+
+    m_recentFiles.removeAll(normalizedPath);
+    m_recentFiles.prepend(normalizedPath);
+    while(m_recentFiles.size() > MaxRecentFiles)
+    {
+        m_recentFiles.removeLast();
+    }
+    refreshRecentFilesMenu();
+}
+
+void MainWindow::refreshRecentFilesMenu()
+{
+    if(!m_recentFilesMenu)
+    {
+        return;
+    }
+
+    m_recentFilesMenu->clear();
+    if(m_recentFiles.isEmpty())
+    {
+        auto* emptyAction = m_recentFilesMenu->addAction(tr("(No Recent Files)"));
+        emptyAction->setEnabled(false);
+    }
+    else
+    {
+        for(const auto& path : m_recentFiles)
+        {
+            if(path.isEmpty())
+            {
+                continue;
+            }
+
+            const QFileInfo info(path);
+            auto* action = m_recentFilesMenu->addAction(info.fileName().isEmpty() ? path : info.fileName());
+            action->setData(path);
+            action->setToolTip(path);
+            connect(action, &QAction::triggered, this, &MainWindow::handleOpenRecentFile);
+        }
+    }
+
+    m_recentFilesMenu->addSeparator();
+    auto* clearAction = m_recentFilesMenu->addAction(tr("Clear Recent Files"), this, &MainWindow::handleClearRecentFiles);
+    clearAction->setEnabled(!m_recentFiles.isEmpty());
+}
+
+QString MainWindow::dialogDirectory(const QString& lastDir) const
+{
+    if(!lastDir.isEmpty())
+    {
+        return lastDir;
+    }
+    return defaultDocumentsDirectory();
+}
+
+QString MainWindow::defaultDocumentsDirectory() const
+{
+    const QString documentsLocation = QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation);
+    if(!documentsLocation.isEmpty())
+    {
+        return documentsLocation;
+    }
+    return QDir::homePath();
 }
 
 QTextDocument::FindFlags MainWindow::buildFindFlags(QTextDocument::FindFlags baseFlags) const
