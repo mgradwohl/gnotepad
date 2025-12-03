@@ -42,9 +42,11 @@
 #include <QTextOption>
 #include <QVBoxLayout>
 #include <QUrl>
+#include <QPainter>
 #include <QtSvgWidgets/QSvgWidget>
 #include <algorithm>
 
+#include <qnamespace.h>
 #include <spdlog/spdlog.h>
 
 namespace GnotePad::ui
@@ -504,10 +506,12 @@ void MainWindow::showAboutDialog()
     QPixmap aboutPixmap;
     if(!icon.isNull())
     {
-        aboutPixmap = icon.pixmap(128, 128);
+        spdlog::info("About dialog: using icon for branding.");
+        aboutPixmap = icon.pixmap(64, 64);
     }
     if(aboutPixmap.isNull())
     {
+        spdlog::info("About dialog: creating pixmap from SVG resource.");
         aboutPixmap = QPixmap(QStringLiteral(":/gnotepad-icon.svg"));
     }
 
@@ -527,8 +531,8 @@ void MainWindow::showAboutDialog()
     auto* contentLayout = new QHBoxLayout();
     layout->addLayout(contentLayout);
 
-    iconLabel->setAlignment(Qt::AlignCenter | Qt::AlignLeft);
-    contentLayout->addWidget(iconLabel, 0, Qt::AlignCenter);
+    iconLabel->setAlignment(Qt::AlignLeft| Qt:: AlignVCenter);
+    contentLayout->addWidget(iconLabel, 0, Qt::AlignLeft);
 
     QLabel* textLabel = new QLabel(details, &dialog);
     textLabel->setTextFormat(Qt::RichText);
@@ -893,7 +897,11 @@ QIcon MainWindow::brandIcon() const
     if(icon.isNull())
     {
         spdlog::info("brandIcon: windowIcon() failed.");
-        icon = QIcon(QStringLiteral(":/icons/gnotepad-icon.svg"));
+        icon = QIcon(QStringLiteral(":/gnotepad-icon.svg"));
+    }
+    else
+    {
+        spdlog::info("brandIcon: using windowIcon().");
     }
 
     if (icon.isNull())
