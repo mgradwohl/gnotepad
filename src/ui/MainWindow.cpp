@@ -45,7 +45,6 @@
 #include <QtSvgWidgets/QSvgWidget>
 #include <algorithm>
 
-#include <qnamespace.h>
 #include <spdlog/spdlog.h>
 
 namespace GnotePad::ui
