@@ -191,12 +191,26 @@ void TextEditor::highlightCurrentLine()
 
 void TextEditor::increaseZoom(int range)
 {
+    // Check if we would exceed the maximum zoom percentage
+    const int newPercentage = m_zoomPercentage + range * kZoomStepPercent;
+    if(newPercentage > kMaxZoomPercent)
+    {
+        return; // Already at maximum zoom
+    }
+    
     QPlainTextEdit::zoomIn(range);
     updateZoomPercentageEstimate(range);
 }
 
 void TextEditor::decreaseZoom(int range)
 {
+    // Check if we would go below the minimum zoom percentage
+    const int newPercentage = m_zoomPercentage - range * kZoomStepPercent;
+    if(newPercentage < kMinZoomPercent)
+    {
+        return; // Already at minimum zoom
+    }
+    
     QPlainTextEdit::zoomOut(range);
     updateZoomPercentageEstimate(-range);
 }
