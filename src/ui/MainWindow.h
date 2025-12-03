@@ -65,6 +65,7 @@ private:
     bool promptEncodingSelection(QStringConverter::Encoding& encoding, bool& bom);
     void applyEncodingSelection(QStringConverter::Encoding encoding, bool bom);
     void resetDocumentState();
+    QTextDocument::FindFlags buildFindFlags(QTextDocument::FindFlags baseFlags = {}) const;
     bool performFind(const QString& term, QTextDocument::FindFlags flags = {});
     int replaceAllOccurrences(const QString& term, const QString& replacement, QTextDocument::FindFlags flags = {});
     QIcon brandIcon() const;
