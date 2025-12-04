@@ -10,12 +10,16 @@
 #include <QtCore/QSize>
 #include <QtCore/QStandardPaths>
 #include <QtCore/QTemporaryDir>
+#include <QStringList>
 #include <QtTest/QTest>
 
 #include <QtGui/QAction>
+#include <QtGui/QFont>
 #include <QtGui/QTextCursor>
+#include <QtGui/QTextOption>
 #include <QtWidgets/QMenu>
 #include <QtWidgets/QMessageBox>
+#include <QtWidgets/QStatusBar>
 #include <QtWidgets/QScrollBar>
 #include <QStringConverter>
 
@@ -68,6 +72,112 @@ void MainWindowSmokeTests::testWindowStateTransitions()
     window.showNormal();
     QTRY_VERIFY(!window.windowState().testFlag(Qt::WindowMinimized));
     QTRY_VERIFY(!window.windowState().testFlag(Qt::WindowMaximized));
+}
+
+void MainWindowSmokeTests::testDefaultsWithoutSettings()
+{
+    {
+        QSettings settings;
+        const QString iniPath = settings.fileName();
+        settings.clear();
+        settings.sync();
+        if(!iniPath.isEmpty())
+        {
+            QFile::remove(iniPath);
+            QFile::remove(iniPath + QStringLiteral(".lock"));
+        }
+    }
+
+    MainWindow window;
+    window.show();
+    QTRY_VERIFY(window.isVisible());
+    auto* editor = window.editorForTest();
+    QVERIFY(editor);
+
+    QVERIFY(window.recentFilesForTest().isEmpty());
+    auto* menu = window.recentFilesMenuForTest();
+    QVERIFY(menu);
+    const auto actions = menu->actions();
+    QVERIFY(!actions.isEmpty());
+    QVERIFY(!actions.first()->isEnabled());
+
+    QCOMPARE(window.currentEncodingForTest(), QStringConverter::Utf8);
+    QVERIFY(!window.currentBomForTest());
+
+    QVERIFY(editor->lineNumbersVisible());
+    QCOMPARE(editor->wordWrapMode(), QTextOption::NoWrap);
+    QCOMPARE(editor->tabSizeSpaces(), 4);
+    QCOMPARE(editor->zoomPercentage(), 100);
+
+    const QFont font = editor->font();
+    QVERIFY(!font.family().isEmpty());
+    QVERIFY(font.pointSizeF() > 0.0);
+
+    QCOMPARE(window.windowState(), Qt::WindowNoState);
+
+    auto* statusBar = window.findChild<QStatusBar*>();
+    QVERIFY(statusBar);
+    QVERIFY(statusBar->isVisible());
+}
+
+void MainWindowSmokeTests::testHandlesCorruptSettings()
+{
+    const QString iniPath = [&]() {
+        QSettings settings;
+        const QString fileName = settings.fileName();
+        settings.clear();
+        settings.setValue("window/posX", -9999);
+        settings.setValue("window/posY", -9999);
+        settings.setValue("window/width", -400);
+        settings.setValue("window/height", 0);
+        settings.setValue("editor/tabSizeSpaces", 64);
+        settings.setValue("editor/zoomPercent", 9999);
+        settings.setValue("editor/fontFamily", QString());
+        settings.setValue("editor/fontPointSize", 512.0);
+
+        QStringList recents;
+        for(int i = 0; i < 20; ++i)
+        {
+            recents.append(QStringLiteral("/tmp/corrupt_file_%1.txt").arg(i));
+        }
+        settings.setValue("documents/recentFiles", recents);
+        settings.sync();
+        return fileName;
+    }();
+
+    {
+        MainWindow window;
+        window.show();
+        QTRY_VERIFY(window.isVisible());
+
+        auto* editor = window.editorForTest();
+        QVERIFY(editor);
+
+        QVERIFY(window.width() > 0);
+        QVERIFY(window.height() > 0);
+
+        QCOMPARE(editor->tabSizeSpaces(), 16);
+        QCOMPARE(editor->zoomPercentage(), 500);
+
+        const QFont font = editor->font();
+        QVERIFY(font.pointSizeF() < 50.0);
+
+        const auto recents = window.recentFilesForTest();
+        QCOMPARE(recents.size(), 10);
+        QCOMPARE(recents.first(), QStringLiteral("/tmp/corrupt_file_0.txt"));
+        QCOMPARE(recents.last(), QStringLiteral("/tmp/corrupt_file_9.txt"));
+    }
+
+    {
+        QSettings settings;
+        settings.clear();
+        settings.sync();
+        if(!iniPath.isEmpty())
+        {
+            QFile::remove(iniPath);
+            QFile::remove(iniPath + QStringLiteral(".lock"));
+        }
+    }
 }
 
 void MainWindowSmokeTests::testZoomActions()

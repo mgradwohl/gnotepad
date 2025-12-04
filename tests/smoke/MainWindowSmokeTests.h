@@ -19,6 +19,8 @@ private slots:
     void initTestCase();
     void testLaunchShowsWindow();
     void testWindowStateTransitions();
+    void testDefaultsWithoutSettings();
+    void testHandlesCorruptSettings();
     void testZoomActions();
     void testInsertTimeDate();
     void testToggleLineNumbers();
