@@ -30,7 +30,7 @@ else()
     message(WARNING "GnotePad is validated primarily with clang; proceeding with ${CMAKE_CXX_COMPILER_ID}.")
 endif()
 
-find_package(Qt6 6.4 REQUIRED COMPONENTS Core Gui Widgets PrintSupport Svg SvgWidgets)
+find_package(Qt6 6.4 REQUIRED COMPONENTS Core Gui Widgets PrintSupport Svg SvgWidgets Test)
 
 FetchContent_Declare(
     spdlog

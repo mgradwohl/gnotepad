@@ -46,6 +46,7 @@
 #include <QStringConverter>
 #include <QTextDocument>
 #include <QTextOption>
+#include <QTimer>
 #include <QVBoxLayout>
 #include <QUrl>
 #include <algorithm>
@@ -143,14 +144,14 @@ void MainWindow::buildMenus()
     editMenu->addAction(tr("&Paste"), QKeySequence::Paste, m_editor, &QPlainTextEdit::paste);
     editMenu->addAction(tr("De&lete"), m_editor, &QPlainTextEdit::cut);
     editMenu->addSeparator();
-    editMenu->addAction(tr("&Find…"), QKeySequence::Find, this, &MainWindow::handleFind);
+    m_findAction = editMenu->addAction(tr("&Find…"), QKeySequence::Find, this, &MainWindow::handleFind);
     editMenu->addAction(tr("Find &Next"), QKeySequence(Qt::Key_F3), this, &MainWindow::handleFindNext);
     editMenu->addAction(tr("Find &Previous"), QKeySequence(Qt::SHIFT | Qt::Key_F3), this, &MainWindow::handleFindPrevious);
-    editMenu->addAction(tr("&Replace…"), QKeySequence::Replace, this, &MainWindow::handleReplace);
+    m_replaceAction = editMenu->addAction(tr("&Replace…"), QKeySequence::Replace, this, &MainWindow::handleReplace);
     editMenu->addAction(tr("&Go To…"), QKeySequence(Qt::CTRL | Qt::Key_G), this, &MainWindow::handleGoToLine);
     editMenu->addSeparator();
     editMenu->addAction(tr("Select &All"), QKeySequence::SelectAll, m_editor, &QPlainTextEdit::selectAll);
-    editMenu->addAction(tr("Time/&Date"), QKeySequence(Qt::Key_F5), this, &MainWindow::handleInsertTimeDate);
+    m_timeDateAction = editMenu->addAction(tr("Time/&Date"), QKeySequence(Qt::Key_F5), this, &MainWindow::handleInsertTimeDate);
 
     m_wordWrapAction = formatMenu->addAction(tr("&Word Wrap"));
     m_wordWrapAction->setCheckable(true);
@@ -361,6 +362,10 @@ void MainWindow::handleFind()
         return;
     }
 
+#if defined(GNOTE_TEST_HOOKS)
+    ++m_testFindDialogInvocations;
+#endif
+
     QDialog dialog(this);
     dialog.setWindowTitle(tr("Find"));
     dialog.setModal(true);
@@ -378,6 +383,13 @@ void MainWindow::handleFind()
 
     connect(buttons, &QDialogButtonBox::accepted, &dialog, &QDialog::accept);
     connect(buttons, &QDialogButtonBox::rejected, &dialog, &QDialog::reject);
+
+#if defined(GNOTE_TEST_HOOKS)
+    if(m_testAutoDismissDialogs)
+    {
+        QTimer::singleShot(0, &dialog, &QDialog::reject);
+    }
+#endif
 
     if(dialog.exec() != QDialog::Accepted)
     {
@@ -434,6 +446,10 @@ void MainWindow::handleReplace()
         return;
     }
 
+#if defined(GNOTE_TEST_HOOKS)
+    ++m_testReplaceDialogInvocations;
+#endif
+
     QDialog dialog(this);
     dialog.setWindowTitle(tr("Replace"));
 
@@ -469,28 +485,6 @@ void MainWindow::handleReplace()
         m_lastCaseSensitivity = matchCase->isChecked() ? Qt::CaseSensitive : Qt::CaseInsensitive;
     };
 
-    const auto replaceSingle = [this](const QString& term, const QString& replacement) -> bool {
-        if(term.isEmpty())
-        {
-            return false;
-        }
-
-        QTextCursor cursor = m_editor->textCursor();
-        const bool selectionMatches = cursor.hasSelection() && QString::compare(cursor.selectedText(), term, m_lastCaseSensitivity) == 0;
-        if(!selectionMatches)
-        {
-            if(!performFind(term, buildFindFlags()))
-            {
-                return false;
-            }
-            cursor = m_editor->textCursor();
-        }
-
-        cursor.insertText(replacement);
-        m_editor->setTextCursor(cursor);
-        return true;
-    };
-
     connect(findNextButton, &QPushButton::clicked, &dialog, [this, applyDialogState]() {
         applyDialogState();
         if(m_lastSearchTerm.isEmpty())
@@ -503,13 +497,13 @@ void MainWindow::handleReplace()
         }
     });
 
-    connect(replaceButton, &QPushButton::clicked, &dialog, [this, applyDialogState, replaceSingle]() {
+    connect(replaceButton, &QPushButton::clicked, &dialog, [this, applyDialogState]() {
         applyDialogState();
         if(m_lastSearchTerm.isEmpty())
         {
             return;
         }
-        if(!replaceSingle(m_lastSearchTerm, m_lastReplaceText))
+        if(!replaceNextOccurrence(m_lastSearchTerm, m_lastReplaceText, buildFindFlags()))
         {
             QMessageBox::information(this, tr("Replace"), tr("Cannot find \"%1\".").arg(m_lastSearchTerm));
         }
@@ -526,6 +520,13 @@ void MainWindow::handleReplace()
     });
 
     connect(closeButton, &QPushButton::clicked, &dialog, &QDialog::reject);
+
+#if defined(GNOTE_TEST_HOOKS)
+    if(m_testAutoDismissDialogs)
+    {
+        QTimer::singleShot(0, &dialog, &QDialog::reject);
+    }
+#endif
 
     dialog.exec();
 }
@@ -929,6 +930,23 @@ bool MainWindow::confirmReadyForDestructiveAction()
     {
         return true;
     }
+
+#if defined(GNOTE_TEST_HOOKS)
+    if(!m_testPromptResponses.empty())
+    {
+        const auto response = m_testPromptResponses.front();
+        m_testPromptResponses.pop_front();
+        if(response == QMessageBox::Save)
+        {
+            return saveCurrentDocument();
+        }
+        if(response == QMessageBox::Discard)
+        {
+            return true;
+        }
+        return false;
+    }
+#endif
 
     const auto title = m_currentFilePath.isEmpty() ? tr(UntitledDocumentTitle) : QFileInfo(m_currentFilePath).fileName();
         QMessageBox prompt(this);
@@ -1347,6 +1365,29 @@ bool MainWindow::performFind(const QString& term, QTextDocument::FindFlags flags
     return foundAfterWrap;
 }
 
+bool MainWindow::replaceNextOccurrence(const QString& term, const QString& replacement, QTextDocument::FindFlags flags)
+{
+    if(!m_editor || term.isEmpty())
+    {
+        return false;
+    }
+
+    QTextCursor cursor = m_editor->textCursor();
+    const bool selectionMatches = cursor.hasSelection() && QString::compare(cursor.selectedText(), term, m_lastCaseSensitivity) == 0;
+    if(!selectionMatches)
+    {
+        if(!performFind(term, flags))
+        {
+            return false;
+        }
+        cursor = m_editor->textCursor();
+    }
+
+    cursor.insertText(replacement);
+    m_editor->setTextCursor(cursor);
+    return true;
+}
+
 int MainWindow::replaceAllOccurrences(const QString& term, const QString& replacement, QTextDocument::FindFlags flags)
 {
     if(!m_editor || term.isEmpty())
@@ -1435,5 +1476,47 @@ QStringConverter::Encoding MainWindow::detectEncodingFromData(const QByteArray& 
 
     return QStringConverter::Utf8;
 }
+
+#if defined(GNOTE_TEST_HOOKS)
+void MainWindow::setSearchStateForTest(const QString& term, Qt::CaseSensitivity sensitivity, const QString& replacement)
+{
+    m_lastSearchTerm = term;
+    m_lastCaseSensitivity = sensitivity;
+    m_lastReplaceText = replacement;
+}
+
+bool MainWindow::testFindNext(QTextDocument::FindFlags extraFlags)
+{
+    if(m_lastSearchTerm.isEmpty())
+    {
+        return false;
+    }
+    return performFind(m_lastSearchTerm, buildFindFlags(extraFlags));
+}
+
+bool MainWindow::testFindPrevious()
+{
+    if(m_lastSearchTerm.isEmpty())
+    {
+        return false;
+    }
+    return performFind(m_lastSearchTerm, buildFindFlags(QTextDocument::FindBackward));
+}
+
+bool MainWindow::testReplaceNext(const QString& replacementOverride)
+{
+    if(m_lastSearchTerm.isEmpty())
+    {
+        return false;
+    }
+    const QString replacement = replacementOverride.isNull() ? m_lastReplaceText : replacementOverride;
+    return replaceNextOccurrence(m_lastSearchTerm, replacement, buildFindFlags());
+}
+
+int MainWindow::testReplaceAll(const QString& term, const QString& replacement, QTextDocument::FindFlags extraFlags)
+{
+    return replaceAllOccurrences(term, replacement, buildFindFlags(extraFlags));
+}
+#endif
 
 } // namespace GnotePad::ui

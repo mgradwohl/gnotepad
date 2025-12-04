@@ -26,6 +26,7 @@ public:
     void setZoomPercentage(int percent);
     void setTabSizeSpaces(int spaces);
     int tabSizeSpaces() const { return m_tabSizeSpaces; }
+    int zoomPercentage() const { return m_zoomPercentage; }
 
     int lineNumberAreaWidth() const;
     void lineNumberAreaPaintEvent(QPaintEvent* event);
