@@ -3,6 +3,7 @@
 
 #include <array>
 #include <QAction>
+#include <QActionGroup>
 #include <QCheckBox>
 #include <QCloseEvent>
 #include <QCoreApplication>
@@ -167,6 +168,26 @@ void MainWindow::buildMenus()
     });
 
     formatMenu->addAction(tr("Tab &Size…"), this, &MainWindow::handleSetTabSize);
+
+    auto* dateFormatMenu = formatMenu->addMenu(tr("Time/&Date Format"));
+    auto* dateFormatGroup = new QActionGroup(this);
+    dateFormatGroup->setExclusive(true);
+
+    m_dateFormatShortAction = dateFormatMenu->addAction(tr("&Short"));
+    m_dateFormatShortAction->setCheckable(true);
+    m_dateFormatShortAction->setActionGroup(dateFormatGroup);
+    connect(m_dateFormatShortAction, &QAction::triggered, this, [this]() {
+        setDateFormatPreference(DateFormatPreference::Short);
+    });
+
+    m_dateFormatLongAction = dateFormatMenu->addAction(tr("&Long"));
+    m_dateFormatLongAction->setCheckable(true);
+    m_dateFormatLongAction->setActionGroup(dateFormatGroup);
+    connect(m_dateFormatLongAction, &QAction::triggered, this, [this]() {
+        setDateFormatPreference(DateFormatPreference::Long);
+    });
+
+    updateDateFormatActionState();
 
     m_statusBarToggle = viewMenu->addAction(tr("Status &Bar"), this, &MainWindow::handleToggleStatusBar);
     m_statusBarToggle->setCheckable(true);
@@ -547,7 +568,13 @@ void MainWindow::handleInsertTimeDate()
 
     const QDateTime now = QDateTime::currentDateTime();
     const QLocale locale = QLocale::system();
-    QString stamp = locale.toString(now, QLocale::ShortFormat);
+    const auto preferredFormat = m_dateFormatPreference == DateFormatPreference::Long ? QLocale::LongFormat : QLocale::ShortFormat;
+
+    QString stamp = locale.toString(now, preferredFormat);
+    if(stamp.isEmpty())
+    {
+        stamp = locale.toString(now, QLocale::ShortFormat);
+    }
     if(stamp.isEmpty())
     {
         stamp = now.toString(Qt::DateFormat::TextDate);
@@ -1101,6 +1128,16 @@ void MainWindow::loadSettings()
     {
         updateZoomLabel(zoomPercent);
     }
+
+    const QString dateFormatValue = settings.value("editor/dateFormat", QStringLiteral("short")).toString();
+    if(dateFormatValue.compare(QStringLiteral("long"), Qt::CaseInsensitive) == 0)
+    {
+        setDateFormatPreference(DateFormatPreference::Long);
+    }
+    else
+    {
+        setDateFormatPreference(DateFormatPreference::Short);
+    }
 }
 
 void MainWindow::saveSettings() const
@@ -1139,6 +1176,7 @@ void MainWindow::saveSettings() const
     settings.setValue("editor/defaultEncoding", static_cast<int>(m_currentEncoding));
     settings.setValue("editor/defaultBom", m_hasBom);
     settings.setValue("editor/zoomPercent", m_currentZoomPercent);
+    settings.setValue("editor/dateFormat", m_dateFormatPreference == DateFormatPreference::Long ? QStringLiteral("long") : QStringLiteral("short"));
 
     settings.remove("window/geometry");
     settings.remove("window/state");
@@ -1219,6 +1257,32 @@ QString MainWindow::defaultDocumentsDirectory() const
         return documentsLocation;
     }
     return QDir::homePath();
+}
+
+void MainWindow::setDateFormatPreference(DateFormatPreference preference)
+{
+    if(m_dateFormatPreference == preference)
+    {
+        updateDateFormatActionState();
+        return;
+    }
+
+    m_dateFormatPreference = preference;
+    updateDateFormatActionState();
+}
+
+void MainWindow::updateDateFormatActionState()
+{
+    if(m_dateFormatShortAction)
+    {
+        const QSignalBlocker blocker(m_dateFormatShortAction);
+        m_dateFormatShortAction->setChecked(m_dateFormatPreference == DateFormatPreference::Short);
+    }
+    if(m_dateFormatLongAction)
+    {
+        const QSignalBlocker blocker(m_dateFormatLongAction);
+        m_dateFormatLongAction->setChecked(m_dateFormatPreference == DateFormatPreference::Long);
+    }
 }
 
 QTextDocument::FindFlags MainWindow::buildFindFlags(QTextDocument::FindFlags baseFlags) const
