@@ -10,7 +10,7 @@
 #include <QtCore/QSize>
 #include <QtCore/QStandardPaths>
 #include <QtCore/QTemporaryDir>
-#include <QStringList>
+#include <QtCore/QStringList>
 #include <QtTest/QTest>
 
 #include <QtGui/QAction>
