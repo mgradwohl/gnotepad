@@ -39,6 +39,8 @@ add_custom_command(TARGET GnotePadSmoke POST_BUILD
 set(GNOTE_SMOKE_TEST_FUNCTIONS
 	testLaunchShowsWindow
 	testWindowStateTransitions
+	testDefaultsWithoutSettings
+	testHandlesCorruptSettings
 	testZoomActions
 	testInsertTimeDate
 	testToggleLineNumbers
@@ -56,7 +58,7 @@ set(GNOTE_SMOKE_TEST_FUNCTIONS
 foreach(test_name IN LISTS GNOTE_SMOKE_TEST_FUNCTIONS)
 	add_test(
 		NAME gnotepad_${test_name}
-		COMMAND GnotePadSmoke -functions ${test_name}
+		COMMAND GnotePadSmoke ${test_name}
 	)
 endforeach()
 
