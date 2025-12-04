@@ -5,6 +5,10 @@ add_executable(GnotePadSmoke
 
 target_compile_features(GnotePadSmoke PRIVATE cxx_std_23)
 
+if(COMMAND gnote_apply_default_warnings)
+	gnote_apply_default_warnings(GnotePadSmoke)
+endif()
+
 target_include_directories(GnotePadSmoke PRIVATE
 	${CMAKE_SOURCE_DIR}/src
 )

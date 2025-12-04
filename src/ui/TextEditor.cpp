@@ -20,18 +20,16 @@ namespace
 constexpr int kZoomStepPercent = 10;
 constexpr int kMinZoomPercent = 10;
 constexpr int kMaxZoomPercent = 500;
-}
+} // namespace
 
-TextEditor::LineNumberArea::LineNumberArea(TextEditor* editor)
-    : QWidget(editor)
-    , m_editor(editor)
+TextEditor::LineNumberArea::LineNumberArea(TextEditor* editor) : QWidget(editor), m_editor(editor)
 {
     setCursor(Qt::ArrowCursor);
 }
 
 QSize TextEditor::LineNumberArea::sizeHint() const
 {
-    if(!m_editor)
+    if (!m_editor)
     {
         return QSize(0, 0);
     }
@@ -40,16 +38,13 @@ QSize TextEditor::LineNumberArea::sizeHint() const
 
 void TextEditor::LineNumberArea::paintEvent(QPaintEvent* event)
 {
-    if(m_editor)
+    if (m_editor)
     {
         m_editor->lineNumberAreaPaintEvent(event);
     }
 }
 
-TextEditor::TextEditor(QWidget* parent)
-    : QPlainTextEdit(parent)
-    , m_lineNumberArea(new LineNumberArea(this))
-    , m_defaultFont(font())
+TextEditor::TextEditor(QWidget* parent) : QPlainTextEdit(parent), m_lineNumberArea(new LineNumberArea(this)), m_defaultFont(font())
 {
     m_lineNumberArea->setVisible(m_lineNumbersVisible);
 
@@ -64,13 +59,13 @@ TextEditor::TextEditor(QWidget* parent)
 
 void TextEditor::setLineNumbersVisible(bool visible)
 {
-    if(m_lineNumbersVisible == visible)
+    if (m_lineNumbersVisible == visible)
     {
         return;
     }
 
     m_lineNumbersVisible = visible;
-    if(m_lineNumberArea)
+    if (m_lineNumberArea)
     {
         m_lineNumberArea->setVisible(m_lineNumbersVisible);
     }
@@ -79,14 +74,14 @@ void TextEditor::setLineNumbersVisible(bool visible)
 
 int TextEditor::lineNumberAreaWidth() const
 {
-    if(!m_lineNumbersVisible)
+    if (!m_lineNumbersVisible)
     {
         return 0;
     }
 
     int digits = 1;
     int max = std::max(1, blockCount());
-    while(max >= 10)
+    while (max >= 10)
     {
         max /= 10;
         ++digits;
@@ -98,7 +93,7 @@ int TextEditor::lineNumberAreaWidth() const
 
 void TextEditor::lineNumberAreaPaintEvent(QPaintEvent* event)
 {
-    if(!m_lineNumberArea || !m_lineNumbersVisible)
+    if (!m_lineNumberArea || !m_lineNumbersVisible)
     {
         return;
     }
@@ -115,9 +110,9 @@ void TextEditor::lineNumberAreaPaintEvent(QPaintEvent* event)
     const QColor activeColor = palette().color(QPalette::Text);
     const int currentBlockNumber = textCursor().blockNumber();
 
-    while(block.isValid() && top <= event->rect().bottom())
+    while (block.isValid() && top <= event->rect().bottom())
     {
-        if(block.isVisible() && bottom >= event->rect().top())
+        if (block.isVisible() && bottom >= event->rect().top())
         {
             const QString number = QString::number(blockNumber + 1);
             painter.setPen(blockNumber == currentBlockNumber ? activeColor : inactiveColor);
@@ -138,12 +133,12 @@ void TextEditor::updateLineNumberAreaWidth(int)
 
 void TextEditor::updateLineNumberArea(const QRect& rect, int dy)
 {
-    if(!m_lineNumberArea)
+    if (!m_lineNumberArea)
     {
         return;
     }
 
-    if(dy != 0)
+    if (dy != 0)
     {
         m_lineNumberArea->scroll(0, dy);
     }
@@ -152,7 +147,7 @@ void TextEditor::updateLineNumberArea(const QRect& rect, int dy)
         m_lineNumberArea->update(0, rect.y(), m_lineNumberArea->width(), rect.height());
     }
 
-    if(rect.contains(viewport()->rect()))
+    if (rect.contains(viewport()->rect()))
     {
         updateLineNumberAreaWidth(0);
     }
@@ -162,7 +157,7 @@ void TextEditor::resizeEvent(QResizeEvent* event)
 {
     QPlainTextEdit::resizeEvent(event);
 
-    if(!m_lineNumberArea)
+    if (!m_lineNumberArea)
     {
         return;
     }
@@ -174,7 +169,7 @@ void TextEditor::resizeEvent(QResizeEvent* event)
 
 void TextEditor::highlightCurrentLine()
 {
-    if(isReadOnly())
+    if (isReadOnly())
     {
         return;
     }
@@ -194,11 +189,11 @@ void TextEditor::increaseZoom(int range)
 {
     // Check if we would exceed the maximum zoom percentage
     const int newPercentage = m_zoomPercentage + range * kZoomStepPercent;
-    if(newPercentage > kMaxZoomPercent)
+    if (newPercentage > kMaxZoomPercent)
     {
         return; // Already at maximum zoom
     }
-    
+
     QPlainTextEdit::zoomIn(range);
     updateZoomPercentageEstimate(range);
     updateTabStopDistance();
@@ -208,11 +203,11 @@ void TextEditor::decreaseZoom(int range)
 {
     // Check if we would go below the minimum zoom percentage
     const int newPercentage = m_zoomPercentage - range * kZoomStepPercent;
-    if(newPercentage < kMinZoomPercent)
+    if (newPercentage < kMinZoomPercent)
     {
         return; // Already at minimum zoom
     }
-    
+
     QPlainTextEdit::zoomOut(range);
     updateZoomPercentageEstimate(-range);
     updateTabStopDistance();
@@ -220,14 +215,14 @@ void TextEditor::decreaseZoom(int range)
 
 void TextEditor::wheelEvent(QWheelEvent* event)
 {
-    if(event->modifiers().testFlag(Qt::ControlModifier))
+    if (event->modifiers().testFlag(Qt::ControlModifier))
     {
         event->accept();
-        if(event->angleDelta().y() > 0)
+        if (event->angleDelta().y() > 0)
         {
             increaseZoom();
         }
-        else if(event->angleDelta().y() < 0)
+        else if (event->angleDelta().y() < 0)
         {
             decreaseZoom();
         }
@@ -261,12 +256,12 @@ void TextEditor::setZoomPercentage(int percent)
     const int clamped = std::clamp(percent, kMinZoomPercent, kMaxZoomPercent);
     const int snapped = (clamped / kZoomStepPercent) * kZoomStepPercent;
     const int delta = snapped - m_zoomPercentage;
-    if(delta == 0)
+    if (delta == 0)
     {
         return;
     }
 
-    if(delta > 0)
+    if (delta > 0)
     {
         increaseZoom(delta / kZoomStepPercent);
     }
@@ -291,7 +286,7 @@ void TextEditor::updateZoomPercentageEstimate(int deltaSteps)
 void TextEditor::setTabSizeSpaces(int spaces)
 {
     const int normalized = std::clamp(spaces, 1, 16);
-    if(m_tabSizeSpaces == normalized)
+    if (m_tabSizeSpaces == normalized)
     {
         return;
     }

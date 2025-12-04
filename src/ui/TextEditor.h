@@ -17,7 +17,10 @@ public:
     explicit TextEditor(QWidget* parent = nullptr);
 
     void setLineNumbersVisible(bool visible);
-    bool lineNumbersVisible() const { return m_lineNumbersVisible; }
+    bool lineNumbersVisible() const
+    {
+        return m_lineNumbersVisible;
+    }
 
     void resetZoom();
     void applyEditorFont(const QFont& font);
@@ -25,8 +28,14 @@ public:
     void decreaseZoom(int range = 1);
     void setZoomPercentage(int percent);
     void setTabSizeSpaces(int spaces);
-    int tabSizeSpaces() const { return m_tabSizeSpaces; }
-    int zoomPercentage() const { return m_zoomPercentage; }
+    int tabSizeSpaces() const
+    {
+        return m_tabSizeSpaces;
+    }
+    int zoomPercentage() const
+    {
+        return m_zoomPercentage;
+    }
 
     int lineNumberAreaWidth() const;
     void lineNumberAreaPaintEvent(QPaintEvent* event);
@@ -49,11 +58,11 @@ private:
     void updateZoomPercentageEstimate(int deltaSteps);
     void updateTabStopDistance();
 
-    QWidget* m_lineNumberArea {nullptr};
-    bool m_lineNumbersVisible {true};
+    QWidget* m_lineNumberArea{nullptr};
+    bool m_lineNumbersVisible{true};
     QFont m_defaultFont;
-    int m_zoomPercentage {100};
-    int m_tabSizeSpaces {4};
+    int m_zoomPercentage{100};
+    int m_tabSizeSpaces{4};
 };
 
 class TextEditor::LineNumberArea : public QWidget
@@ -67,7 +76,7 @@ protected:
     void paintEvent(QPaintEvent* event) override;
 
 private:
-    TextEditor* m_editor {nullptr};
+    TextEditor* m_editor{nullptr};
 };
 
 } // namespace GnotePad::ui

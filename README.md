@@ -65,6 +65,14 @@ After building, launch the executable from `build/<config>/GnotePad` (Linux/macO
 - Logging is provided by spdlog through CMake FetchContent integration.
 - Tests now use Qt Test (QTest) via CTest. The `GnotePadSmoke` suite spins up the real `MainWindow` to verify launch/minimize/maximize flows; future additions will cover file I/O, MRU, encoding round-trips, UI automation (find/replace, zoom, insert date), and large-file scrolling.
 
+## Static Analysis & Tooling
+
+- **clang-tidy** – The repo ships a `.clang-tidy` profile plus a CMake toggle. Run `cmake -S . -B build/debug -G Ninja -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_PREFIX_PATH=/usr/lib/x86_64-linux-gnu/cmake/Qt6 -DCMAKE_BUILD_TYPE=Debug -DGNOTE_ENABLE_CLANG_TIDY=ON && cmake --build build/debug` or invoke the VS Code task **Clang-Tidy (Debug)**. You can also call `cmake --build build/debug --target run-clang-tidy` after configuring to re-check just the sources.
+- **scan-build (clang static analyzer)** – Use `tools/run-scan-build.sh` (defaults to `build/analyze`) or the VS Code task **Scan-Build (Debug)**. Reports land in `scan-build-report/` and can be opened in a browser.
+- **clang-format** – Formatting rules live in `.clang-format`. Run `cmake --build build/debug --target run-clang-format` (or the **Clang-Format** VS Code task) to apply styling in-place. Configure editors to honor the same profile for on-save formatting.
+- **Editor configuration** – VS Code’s C/C++ IntelliSense engine is disabled to avoid conflicting diagnostics; clangd via CMake Tools drives code completion using the generated `compile_commands.json`.
+- **Other clang utilities** – clangd powers completions, and clang-query/clang-apply-replacements can be layered on later for AST exploration or batch rewrites if needed.
+
 ## Next Steps
 
 - Add broader Unicode/encoding regression tests using published sample corpora and round-trip validation

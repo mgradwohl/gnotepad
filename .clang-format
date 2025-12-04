@@ -1,0 +1,34 @@
+BasedOnStyle: LLVM
+IndentWidth: 4
+TabWidth: 4
+UseTab: Never
+ColumnLimit: 140
+AllowShortIfStatementsOnASingleLine: false
+BreakBeforeBraces: Allman
+PointerAlignment: Left
+SortIncludes: true
+SpacesInParentheses: false
+SpaceAfterTemplateKeyword: false
+AlignAfterOpenBracket: Align
+ReflowComments: true
+AccessModifierOffset: -4
+SpaceAfterCStyleCast: true
+AlignConsecutiveAssignments: false
+AlignConsecutiveDeclarations: false
+AllowShortFunctionsOnASingleLine: false
+AllowShortBlocksOnASingleLine: false
+AllowShortLambdasOnASingleLine: None
+
+# Explicit Allman brace control for fine-grained consistency
+BraceWrapping:
+  AfterClass: true
+  AfterControlStatement: true
+  AfterEnum: true
+  AfterFunction: true
+  AfterNamespace: true
+  AfterStruct: true
+  AfterUnion: true
+  BeforeCatch: true
+  BeforeElse: true
+  AfterCaseLabel: true
+  IndentBraces: false
