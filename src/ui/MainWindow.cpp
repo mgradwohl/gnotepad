@@ -20,6 +20,7 @@
 #include <QIcon>
 #include <QInputDialog>
 #include <QLabel>
+#include <QLocale>
 #include <QLineEdit>
 #include <QFontDatabase>
 #include <QPixmap>
@@ -56,8 +57,8 @@ namespace GnotePad::ui
 
 namespace
 {
-constexpr auto UntitledDocumentTitle = "Untitled";
-constexpr int MaxRecentFiles = 10;
+    constexpr auto UntitledDocumentTitle = "Untitled";
+    constexpr int MaxRecentFiles = 10;
 }
 
 MainWindow::MainWindow(QWidget* parent)
@@ -544,7 +545,17 @@ void MainWindow::handleInsertTimeDate()
         return;
     }
 
-    const QString stamp = QDateTime::currentDateTime().toString(QStringLiteral("h:mm A M/d/yyyy"));
+    const QDateTime now = QDateTime::currentDateTime();
+    const QLocale locale = QLocale::system();
+    QString stamp = locale.toString(now, QLocale::ShortFormat);
+    if(stamp.isEmpty())
+    {
+        stamp = now.toString(Qt::DateFormat::TextDate);
+    }
+    if(stamp.isEmpty())
+    {
+        stamp = now.toString(QStringLiteral("h:mm A M/d/yyyy"));
+    }
     m_editor->insertPlainText(stamp);
 }
 
