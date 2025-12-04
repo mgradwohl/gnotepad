@@ -1,0 +1,5 @@
+cat alpha
+beta Dog
+gamma dog dog
+delta DOG
+epsilon cat

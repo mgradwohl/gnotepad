@@ -63,7 +63,7 @@ After building, launch the executable from `build/<config>/GnotePad` (Linux/macO
 - Sources live in `src/` and are split by responsibility (`app/`, `ui/`).
 - Qt resources (icons, translations, etc.) live under `resources/`.
 - Logging is provided by spdlog through CMake FetchContent integration.
-- Tests live in `tests/` and are hooked into CTest; extend them as behavior solidifies.
+- Tests now use Qt Test (QTest) via CTest. The `GnotePadSmoke` suite spins up the real `MainWindow` to verify launch/minimize/maximize flows; future additions will cover file I/O, MRU, encoding round-trips, UI automation (find/replace, zoom, insert date), and large-file scrolling.
 
 ## Next Steps
 
