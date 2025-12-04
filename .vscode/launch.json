@@ -37,7 +37,7 @@
                 "LD_LIBRARY_PATH": ""
             },
             "preLaunchTask": "Build Optimized",
-            "terminal": "integrated",
+            "terminal": "integrated"
         }
     ]
 }
