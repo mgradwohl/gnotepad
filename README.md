@@ -2,6 +2,8 @@
 
 GnotePad is a cross-platform Qt 6 clone of the Windows 10 Notepad experience. The project targets modern C++23, depends on clang + CMake, and keeps its functionality portable across Linux and Windows.
 
+Current work happens on the `feature/user-preferences` branch, which adds persistent settings, MRU tracking, and richer editor controls on top of the original scaffold.
+
 ## Prerequisites
 
 - CMake 3.26+
@@ -25,12 +27,15 @@ On **Windows** (PowerShell with winget and vcpkg/Qt online installer):
 ## Configure & Build (Linux/macOS)
 
 ```bash
-cmake -S . -B build -G Ninja \
+cmake -S . -B build/debug -G Ninja \
   -DCMAKE_CXX_COMPILER=clang++ \
-  -DCMAKE_BUILD_TYPE=RelWithDebInfo
-cmake --build build
-ctest --test-dir build
+  -DCMAKE_PREFIX_PATH=/usr/lib/x86_64-linux-gnu/cmake/Qt6 \
+  -DCMAKE_BUILD_TYPE=Debug
+cmake --build build/debug
+ctest --test-dir build/debug
 ```
+
+Adjust `-DCMAKE_PREFIX_PATH` to match your Qt6 installation (e.g., `/opt/Qt/6.xx/gcc_64/lib/cmake/Qt6`). Swap `Debug` for `Release` or `RelWithDebInfo` as needed.
 
 ## Configure & Build (Windows, clang-cl)
 
@@ -46,10 +51,12 @@ ctest --test-dir build
 
 ## Running
 
-After building, launch the executable from `build/GnotePad` (Linux/macOS) or `build/GnotePad.exe` (Windows). Initial functionality includes:
-- Qt-based main window with menu structure matching Notepad
-- Status bar w/ cursor position, encoding, zoom placeholders
-- Placeholder file operations, PDF export stub, and logging via spdlog
+After building, launch the executable from `build/<config>/GnotePad` (Linux/macOS) or `build/<config>/GnotePad.exe` (Windows). The current feature set includes:
+- Native QFileDialog open/save flows with UTF BOM detection, encoding picker, and per-file encoding display
+- Persistent preferences via QSettings (window geometry, MRU list, directories, tab size, word wrap, line numbers, zoom, status bar visibility)
+- Rich editor surface powered by `TextEditor` (line-number gutter, zoom in/out/reset, configurable tab spacing, cursor + document statistics, encoding indicator)
+- Find/Replace dialogs, Go To line, time/date insertion, PDF export, and recent-files submenu mirroring Windows Notepad
+- Structured logging through spdlog and CTest-driven smoke tests
 
 ## Development Notes
 
@@ -60,7 +67,7 @@ After building, launch the executable from `build/GnotePad` (Linux/macOS) or `bu
 
 ## Next Steps
 
-- Flesh out document model (encoding management, BOM detection, MRU history)
-- Implement Notepad-accurate dialogs (Find/Replace, Go To, Page Setup)
-- Add configurable line-number gutter, zoom UI, and PDF viewer launch per platform
-- Expand automated test coverage (Qt Test + document IO unit tests)
+- Add broader Unicode/encoding regression tests using published sample corpora and round-trip validation
+- Implement remaining Notepad UX (Page Setup, print preview, font dialog persistence, multi-document handling)
+- Package builds for macOS/Windows/Linux (AppImage/MSIX/dmg) plus desktop integration assets
+- Investigate large-file performance improvements and background loading indicators
