@@ -7,8 +7,8 @@ REPORT_DIR=${2:-scan-build-report}
 : "${CXX:=clang++}"
 
 cmake -S . -B "${BUILD_DIR}" -G Ninja \
-  -DCMAKE_CXX_COMPILER="${CXX}" \
-  -DCMAKE_PREFIX_PATH="${QT6_PREFIX}" \
+  -DCMAKE_CXX_COMPILER="${CXX:-clang++}" \
+  -DCMAKE_PREFIX_PATH="${QT6_PREFIX:-/usr/lib/x86_64-linux-gnu/cmake/Qt6}" \
   -DCMAKE_BUILD_TYPE=Debug
 
 scan-build -o "${REPORT_DIR}" --status-bugs cmake --build "${BUILD_DIR}"
