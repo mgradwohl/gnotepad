@@ -52,6 +52,12 @@ private slots:
     void handleClearRecentFiles();
 
 private:
+    enum class DateFormatPreference
+    {
+        Short,
+        Long
+    };
+
     void buildMenus();
     void buildStatusBar();
     void buildEditor();
@@ -80,6 +86,8 @@ private:
     void refreshRecentFilesMenu();
     QString dialogDirectory(const QString& lastDir) const;
     QString defaultDocumentsDirectory() const;
+    void setDateFormatPreference(DateFormatPreference preference);
+    void updateDateFormatActionState();
 
     void closeEvent(QCloseEvent* event) override;
 
@@ -97,6 +105,8 @@ private:
     QAction* m_statusBarToggle {nullptr};
     QAction* m_lineNumberToggle {nullptr};
     QAction* m_wordWrapAction {nullptr};
+    QAction* m_dateFormatShortAction {nullptr};
+    QAction* m_dateFormatLongAction {nullptr};
     QMenu* m_recentFilesMenu {nullptr};
 
     QString m_currentFilePath;
@@ -110,6 +120,7 @@ private:
     QString m_lastSaveDirectory;
     int m_tabSizeSpaces {4};
     int m_currentZoomPercent {100};
+    DateFormatPreference m_dateFormatPreference {DateFormatPreference::Short};
 };
 
 } // namespace GnotePad::ui
