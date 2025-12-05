@@ -10,6 +10,7 @@
 #include <QtCore/qstring.h>
 #include <QtCore/qstringconverter.h>
 #include <QtCore/qstringlist.h>
+#include <QtCore/qsettings.h>
 #include <QtGui/qevent.h>
 #include <QtGui/qicon.h>
 #include <QtGui/qtextdocument.h>
@@ -133,12 +134,23 @@ private slots:
     void handleOpenRecentFile();
     void handleClearRecentFiles();
 
+    // NOLINTNEXTLINE(readability-redundant-access-specifiers)
 private:
     enum class DateFormatPreference
     {
         Short,
         Long
     };
+
+    static constexpr int DefaultWindowWidth = 900;
+    static constexpr int DefaultWindowHeight = 700;
+    static constexpr int DefaultZoomPercent = 100;
+    static constexpr int DefaultTabSizeSpaces = 4;
+    static constexpr int MinTabSizeSpaces = 1;
+    static constexpr int MaxTabSizeSpaces = 16;
+    static constexpr int TabSizeStep = 1;
+    static constexpr int AboutDialogIconSize = 64;
+    static constexpr qreal InvalidFontPointSize = -1.0;
 
     void buildMenus();
     void buildStatusBar();
@@ -165,10 +177,22 @@ private:
     QIcon brandIcon() const;
     void loadSettings();
     void saveSettings() const;
+    void loadWindowGeometrySettings(QSettings& settings);
+    void loadPathSettings(QSettings& settings);
+    void loadRecentFilesSettings(QSettings& settings);
+    void loadEditorFontSettings(QSettings& settings, bool hasExistingPreferences);
+    void loadEditorViewSettings(QSettings& settings);
+    void loadEditorBehaviorSettings(QSettings& settings);
+    void saveWindowGeometrySettings(QSettings& settings) const;
+    void savePathSettings(QSettings& settings) const;
+    void saveRecentFilesSettings(QSettings& settings) const;
+    void saveEditorFontSettings(QSettings& settings) const;
+    void saveEditorBehaviorSettings(QSettings& settings) const;
+    static void clearLegacySettings(QSettings& settings);
     void addRecentFile(const QString& path);
     void refreshRecentFilesMenu();
     QString dialogDirectory(const QString& lastDir) const;
-    QString defaultDocumentsDirectory() const;
+    static QString defaultDocumentsDirectory();
     void setDateFormatPreference(DateFormatPreference preference);
     void updateDateFormatActionState();
 
@@ -204,8 +228,8 @@ private:
     QStringList m_recentFiles;
     QString m_lastOpenDirectory;
     QString m_lastSaveDirectory;
-    int m_tabSizeSpaces{4};
-    int m_currentZoomPercent{100};
+    int m_tabSizeSpaces{DefaultTabSizeSpaces};
+    int m_currentZoomPercent{DefaultZoomPercent};
     DateFormatPreference m_dateFormatPreference{DateFormatPreference::Short};
 #if defined(GNOTE_TEST_HOOKS)
     std::deque<QMessageBox::StandardButton> m_testPromptResponses;

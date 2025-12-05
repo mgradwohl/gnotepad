@@ -34,6 +34,6 @@ private slots:
     void testDestructivePrompts();
     void testShortcutCommands();
 
-private:
+private: //NOLINT(readability-redundant-access-specifiers)
     QString resolveTestFile(const QString& name) const;
 };

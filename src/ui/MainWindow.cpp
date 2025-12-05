@@ -3,7 +3,6 @@
 
 #include <algorithm>
 #include <array>
-#include <cstddef>
 
 #include <QtCore/qbytearray.h>
 #include <QtCore/qcoreapplication.h>
@@ -59,6 +58,9 @@
 #include <QtWidgets/qwidget.h>
 #include <spdlog/spdlog.h>
 
+// NOTE: Qt's parent-child memory management deletes QObjects given a parent, so raw pointer
+// assignments of child widgets in this file are intentional despite the cppcoreguidelines-owning-memory warning.
+
 namespace GnotePad::ui
 {
 
@@ -75,13 +77,15 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent)
     buildStatusBar();
     wireSignals();
 
-    resize(900, 700);
+    resize(DefaultWindowWidth, DefaultWindowHeight);
     loadSettings();
     resetDocumentState();
 }
 
 void MainWindow::buildEditor()
 {
+    // Qt parents clean up child widgets; suppress ownership warning for intentional raw pointer.
+    // NOLINTNEXTLINE(cppcoreguidelines-owning-memory)
     m_editor = new TextEditor(this);
     applyDefaultEditorFont();
     m_editor->setWordWrapMode(QTextOption::NoWrap);
@@ -179,6 +183,7 @@ void MainWindow::buildMenus()
     formatMenu->addAction(tr("Tab &Size…"), this, &MainWindow::handleSetTabSize);
 
     auto* dateFormatMenu = formatMenu->addMenu(tr("Time/&Date Format"));
+    // NOLINTNEXTLINE(cppcoreguidelines-owning-memory)  // QActionGroups are owned by their QObject parent.
     auto* dateFormatGroup = new QActionGroup(this);
     dateFormatGroup->setExclusive(true);
 
@@ -227,10 +232,14 @@ void MainWindow::buildStatusBar()
 {
     m_statusBar = statusBar();
 
+    // Status labels live as QObject children of the window; Qt deletes them with the parent.
+    // NOLINTBEGIN(cppcoreguidelines-owning-memory)
     m_cursorLabel = new QLabel(tr("Ln 1, Col 1"), this);
     m_documentStatsLabel = new QLabel(tr("Length: 0  Lines: 1"), this);
     m_encodingLabel = new QLabel(tr("UTF-8"), this);
-    m_zoomLabel = new QLabel(tr("100%"), this);
+    const QString defaultZoomText = tr("%1%").arg(DefaultZoomPercent);
+    m_zoomLabel = new QLabel(defaultZoomText, this);
+    // NOLINTEND(cppcoreguidelines-owning-memory)
 
     m_statusBar->addPermanentWidget(m_cursorLabel);
     m_statusBar->addPermanentWidget(m_documentStatsLabel);
@@ -239,7 +248,7 @@ void MainWindow::buildStatusBar()
 
     updateEncodingDisplay(encodingLabel());
     updateDocumentStats();
-    updateZoomLabel(100);
+    updateZoomLabel(DefaultZoomPercent);
 }
 
 void MainWindow::wireSignals()
@@ -363,7 +372,8 @@ void MainWindow::handleSetTabSize()
 
     bool accepted = false;
     const int currentSize = m_editor->tabSizeSpaces();
-    const int newSize = QInputDialog::getInt(this, tr("Tab Size"), tr("Spaces per tab:"), currentSize, 1, 16, 1, &accepted);
+    const int newSize =
+        QInputDialog::getInt(this, tr("Tab Size"), tr("Spaces per tab:"), currentSize, MinTabSizeSpaces, MaxTabSizeSpaces, TabSizeStep, &accepted);
     if (!accepted || newSize == currentSize)
     {
         return;
@@ -389,6 +399,8 @@ void MainWindow::handleFind()
     dialog.setWindowTitle(tr("Find"));
     dialog.setModal(true);
 
+    // Dialog owns its child widgets; suppress ownership warnings for stack-local helpers.
+    // NOLINTBEGIN(cppcoreguidelines-owning-memory)
     auto* form = new QFormLayout(&dialog);
     auto* findField = new QLineEdit(m_lastSearchTerm, &dialog);
     auto* matchCase = new QCheckBox(tr("Match case"), &dialog);
@@ -399,6 +411,7 @@ void MainWindow::handleFind()
 
     auto* buttons = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal, &dialog);
     form->addWidget(buttons);
+    // NOLINTEND(cppcoreguidelines-owning-memory)
 
     connect(buttons, &QDialogButtonBox::accepted, &dialog, &QDialog::accept);
     connect(buttons, &QDialogButtonBox::rejected, &dialog, &QDialog::reject);
@@ -472,6 +485,8 @@ void MainWindow::handleReplace()
     QDialog dialog(this);
     dialog.setWindowTitle(tr("Replace"));
 
+    // Dialog owns child controls created below; raw pointers mirror Qt patterns.
+    // NOLINTBEGIN(cppcoreguidelines-owning-memory)
     auto* layout = new QVBoxLayout(&dialog);
     auto* formLayout = new QFormLayout();
     layout->addLayout(formLayout);
@@ -497,6 +512,7 @@ void MainWindow::handleReplace()
     buttonsLayout->addWidget(replaceButton);
     buttonsLayout->addWidget(replaceAllButton);
     buttonsLayout->addWidget(closeButton);
+    // NOLINTEND(cppcoreguidelines-owning-memory)
 
     const auto applyDialogState = [this, findField, replaceField, matchCase]()
     {
@@ -574,7 +590,7 @@ void MainWindow::handleGoToLine()
         return;
     }
 
-    QTextBlock block = document->findBlockByNumber(targetLine - 1);
+    const QTextBlock block = document->findBlockByNumber(targetLine - 1);
     if (!block.isValid())
     {
         return;
@@ -619,9 +635,9 @@ void MainWindow::showAboutDialog()
     const QString version = QCoreApplication::applicationVersion();
     const QString org = QCoreApplication::organizationName();
     const QString details = tr("<p><b>%1</b> %2</p>"
-                               "<p>A lightweight Qt-based text editor inspired by Windows Notepad.</p>"
-                               "<p>Qt %3 • %4</p>")
-                                .arg(appName, version, QString::fromLatin1(qVersion()), org);
+                               "<p>A lightweight text editor inspired by Windows Notepad.</p>"
+                               "<p>For Linux and Windows, coded in C++, with Qt %3.</p>")
+                                .arg(appName, version, QString::fromLatin1(qVersion()));
     const QIcon icon = brandIcon();
 
     QDialog dialog(this);
@@ -629,13 +645,14 @@ void MainWindow::showAboutDialog()
     dialog.setModal(true);
     dialog.setWindowIcon(icon);
 
-    // get the icon as a larger image
+    // get the icon as a larger image (dialog owns controls below)
+    // NOLINTBEGIN(cppcoreguidelines-owning-memory)
     QLabel* iconLabel = new QLabel(&dialog);
     QPixmap aboutPixmap;
     if (!icon.isNull())
     {
         spdlog::info("About dialog: using icon for branding.");
-        aboutPixmap = icon.pixmap(64, 64);
+        aboutPixmap = icon.pixmap(AboutDialogIconSize, AboutDialogIconSize);
     }
     if (aboutPixmap.isNull())
     {
@@ -665,11 +682,14 @@ void MainWindow::showAboutDialog()
     QLabel* textLabel = new QLabel(details, &dialog);
     textLabel->setTextFormat(Qt::RichText);
     textLabel->setWordWrap(true);
+    textLabel->setMinimumWidth(500);
+   
     contentLayout->addWidget(textLabel, 1);
 
     auto* buttons = new QDialogButtonBox(QDialogButtonBox::Ok, Qt::Horizontal, &dialog);
     connect(buttons, &QDialogButtonBox::accepted, &dialog, &QDialog::accept);
     layout->addWidget(buttons);
+    // NOLINTEND(cppcoreguidelines-owning-memory)
 
     dialog.exec();
 }
@@ -849,7 +869,9 @@ bool MainWindow::saveDocumentToPath(const QString& filePath)
 {
     if (filePath.isEmpty())
     {
-        return saveDocumentAsDialog();
+        spdlog::warn("saveDocumentToPath called without a file path; refusing to save.");
+        Q_ASSERT(!filePath.isEmpty());
+        return false;
     }
 
     QSaveFile file(filePath);
@@ -862,7 +884,7 @@ bool MainWindow::saveDocumentToPath(const QString& filePath)
 
     QStringEncoder encoder(m_currentEncoding);
     const QString text = m_editor ? m_editor->toPlainText() : QString();
-    QByteArray encoded = encoder(text);
+    const QByteArray encoded = encoder(text);
     if (encoder.hasError())
     {
         QMessageBox::warning(this, tr("Save File"), tr("Unable to encode document using %1").arg(encodingLabel()));
@@ -1014,13 +1036,15 @@ bool MainWindow::promptEncodingSelection(QStringConverter::Encoding& encoding, b
     QStringList labels;
     labels.reserve(choices.size());
     int currentIndex = 0;
-    for (std::size_t i = 0; i < choices.size(); ++i)
+    int candidateIndex = 0;
+    for (const auto& choice : choices)
     {
-        labels.append(choices[i].label);
-        if (choices[i].encoding == encoding && choices[i].includeBom == bom)
+        labels.append(choice.label);
+        if (choice.encoding == encoding && choice.includeBom == bom)
         {
-            currentIndex = static_cast<int>(i);
+            currentIndex = candidateIndex;
         }
+        ++candidateIndex;
     }
 
     bool accepted = false;
@@ -1030,19 +1054,21 @@ bool MainWindow::promptEncodingSelection(QStringConverter::Encoding& encoding, b
         return false;
     }
 
-    const auto match = std::find_if(choices.cbegin(), choices.cend(),
-                                    [&](const auto& choice)
-                                    {
-                                        return choice.label == selection;
-                                    });
+    // Iterator type may change with container tweaks; keep auto for flexibility.
+    // NOLINTNEXTLINE(readability-qualified-auto)
+    const auto matchIt = std::find_if(choices.cbegin(), choices.cend(),
+                                      [&](const auto& choice)
+                                      {
+                                          return choice.label == selection;
+                                      });
 
-    if (match == choices.cend())
+    if (matchIt == choices.cend())
     {
         return false;
     }
 
-    encoding = match->encoding;
-    bom = match->includeBom;
+    encoding = matchIt->encoding;
+    bom = matchIt->includeBom;
     return true;
 }
 
@@ -1059,9 +1085,30 @@ void MainWindow::loadSettings()
     const QFileInfo settingsFile(settings.fileName());
     const bool hasExistingPreferences = settingsFile.exists();
 
+    loadWindowGeometrySettings(settings);
+    loadPathSettings(settings);
+    loadRecentFilesSettings(settings);
+    loadEditorFontSettings(settings, hasExistingPreferences);
+    loadEditorViewSettings(settings);
+    loadEditorBehaviorSettings(settings);
+}
+
+void MainWindow::saveSettings() const
+{
+    QSettings settings;
+
+    saveWindowGeometrySettings(settings);
+    savePathSettings(settings);
+    saveRecentFilesSettings(settings);
+    saveEditorFontSettings(settings);
+    saveEditorBehaviorSettings(settings);
+    clearLegacySettings(settings);
+}
+
+void MainWindow::loadWindowGeometrySettings(QSettings& settings)
+{
     const bool hasRectKeys = settings.contains("window/posX") && settings.contains("window/posY") && settings.contains("window/width") &&
                              settings.contains("window/height");
-    const bool windowMaximized = settings.value("window/maximized", false).toBool();
 
     if (hasRectKeys)
     {
@@ -1082,28 +1129,37 @@ void MainWindow::loadSettings()
         restoreGeometry(legacyGeometry);
     }
 
-    if (windowMaximized)
-    {
-        setWindowState(Qt::WindowMaximized);
-    }
-    else
-    {
-        setWindowState(Qt::WindowNoState);
-    }
+    const bool windowMaximized = settings.value("window/maximized", false).toBool();
+    setWindowState(windowMaximized ? Qt::WindowMaximized : Qt::WindowNoState);
+}
 
+void MainWindow::loadPathSettings(QSettings& settings)
+{
     m_lastOpenDirectory = settings.value("paths/lastOpenDirectory").toString();
     m_lastSaveDirectory = settings.value("paths/lastSaveDirectory").toString();
+}
 
+void MainWindow::loadRecentFilesSettings(QSettings& settings)
+{
     m_recentFiles = settings.value("documents/recentFiles").toStringList();
     while (m_recentFiles.size() > MaxRecentFiles)
     {
         m_recentFiles.removeLast();
     }
     refreshRecentFilesMenu();
+}
+
+void MainWindow::loadEditorFontSettings(QSettings& settings, bool hasExistingPreferences)
+{
+    if (!m_editor)
+    {
+        return;
+    }
 
     const QString fontFamily = settings.value("editor/fontFamily").toString();
-    const qreal fontPointSize = settings.value("editor/fontPointSize", -1.0).toDouble();
-    if (m_editor && !fontFamily.isEmpty())
+    const qreal fontPointSize = settings.value("editor/fontPointSize", InvalidFontPointSize).toDouble();
+
+    if (!fontFamily.isEmpty())
     {
         QFont storedFont(fontFamily);
         if (fontPointSize > 0)
@@ -1111,20 +1167,27 @@ void MainWindow::loadSettings()
             storedFont.setPointSizeF(fontPointSize);
         }
         m_editor->applyEditorFont(storedFont);
+        return;
     }
-    else if (m_editor && settings.contains("editor/font"))
+
+    if (settings.contains("editor/font"))
     {
         const QFont legacyFont = settings.value("editor/font").value<QFont>();
         if (!legacyFont.family().isEmpty())
         {
             m_editor->applyEditorFont(legacyFont);
+            return;
         }
     }
-    else if (m_editor && !hasExistingPreferences)
+
+    if (!hasExistingPreferences)
     {
         applyDefaultEditorFont();
     }
+}
 
+void MainWindow::loadEditorViewSettings(QSettings& settings)
+{
     const bool lineNumbersVisible = settings.value("editor/lineNumbersVisible", true).toBool();
     if (m_editor)
     {
@@ -1132,6 +1195,7 @@ void MainWindow::loadSettings()
     }
     if (m_lineNumberToggle)
     {
+        const QSignalBlocker blocker(m_lineNumberToggle);
         m_lineNumberToggle->setChecked(lineNumbersVisible);
     }
 
@@ -1153,10 +1217,14 @@ void MainWindow::loadSettings()
     }
     if (m_statusBarToggle)
     {
+        const QSignalBlocker blocker(m_statusBarToggle);
         m_statusBarToggle->setChecked(statusBarVisible);
     }
+}
 
-    m_tabSizeSpaces = std::clamp(settings.value("editor/tabSizeSpaces", m_tabSizeSpaces).toInt(), 1, 16);
+void MainWindow::loadEditorBehaviorSettings(QSettings& settings)
+{
+    m_tabSizeSpaces = std::clamp(settings.value("editor/tabSizeSpaces", m_tabSizeSpaces).toInt(), MinTabSizeSpaces, MaxTabSizeSpaces);
     if (m_editor)
     {
         m_editor->setTabSizeSpaces(m_tabSizeSpaces);
@@ -1166,7 +1234,7 @@ void MainWindow::loadSettings()
     const bool bom = settings.value("editor/defaultBom", m_hasBom).toBool();
     applyEncodingSelection(static_cast<QStringConverter::Encoding>(encodingValue), bom);
 
-    const int zoomPercent = settings.value("editor/zoomPercent", 100).toInt();
+    const int zoomPercent = settings.value("editor/zoomPercent", m_currentZoomPercent).toInt();
     if (m_editor)
     {
         m_editor->setZoomPercentage(zoomPercent);
@@ -1187,21 +1255,29 @@ void MainWindow::loadSettings()
     }
 }
 
-void MainWindow::saveSettings() const
+void MainWindow::saveWindowGeometrySettings(QSettings& settings) const
 {
-    QSettings settings;
-
     const QRect windowRect = isMaximized() ? normalGeometry() : geometry();
     settings.setValue("window/posX", windowRect.x());
     settings.setValue("window/posY", windowRect.y());
     settings.setValue("window/width", windowRect.width());
     settings.setValue("window/height", windowRect.height());
     settings.setValue("window/maximized", isMaximized());
+}
 
+void MainWindow::savePathSettings(QSettings& settings) const
+{
     settings.setValue("paths/lastOpenDirectory", m_lastOpenDirectory);
     settings.setValue("paths/lastSaveDirectory", m_lastSaveDirectory);
-    settings.setValue("documents/recentFiles", m_recentFiles);
+}
 
+void MainWindow::saveRecentFilesSettings(QSettings& settings) const
+{
+    settings.setValue("documents/recentFiles", m_recentFiles);
+}
+
+void MainWindow::saveEditorFontSettings(QSettings& settings) const
+{
     if (m_editor)
     {
         const QFont editorFont = m_editor->font();
@@ -1209,15 +1285,17 @@ void MainWindow::saveSettings() const
         settings.setValue("editor/fontPointSize", editorFont.pointSizeF());
         settings.setValue("editor/lineNumbersVisible", m_editor->lineNumbersVisible());
         settings.setValue("editor/wordWrap", m_editor->wordWrapMode() != QTextOption::NoWrap);
-    }
-    else
-    {
-        settings.remove("editor/fontFamily");
-        settings.remove("editor/fontPointSize");
-        settings.setValue("editor/lineNumbersVisible", true);
-        settings.setValue("editor/wordWrap", false);
+        return;
     }
 
+    settings.remove("editor/fontFamily");
+    settings.remove("editor/fontPointSize");
+    settings.setValue("editor/lineNumbersVisible", true);
+    settings.setValue("editor/wordWrap", false);
+}
+
+void MainWindow::saveEditorBehaviorSettings(QSettings& settings) const
+{
     settings.setValue("editor/tabSizeSpaces", m_tabSizeSpaces);
     settings.setValue("editor/statusBarVisible", m_statusBar ? m_statusBar->isVisible() : true);
     settings.setValue("editor/defaultEncoding", static_cast<int>(m_currentEncoding));
@@ -1225,7 +1303,10 @@ void MainWindow::saveSettings() const
     settings.setValue("editor/zoomPercent", m_currentZoomPercent);
     settings.setValue("editor/dateFormat",
                       m_dateFormatPreference == DateFormatPreference::Long ? QStringLiteral("long") : QStringLiteral("short"));
+}
 
+void MainWindow::clearLegacySettings(QSettings& settings)
+{
     settings.remove("window/geometry");
     settings.remove("window/state");
     settings.remove("editor/font");
@@ -1288,6 +1369,8 @@ void MainWindow::refreshRecentFilesMenu()
     clearAction->setEnabled(!m_recentFiles.isEmpty());
 }
 
+    // Intentionally non-static to allow future access to instance state.
+    // NOLINTNEXTLINE(readability-convert-member-functions-to-static)
 QString MainWindow::dialogDirectory(const QString& lastDir) const
 {
     if (!lastDir.isEmpty())
@@ -1297,9 +1380,9 @@ QString MainWindow::dialogDirectory(const QString& lastDir) const
     return defaultDocumentsDirectory();
 }
 
-QString MainWindow::defaultDocumentsDirectory() const
+QString MainWindow::defaultDocumentsDirectory()
 {
-    const QString documentsLocation = QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation);
+    QString documentsLocation = QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation);
     if (!documentsLocation.isEmpty())
     {
         return documentsLocation;
@@ -1370,7 +1453,7 @@ bool MainWindow::performFind(const QString& term, QTextDocument::FindFlags flags
         return false;
     }
 
-    QTextCursor originalCursor = m_editor->textCursor();
+    const QTextCursor originalCursor = m_editor->textCursor();
     if (m_editor->find(term, flags))
     {
         return true;
@@ -1425,7 +1508,7 @@ int MainWindow::replaceAllOccurrences(const QString& term, const QString& replac
         return 0;
     }
 
-    QTextCursor originalCursor = m_editor->textCursor();
+    const QTextCursor originalCursor = m_editor->textCursor();
     QTextCursor searchCursor = originalCursor;
     searchCursor.movePosition(QTextCursor::Start);
     m_editor->setTextCursor(searchCursor);

@@ -53,11 +53,11 @@ protected:
     void wheelEvent(QWheelEvent* event) override;
 
 private slots:
-    void updateLineNumberAreaWidth(int newBlockCount = 0);
+    void updateLineNumberAreaWidth([[maybe_unused]] int newBlockCount = 0);
     void updateLineNumberArea(const QRect& rect, int dy);
     void highlightCurrentLine();
 
-private:
+private: //NOLINT(readability-redundant-access-specifiers)
     class LineNumberArea;
 
     void updateZoomPercentageEstimate(int deltaSteps);

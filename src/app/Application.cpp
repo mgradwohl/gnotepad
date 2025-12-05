@@ -41,6 +41,8 @@ int Application::run()
     return exec();
 }
 
+// Intentionally non-static to keep parity with other setup helpers.
+// NOLINTNEXTLINE(readability-convert-member-functions-to-static)
 void Application::configureMetadata()
 {
     QCoreApplication::setOrganizationName("GnotePad");
