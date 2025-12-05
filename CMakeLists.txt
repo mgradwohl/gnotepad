@@ -9,6 +9,43 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 option(GNOTE_ENABLE_IPO "Enable interprocedural optimization" ON)
 option(GNOTE_ENABLE_WARNINGS "Enable extra compiler warnings" ON)
+option(GNOTE_ENABLE_CLANG_TIDY "Run clang-tidy during builds" OFF)
+
+function(gnote_apply_default_warnings target_name)
+    if(NOT GNOTE_ENABLE_WARNINGS)
+        return()
+    endif()
+
+    if(CMAKE_CXX_COMPILER_ID MATCHES "Clang" OR CMAKE_CXX_COMPILER_ID MATCHES "GNU" OR CMAKE_CXX_COMPILER_ID MATCHES "AppleClang")
+        target_compile_options(${target_name} PRIVATE
+            -Wall
+            -Wextra
+            -Wpedantic
+            -Wconversion
+            -Wimplicit-fallthrough
+            -Werror=return-type
+        )
+    elseif(MSVC)
+        target_compile_options(${target_name} PRIVATE /W4 /permissive- /EHsc)
+    endif()
+endfunction()
+
+find_program(CLANG_TIDY_EXE NAMES clang-tidy)
+find_program(CLANG_FORMAT_EXE NAMES clang-format)
+
+if(GNOTE_ENABLE_CLANG_TIDY)
+    if(NOT CLANG_TIDY_EXE)
+        message(FATAL_ERROR "GNOTE_ENABLE_CLANG_TIDY is ON but clang-tidy was not found.")
+    endif()
+endif()
+
+if(GNOTE_ENABLE_CLANG_TIDY AND CLANG_TIDY_EXE)
+    set(CMAKE_CXX_CLANG_TIDY
+        ${CLANG_TIDY_EXE}
+        --config-file=${CMAKE_SOURCE_DIR}/.clang-tidy
+        -p ${CMAKE_BINARY_DIR}
+    )
+endif()
 
 if(GNOTE_ENABLE_IPO)
     include(CheckIPOSupported)
@@ -62,19 +99,43 @@ set(GNOTE_HEADERS
 
 qt_add_resources(GNOTE_RESOURCES resources/gnotepad.qrc)
 
+if(GNOTE_RESOURCES)
+    foreach(resource_source IN LISTS GNOTE_RESOURCES)
+        set_source_files_properties(${resource_source} PROPERTIES SKIP_CLANG_TIDY TRUE)
+    endforeach()
+endif()
+
+if(CLANG_TIDY_EXE)
+    add_custom_target(run-clang-tidy
+        COMMAND ${CLANG_TIDY_EXE}
+            --config-file=${CMAKE_SOURCE_DIR}/.clang-tidy
+            -p ${CMAKE_BINARY_DIR}
+            ${GNOTE_SOURCES}
+            ${GNOTE_HEADERS}
+        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+        COMMENT "Running clang-tidy on project sources"
+    )
+endif()
+
+if(CLANG_FORMAT_EXE)
+    add_custom_target(run-clang-format
+        COMMAND ${CLANG_FORMAT_EXE} -i
+            ${GNOTE_SOURCES}
+            ${GNOTE_HEADERS}
+        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+        COMMENT "Applying clang-format to project sources"
+    )
+endif()
+
 add_executable(GnotePad
     ${GNOTE_SOURCES}
     ${GNOTE_HEADERS}
     ${GNOTE_RESOURCES}
 )
 
-if(GNOTE_ENABLE_WARNINGS)
-    target_compile_options(GnotePad PRIVATE
-        $<$<CXX_COMPILER_ID:Clang,AppleClang>:-Wall -Wextra -Wpedantic -Wconversion -Wimplicit-fallthrough -Werror=return-type>
-        $<$<CXX_COMPILER_ID:GNU>:-Wall -Wextra -Wpedantic -Wconversion -Wimplicit-fallthrough -Werror=return-type>
-        $<$<CXX_COMPILER_ID:MSVC>:/W4 /permissive- /EHsc>
-    )
-endif()
+target_compile_features(GnotePad PRIVATE cxx_std_23)
+
+gnote_apply_default_warnings(GnotePad)
 
 if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
     target_compile_options(GnotePad PRIVATE

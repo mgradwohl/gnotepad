@@ -1,0 +1,43 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Run GnotePad (Debug Build)",
+            "type": "lldb",
+            "request": "launch",
+            "program": "${workspaceFolder}/build/debug/GnotePad",
+            "args": [],
+            "cwd": "${workspaceFolder}",
+            "env": {
+                "LD_LIBRARY_PATH": ""
+           },
+            "preLaunchTask": "Build Debug",
+            "terminal": "integrated"
+        },
+        {
+            "name": "Run GnotePad (Release Build)",
+            "type": "lldb",
+            "request": "launch",
+            "program": "${workspaceFolder}/build/release/GnotePad",
+            "cwd": "${workspaceFolder}",
+            "preLaunchTask": "Build Release",
+            "presentation": {
+                "group": "run",
+                "order": 2
+            }
+        },
+        {
+            "name": "Run GnotePad (Optimized)",
+            "type": "lldb",
+            "request": "launch",
+            "program": "${workspaceFolder}/build/optimized/GnotePad",
+            "args": [],
+            "cwd": "${workspaceFolder}",
+            "env": {
+                "LD_LIBRARY_PATH": ""
+            },
+            "preLaunchTask": "Build Optimized",
+            "terminal": "integrated"
+        }
+    ]
+}

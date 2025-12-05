@@ -1,57 +1,62 @@
 #include "ui/MainWindow.h"
 #include "ui/TextEditor.h"
 
-#include <array>
-#include <QAction>
-#include <QActionGroup>
-#include <QCheckBox>
-#include <QCloseEvent>
-#include <QCoreApplication>
-#include <QDesktopServices>
-#include <QDateTime>
-#include <QDialog>
-#include <QDialogButtonBox>
-#include <QFile>
-#include <QFileDialog>
-#include <QFileInfo>
-#include <QDir>
-#include <QFontDialog>
-#include <QFont>
-#include <QFormLayout>
-#include <QIcon>
-#include <QInputDialog>
-#include <QLabel>
-#include <QLocale>
-#include <QLineEdit>
-#include <QFontDatabase>
-#include <QPixmap>
-#include <QMessageBox>
-#include <QMenu>
-#include <QMenuBar>
-#include <QKeySequence>
-#include <QPushButton>
-#include <QPlainTextEdit>
-#include <QPrinter>
-#include <QRect>
-#include <QSaveFile>
-#include <QSignalBlocker>
-#include <QSettings>
-#include <QTextBlock>
-#include <QTextCursor>
-#include <QHBoxLayout>
-#include <QStatusBar>
-#include <QStandardPaths>
-#include <QStringDecoder>
-#include <QStringEncoder>
-#include <QStringConverter>
-#include <QTextDocument>
-#include <QTextOption>
-#include <QTimer>
-#include <QVBoxLayout>
-#include <QUrl>
 #include <algorithm>
+#include <array>
+#include <cstddef>
 
-#include <qnamespace.h>
+#include <QtCore/qbytearray.h>
+#include <QtCore/qcoreapplication.h>
+#include <QtCore/qdatetime.h>
+#include <QtCore/qdir.h>
+#include <QtCore/qfile.h>
+#include <QtCore/qfileinfo.h>
+#include <QtCore/qiodevice.h>
+#include <QtCore/qlocale.h>
+#include <QtCore/qnamespace.h>
+#include <QtCore/qrect.h>
+#include <QtCore/qsavefile.h>
+#include <QtCore/qsettings.h>
+#include <QtCore/qstandardpaths.h>
+#include <QtCore/qobject.h>
+#include <QtCore/qstring.h>
+#include <QtCore/qstringconverter.h>
+#include <QtCore/qstringlist.h>
+#include <QtCore/qstringliteral.h>
+#include <QtCore/qtimer.h>
+#include <QtCore/qurl.h>
+#include <QtGui/qaction.h>
+#include <QtGui/qactiongroup.h>
+#include <QtGui/qdesktopservices.h>
+#include <QtGui/qevent.h>
+#include <QtGui/qfont.h>
+#include <QtGui/qfontdatabase.h>
+#include <QtGui/qicon.h>
+#include <QtGui/qkeysequence.h>
+#include <QtGui/qpixmap.h>
+#include <QtGui/qtextobject.h>
+#include <QtGui/qtextcursor.h>
+#include <QtGui/qtextdocument.h>
+#include <QtGui/qtextoption.h>
+#include <QtPrintSupport/qprinter.h>
+#include <QtWidgets/qboxlayout.h>
+#include <QtWidgets/qcheckbox.h>
+#include <QtWidgets/qdialog.h>
+#include <QtWidgets/qdialogbuttonbox.h>
+#include <QtWidgets/qfiledialog.h>
+#include <QtWidgets/qfontdialog.h>
+#include <QtWidgets/qformlayout.h>
+#include <QtWidgets/qinputdialog.h>
+#include <QtWidgets/qlabel.h>
+#include <QtWidgets/qlineedit.h>
+#include <QtWidgets/qmenu.h>
+#include <QtWidgets/qmenubar.h>
+#include <QtWidgets/qmessagebox.h>
+#include <QtWidgets/qplaintextedit.h>
+#include <QtWidgets/qpushbutton.h>
+#include <QtWidgets/qstatusbar.h>
+#include <QtWidgets/qtextedit.h>
+#include <QtWidgets/qwidget.h>
 #include <spdlog/spdlog.h>
 
 namespace GnotePad::ui
@@ -59,12 +64,11 @@ namespace GnotePad::ui
 
 namespace
 {
-    constexpr auto UntitledDocumentTitle = "Untitled";
-    constexpr int MaxRecentFiles = 10;
-}
+constexpr auto UntitledDocumentTitle = "Untitled";
+constexpr int MaxRecentFiles = 10;
+} // namespace
 
-MainWindow::MainWindow(QWidget* parent)
-    : QMainWindow(parent)
+MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent)
 {
     buildEditor();
     buildMenus();
@@ -86,7 +90,7 @@ void MainWindow::buildEditor()
 
 void MainWindow::applyDefaultEditorFont()
 {
-    if(!m_editor)
+    if (!m_editor)
     {
         return;
     }
@@ -103,9 +107,9 @@ void MainWindow::applyDefaultEditorFont()
 #endif
 
     QFont defaultFont = QFontDatabase::systemFont(QFontDatabase::FixedFont);
-    for(const auto& family : preferredFamilies)
+    for (const auto& family : preferredFamilies)
     {
-        if(QFontDatabase::hasFamily(family))
+        if (QFontDatabase::hasFamily(family))
         {
             defaultFont.setFamily(family);
             break;
@@ -155,18 +159,22 @@ void MainWindow::buildMenus()
 
     m_wordWrapAction = formatMenu->addAction(tr("&Word Wrap"));
     m_wordWrapAction->setCheckable(true);
-    connect(m_wordWrapAction, &QAction::toggled, this, [this](bool checked) {
-        m_editor->setWordWrapMode(checked ? QTextOption::WordWrap : QTextOption::NoWrap);
-    });
+    connect(m_wordWrapAction, &QAction::toggled, this,
+            [this](bool checked)
+            {
+                m_editor->setWordWrapMode(checked ? QTextOption::WordWrap : QTextOption::NoWrap);
+            });
 
-    formatMenu->addAction(tr("&Font…"), this, [this] {
-        bool accepted {false};
-        const auto selectedFont = QFontDialog::getFont(&accepted, m_editor->font(), this, tr("Choose Font"));
-        if(accepted)
-        {
-            m_editor->applyEditorFont(selectedFont);
-        }
-    });
+    formatMenu->addAction(tr("&Font…"), this,
+                          [this]
+                          {
+                              bool accepted{false};
+                              const auto selectedFont = QFontDialog::getFont(&accepted, m_editor->font(), this, tr("Choose Font"));
+                              if (accepted)
+                              {
+                                  m_editor->applyEditorFont(selectedFont);
+                              }
+                          });
 
     formatMenu->addAction(tr("Tab &Size…"), this, &MainWindow::handleSetTabSize);
 
@@ -177,16 +185,20 @@ void MainWindow::buildMenus()
     m_dateFormatShortAction = dateFormatMenu->addAction(tr("&Short"));
     m_dateFormatShortAction->setCheckable(true);
     m_dateFormatShortAction->setActionGroup(dateFormatGroup);
-    connect(m_dateFormatShortAction, &QAction::triggered, this, [this]() {
-        setDateFormatPreference(DateFormatPreference::Short);
-    });
+    connect(m_dateFormatShortAction, &QAction::triggered, this,
+            [this]()
+            {
+                setDateFormatPreference(DateFormatPreference::Short);
+            });
 
     m_dateFormatLongAction = dateFormatMenu->addAction(tr("&Long"));
     m_dateFormatLongAction->setCheckable(true);
     m_dateFormatLongAction->setActionGroup(dateFormatGroup);
-    connect(m_dateFormatLongAction, &QAction::triggered, this, [this]() {
-        setDateFormatPreference(DateFormatPreference::Long);
-    });
+    connect(m_dateFormatLongAction, &QAction::triggered, this,
+            [this]()
+            {
+                setDateFormatPreference(DateFormatPreference::Long);
+            });
 
     updateDateFormatActionState();
 
@@ -203,7 +215,11 @@ void MainWindow::buildMenus()
     zoomMenu->addAction(tr("Zoom &Out"), QKeySequence::ZoomOut, this, &MainWindow::handleZoomOut);
     zoomMenu->addAction(tr("Restore &Default Zoom"), QKeySequence(Qt::CTRL | Qt::Key_0), this, &MainWindow::handleZoomReset);
 
-    helpMenu->addAction(tr("View &Help"), QKeySequence::HelpContents, this, [] { spdlog::info("Help placeholder triggered"); });
+    helpMenu->addAction(tr("View &Help"), QKeySequence::HelpContents, this,
+                        []
+                        {
+                            spdlog::info("Help placeholder triggered");
+                        });
     helpMenu->addAction(tr("&About GnotePad"), this, &MainWindow::showAboutDialog);
 }
 
@@ -231,22 +247,24 @@ void MainWindow::wireSignals()
     connect(m_editor, &QPlainTextEdit::cursorPositionChanged, this, &MainWindow::handleUpdateCursorStatus);
     connect(m_editor, &QPlainTextEdit::textChanged, this, &MainWindow::updateDocumentStats);
     connect(m_editor, &TextEditor::zoomPercentageChanged, this, &MainWindow::updateZoomLabel);
-    if(m_editor && m_editor->document())
+    if (m_editor && m_editor->document())
     {
-        connect(m_editor->document(), &QTextDocument::modificationChanged, this, [this](bool) {
-            updateWindowTitle();
-        });
+        connect(m_editor->document(), &QTextDocument::modificationChanged, this,
+                [this](bool)
+                {
+                    updateWindowTitle();
+                });
     }
 }
 
 void MainWindow::handleNewFile()
 {
-    if(!m_editor)
+    if (!m_editor)
     {
         return;
     }
 
-    if(!confirmReadyForDestructiveAction())
+    if (!confirmReadyForDestructiveAction())
     {
         return;
     }
@@ -257,18 +275,19 @@ void MainWindow::handleNewFile()
 
 void MainWindow::handleOpenFile()
 {
-    if(!confirmReadyForDestructiveAction())
+    if (!confirmReadyForDestructiveAction())
     {
         return;
     }
 
-    const auto filePath = QFileDialog::getOpenFileName(this, tr("Open"), dialogDirectory(m_lastOpenDirectory), tr("Text Files (*.txt);;All Files (*.*)"));
-    if(filePath.isEmpty())
+    const auto filePath =
+        QFileDialog::getOpenFileName(this, tr("Open"), dialogDirectory(m_lastOpenDirectory), tr("Text Files (*.txt);;All Files (*.*)"));
+    if (filePath.isEmpty())
     {
         return;
     }
 
-    if(loadDocumentFromPath(filePath))
+    if (loadDocumentFromPath(filePath))
     {
         spdlog::info("Loaded file {}", filePath.toStdString());
     }
@@ -277,23 +296,23 @@ void MainWindow::handleOpenFile()
 void MainWindow::handleOpenRecentFile()
 {
     auto* action = qobject_cast<QAction*>(sender());
-    if(!action)
+    if (!action)
     {
         return;
     }
 
     const QString filePath = action->data().toString();
-    if(filePath.isEmpty())
+    if (filePath.isEmpty())
     {
         return;
     }
 
-    if(!confirmReadyForDestructiveAction())
+    if (!confirmReadyForDestructiveAction())
     {
         return;
     }
 
-    if(loadDocumentFromPath(filePath))
+    if (loadDocumentFromPath(filePath))
     {
         spdlog::info("Loaded recent file {}", filePath.toStdString());
     }
@@ -301,7 +320,7 @@ void MainWindow::handleOpenRecentFile()
 
 void MainWindow::handleClearRecentFiles()
 {
-    if(m_recentFiles.isEmpty())
+    if (m_recentFiles.isEmpty())
     {
         return;
     }
@@ -313,7 +332,7 @@ void MainWindow::handleClearRecentFiles()
 
 void MainWindow::handleSaveFile()
 {
-    if(saveCurrentDocument())
+    if (saveCurrentDocument())
     {
         spdlog::info("Saved file {}", m_currentFilePath.toStdString());
     }
@@ -328,7 +347,7 @@ void MainWindow::handleChangeEncoding()
 {
     QStringConverter::Encoding desiredEncoding = m_currentEncoding;
     bool desiredBom = m_hasBom;
-    if(promptEncodingSelection(desiredEncoding, desiredBom))
+    if (promptEncodingSelection(desiredEncoding, desiredBom))
     {
         applyEncodingSelection(desiredEncoding, desiredBom);
         spdlog::info("Encoding preference updated to {}", encodingLabel().toStdString());
@@ -337,15 +356,15 @@ void MainWindow::handleChangeEncoding()
 
 void MainWindow::handleSetTabSize()
 {
-    if(!m_editor)
+    if (!m_editor)
     {
         return;
     }
-    
+
     bool accepted = false;
     const int currentSize = m_editor->tabSizeSpaces();
     const int newSize = QInputDialog::getInt(this, tr("Tab Size"), tr("Spaces per tab:"), currentSize, 1, 16, 1, &accepted);
-    if(!accepted || newSize == currentSize)
+    if (!accepted || newSize == currentSize)
     {
         return;
     }
@@ -357,7 +376,7 @@ void MainWindow::handleSetTabSize()
 
 void MainWindow::handleFind()
 {
-    if(!m_editor)
+    if (!m_editor)
     {
         return;
     }
@@ -385,19 +404,19 @@ void MainWindow::handleFind()
     connect(buttons, &QDialogButtonBox::rejected, &dialog, &QDialog::reject);
 
 #if defined(GNOTE_TEST_HOOKS)
-    if(m_testAutoDismissDialogs)
+    if (m_testAutoDismissDialogs)
     {
         QTimer::singleShot(0, &dialog, &QDialog::reject);
     }
 #endif
 
-    if(dialog.exec() != QDialog::Accepted)
+    if (dialog.exec() != QDialog::Accepted)
     {
         return;
     }
 
     const QString term = findField->text();
-    if(term.isEmpty())
+    if (term.isEmpty())
     {
         return;
     }
@@ -405,7 +424,7 @@ void MainWindow::handleFind()
     m_lastSearchTerm = term;
     m_lastCaseSensitivity = matchCase->isChecked() ? Qt::CaseSensitive : Qt::CaseInsensitive;
 
-    if(!performFind(term, buildFindFlags()))
+    if (!performFind(term, buildFindFlags()))
     {
         QMessageBox::information(this, tr("Find"), tr("Cannot find \"%1\".").arg(term));
     }
@@ -413,13 +432,13 @@ void MainWindow::handleFind()
 
 void MainWindow::handleFindNext()
 {
-    if(m_lastSearchTerm.isEmpty())
+    if (m_lastSearchTerm.isEmpty())
     {
         handleFind();
         return;
     }
 
-    if(!performFind(m_lastSearchTerm, buildFindFlags()))
+    if (!performFind(m_lastSearchTerm, buildFindFlags()))
     {
         QMessageBox::information(this, tr("Find"), tr("Cannot find \"%1\".").arg(m_lastSearchTerm));
     }
@@ -427,13 +446,13 @@ void MainWindow::handleFindNext()
 
 void MainWindow::handleFindPrevious()
 {
-    if(m_lastSearchTerm.isEmpty())
+    if (m_lastSearchTerm.isEmpty())
     {
         handleFind();
         return;
     }
 
-    if(!performFind(m_lastSearchTerm, buildFindFlags(QTextDocument::FindBackward)))
+    if (!performFind(m_lastSearchTerm, buildFindFlags(QTextDocument::FindBackward)))
     {
         QMessageBox::information(this, tr("Find"), tr("Cannot find \"%1\".").arg(m_lastSearchTerm));
     }
@@ -441,7 +460,7 @@ void MainWindow::handleFindPrevious()
 
 void MainWindow::handleReplace()
 {
-    if(!m_editor)
+    if (!m_editor)
     {
         return;
     }
@@ -479,50 +498,57 @@ void MainWindow::handleReplace()
     buttonsLayout->addWidget(replaceAllButton);
     buttonsLayout->addWidget(closeButton);
 
-    const auto applyDialogState = [this, findField, replaceField, matchCase]() {
+    const auto applyDialogState = [this, findField, replaceField, matchCase]()
+    {
         m_lastSearchTerm = findField->text();
         m_lastReplaceText = replaceField->text();
         m_lastCaseSensitivity = matchCase->isChecked() ? Qt::CaseSensitive : Qt::CaseInsensitive;
     };
 
-    connect(findNextButton, &QPushButton::clicked, &dialog, [this, applyDialogState]() {
-        applyDialogState();
-        if(m_lastSearchTerm.isEmpty())
-        {
-            return;
-        }
-        if(!performFind(m_lastSearchTerm, buildFindFlags()))
-        {
-            QMessageBox::information(this, tr("Replace"), tr("Cannot find \"%1\".").arg(m_lastSearchTerm));
-        }
-    });
+    connect(findNextButton, &QPushButton::clicked, &dialog,
+            [this, applyDialogState]()
+            {
+                applyDialogState();
+                if (m_lastSearchTerm.isEmpty())
+                {
+                    return;
+                }
+                if (!performFind(m_lastSearchTerm, buildFindFlags()))
+                {
+                    QMessageBox::information(this, tr("Replace"), tr("Cannot find \"%1\".").arg(m_lastSearchTerm));
+                }
+            });
 
-    connect(replaceButton, &QPushButton::clicked, &dialog, [this, applyDialogState]() {
-        applyDialogState();
-        if(m_lastSearchTerm.isEmpty())
-        {
-            return;
-        }
-        if(!replaceNextOccurrence(m_lastSearchTerm, m_lastReplaceText, buildFindFlags()))
-        {
-            QMessageBox::information(this, tr("Replace"), tr("Cannot find \"%1\".").arg(m_lastSearchTerm));
-        }
-    });
+    connect(replaceButton, &QPushButton::clicked, &dialog,
+            [this, applyDialogState]()
+            {
+                applyDialogState();
+                if (m_lastSearchTerm.isEmpty())
+                {
+                    return;
+                }
+                if (!replaceNextOccurrence(m_lastSearchTerm, m_lastReplaceText, buildFindFlags()))
+                {
+                    QMessageBox::information(this, tr("Replace"), tr("Cannot find \"%1\".").arg(m_lastSearchTerm));
+                }
+            });
 
-    connect(replaceAllButton, &QPushButton::clicked, &dialog, [this, applyDialogState]() {
-        applyDialogState();
-        if(m_lastSearchTerm.isEmpty())
-        {
-            return;
-        }
-        const int count = replaceAllOccurrences(m_lastSearchTerm, m_lastReplaceText, buildFindFlags());
-        QMessageBox::information(this, tr("Replace"), tr("Replaced %1 occurrence(s).").arg(count));
-    });
+    connect(replaceAllButton, &QPushButton::clicked, &dialog,
+            [this, applyDialogState]()
+            {
+                applyDialogState();
+                if (m_lastSearchTerm.isEmpty())
+                {
+                    return;
+                }
+                const int count = replaceAllOccurrences(m_lastSearchTerm, m_lastReplaceText, buildFindFlags());
+                QMessageBox::information(this, tr("Replace"), tr("Replaced %1 occurrence(s).").arg(count));
+            });
 
     connect(closeButton, &QPushButton::clicked, &dialog, &QDialog::reject);
 
 #if defined(GNOTE_TEST_HOOKS)
-    if(m_testAutoDismissDialogs)
+    if (m_testAutoDismissDialogs)
     {
         QTimer::singleShot(0, &dialog, &QDialog::reject);
     }
@@ -533,7 +559,7 @@ void MainWindow::handleReplace()
 
 void MainWindow::handleGoToLine()
 {
-    if(!m_editor)
+    if (!m_editor)
     {
         return;
     }
@@ -543,13 +569,13 @@ void MainWindow::handleGoToLine()
     bool accepted = false;
     const int currentLine = m_editor->textCursor().blockNumber() + 1;
     const int targetLine = QInputDialog::getInt(this, tr("Go To"), tr("Line number:"), currentLine, 1, maxLine, 1, &accepted);
-    if(!accepted)
+    if (!accepted)
     {
         return;
     }
 
     QTextBlock block = document->findBlockByNumber(targetLine - 1);
-    if(!block.isValid())
+    if (!block.isValid())
     {
         return;
     }
@@ -562,7 +588,7 @@ void MainWindow::handleGoToLine()
 
 void MainWindow::handleInsertTimeDate()
 {
-    if(!m_editor)
+    if (!m_editor)
     {
         return;
     }
@@ -572,15 +598,15 @@ void MainWindow::handleInsertTimeDate()
     const auto preferredFormat = m_dateFormatPreference == DateFormatPreference::Long ? QLocale::LongFormat : QLocale::ShortFormat;
 
     QString stamp = locale.toString(now, preferredFormat);
-    if(stamp.isEmpty())
+    if (stamp.isEmpty())
     {
         stamp = locale.toString(now, QLocale::ShortFormat);
     }
-    if(stamp.isEmpty())
+    if (stamp.isEmpty())
     {
         stamp = now.toString(Qt::DateFormat::TextDate);
     }
-    if(stamp.isEmpty())
+    if (stamp.isEmpty())
     {
         stamp = now.toString(QStringLiteral("h:mm A M/d/yyyy"));
     }
@@ -593,8 +619,8 @@ void MainWindow::showAboutDialog()
     const QString version = QCoreApplication::applicationVersion();
     const QString org = QCoreApplication::organizationName();
     const QString details = tr("<p><b>%1</b> %2</p>"
-                              "<p>A lightweight Qt-based text editor inspired by Windows Notepad.</p>"
-                              "<p>Qt %3 • %4</p>")
+                               "<p>A lightweight Qt-based text editor inspired by Windows Notepad.</p>"
+                               "<p>Qt %3 • %4</p>")
                                 .arg(appName, version, QString::fromLatin1(qVersion()), org);
     const QIcon icon = brandIcon();
 
@@ -606,18 +632,18 @@ void MainWindow::showAboutDialog()
     // get the icon as a larger image
     QLabel* iconLabel = new QLabel(&dialog);
     QPixmap aboutPixmap;
-    if(!icon.isNull())
+    if (!icon.isNull())
     {
         spdlog::info("About dialog: using icon for branding.");
         aboutPixmap = icon.pixmap(64, 64);
     }
-    if(aboutPixmap.isNull())
+    if (aboutPixmap.isNull())
     {
         spdlog::info("About dialog: creating pixmap from SVG resource.");
         aboutPixmap = QPixmap(QStringLiteral(":/gnotepad-icon.svg"));
     }
 
-    if(aboutPixmap.isNull())
+    if (aboutPixmap.isNull())
     {
         spdlog::info("About dialog: failed to resolve icon pixmap.");
         iconLabel->setVisible(false);
@@ -633,7 +659,7 @@ void MainWindow::showAboutDialog()
     auto* contentLayout = new QHBoxLayout();
     layout->addLayout(contentLayout);
 
-    iconLabel->setAlignment(Qt::AlignLeft| Qt:: AlignVCenter);
+    iconLabel->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
     contentLayout->addWidget(iconLabel, 0, Qt::AlignLeft);
 
     QLabel* textLabel = new QLabel(details, &dialog);
@@ -653,13 +679,13 @@ void MainWindow::handlePrintToPdf()
     QPrinter printer(QPrinter::HighResolution);
     printer.setOutputFormat(QPrinter::PdfFormat);
     const auto target = QFileDialog::getSaveFileName(this, tr("Export PDF"), dialogDirectory(m_lastSaveDirectory), tr("PDF Files (*.pdf)"));
-    if(target.isEmpty())
+    if (target.isEmpty())
     {
         return;
     }
 
     printer.setOutputFileName(target);
-    if(m_editor)
+    if (m_editor)
     {
         m_editor->print(&printer);
     }
@@ -669,11 +695,11 @@ void MainWindow::handlePrintToPdf()
 
 void MainWindow::handleToggleStatusBar(bool checked)
 {
-    if(m_statusBar)
+    if (m_statusBar)
     {
         m_statusBar->setVisible(checked);
     }
-    if(m_statusBarToggle && m_statusBarToggle->isChecked() != checked)
+    if (m_statusBarToggle && m_statusBarToggle->isChecked() != checked)
     {
         const QSignalBlocker blocker(m_statusBarToggle);
         m_statusBarToggle->setChecked(checked);
@@ -682,7 +708,7 @@ void MainWindow::handleToggleStatusBar(bool checked)
 
 void MainWindow::handleToggleLineNumbers(bool checked)
 {
-    if(m_editor)
+    if (m_editor)
     {
         m_editor->setLineNumbersVisible(checked);
     }
@@ -691,7 +717,7 @@ void MainWindow::handleToggleLineNumbers(bool checked)
 
 void MainWindow::handleZoomIn()
 {
-    if(m_editor)
+    if (m_editor)
     {
         m_editor->increaseZoom();
     }
@@ -699,7 +725,7 @@ void MainWindow::handleZoomIn()
 
 void MainWindow::handleZoomOut()
 {
-    if(m_editor)
+    if (m_editor)
     {
         m_editor->decreaseZoom();
     }
@@ -707,7 +733,7 @@ void MainWindow::handleZoomOut()
 
 void MainWindow::handleZoomReset()
 {
-    if(m_editor)
+    if (m_editor)
     {
         m_editor->resetZoom();
     }
@@ -715,7 +741,7 @@ void MainWindow::handleZoomReset()
 
 void MainWindow::handleUpdateCursorStatus()
 {
-    if(!m_editor || !m_cursorLabel)
+    if (!m_editor || !m_cursorLabel)
     {
         return;
     }
@@ -728,7 +754,7 @@ void MainWindow::handleUpdateCursorStatus()
 
 void MainWindow::updateEncodingDisplay(const QString& encodingLabel)
 {
-    if(m_encodingLabel)
+    if (m_encodingLabel)
     {
         m_encodingLabel->setText(encodingLabel);
     }
@@ -736,7 +762,7 @@ void MainWindow::updateEncodingDisplay(const QString& encodingLabel)
 
 void MainWindow::updateDocumentStats()
 {
-    if(!m_editor || !m_documentStatsLabel)
+    if (!m_editor || !m_documentStatsLabel)
     {
         return;
     }
@@ -750,7 +776,7 @@ void MainWindow::updateDocumentStats()
 void MainWindow::updateZoomLabel(int percentage)
 {
     m_currentZoomPercent = percentage;
-    if(m_zoomLabel)
+    if (m_zoomLabel)
     {
         m_zoomLabel->setText(tr("%1%").arg(percentage));
     }
@@ -760,7 +786,7 @@ void MainWindow::updateWindowTitle()
 {
     const auto baseName = m_currentFilePath.isEmpty() ? tr(UntitledDocumentTitle) : QFileInfo(m_currentFilePath).fileName();
     QString decoratedName = baseName;
-    if(m_editor && m_editor->document()->isModified())
+    if (m_editor && m_editor->document()->isModified())
     {
         decoratedName.prepend('*');
     }
@@ -770,7 +796,7 @@ void MainWindow::updateWindowTitle()
 
 void MainWindow::closeEvent(QCloseEvent* event)
 {
-    if(confirmReadyForDestructiveAction())
+    if (confirmReadyForDestructiveAction())
     {
         saveSettings();
         event->accept();
@@ -784,7 +810,7 @@ void MainWindow::closeEvent(QCloseEvent* event)
 bool MainWindow::loadDocumentFromPath(const QString& filePath)
 {
     QFile file(filePath);
-    if(!file.open(QIODevice::ReadOnly))
+    if (!file.open(QIODevice::ReadOnly))
     {
         QMessageBox::warning(this, tr("Open File"), tr("Unable to open %1").arg(filePath));
         spdlog::error("Failed to open {}", filePath.toStdString());
@@ -797,14 +823,14 @@ bool MainWindow::loadDocumentFromPath(const QString& filePath)
 
     QStringDecoder decoder(encoding);
     const QString text = decoder(rawData.mid(bomLength));
-    if(decoder.hasError())
+    if (decoder.hasError())
     {
         QMessageBox::warning(this, tr("Open File"), tr("Unsupported encoding in %1").arg(filePath));
         spdlog::error("Unsupported encoding while opening {}", filePath.toStdString());
         return false;
     }
 
-    if(m_editor)
+    if (m_editor)
     {
         m_editor->setPlainText(text);
         m_editor->document()->setModified(false);
@@ -821,13 +847,13 @@ bool MainWindow::loadDocumentFromPath(const QString& filePath)
 
 bool MainWindow::saveDocumentToPath(const QString& filePath)
 {
-    if(filePath.isEmpty())
+    if (filePath.isEmpty())
     {
         return saveDocumentAsDialog();
     }
 
     QSaveFile file(filePath);
-    if(!file.open(QIODevice::WriteOnly))
+    if (!file.open(QIODevice::WriteOnly))
     {
         QMessageBox::warning(this, tr("Save File"), tr("Unable to save %1").arg(filePath));
         spdlog::error("Failed to open {} for writing", filePath.toStdString());
@@ -837,7 +863,7 @@ bool MainWindow::saveDocumentToPath(const QString& filePath)
     QStringEncoder encoder(m_currentEncoding);
     const QString text = m_editor ? m_editor->toPlainText() : QString();
     QByteArray encoded = encoder(text);
-    if(encoder.hasError())
+    if (encoder.hasError())
     {
         QMessageBox::warning(this, tr("Save File"), tr("Unable to encode document using %1").arg(encodingLabel()));
         spdlog::error("Encoding error while saving {}", filePath.toStdString());
@@ -845,20 +871,20 @@ bool MainWindow::saveDocumentToPath(const QString& filePath)
     }
 
     QByteArray payload;
-    if(m_hasBom)
+    if (m_hasBom)
     {
         payload.append(viewBomForEncoding(m_currentEncoding));
     }
     payload.append(encoded);
 
-    if(file.write(payload) != payload.size())
+    if (file.write(payload) != payload.size())
     {
         QMessageBox::warning(this, tr("Save File"), tr("Failed to write data to %1").arg(filePath));
         spdlog::error("Short write while saving {}", filePath.toStdString());
         return false;
     }
 
-    if(!file.commit())
+    if (!file.commit())
     {
         QMessageBox::warning(this, tr("Save File"), tr("Failed to finalize %1").arg(filePath));
         spdlog::error("Failed to commit save file for {}", filePath.toStdString());
@@ -868,7 +894,7 @@ bool MainWindow::saveDocumentToPath(const QString& filePath)
     m_currentFilePath = filePath;
     m_lastSaveDirectory = QFileInfo(filePath).absolutePath();
     addRecentFile(filePath);
-    if(m_editor)
+    if (m_editor)
     {
         m_editor->document()->setModified(false);
     }
@@ -880,21 +906,21 @@ bool MainWindow::saveDocumentAsDialog()
 {
     const QString initialPath = m_currentFilePath.isEmpty() ? dialogDirectory(m_lastSaveDirectory) : m_currentFilePath;
     const auto target = QFileDialog::getSaveFileName(this, tr("Save As"), initialPath, tr("Text Files (*.txt);;All Files (*.*)"));
-    if(target.isEmpty())
+    if (target.isEmpty())
     {
         return false;
     }
 
     QStringConverter::Encoding desiredEncoding = m_currentEncoding;
     bool desiredBom = m_hasBom;
-    if(!promptEncodingSelection(desiredEncoding, desiredBom))
+    if (!promptEncodingSelection(desiredEncoding, desiredBom))
     {
         return false;
     }
 
     applyEncodingSelection(desiredEncoding, desiredBom);
 
-    if(saveDocumentToPath(target))
+    if (saveDocumentToPath(target))
     {
         spdlog::info("Saved file {}", target.toStdString());
         return true;
@@ -904,7 +930,7 @@ bool MainWindow::saveDocumentAsDialog()
 
 bool MainWindow::saveCurrentDocument(bool forceSaveAs)
 {
-    if(forceSaveAs || m_currentFilePath.isEmpty())
+    if (forceSaveAs || m_currentFilePath.isEmpty())
     {
         return saveDocumentAsDialog();
     }
@@ -914,7 +940,7 @@ bool MainWindow::saveCurrentDocument(bool forceSaveAs)
 void MainWindow::resetDocumentState()
 {
     m_currentFilePath.clear();
-    if(m_editor)
+    if (m_editor)
     {
         m_editor->document()->clear();
         m_editor->document()->setModified(false);
@@ -926,21 +952,21 @@ void MainWindow::resetDocumentState()
 
 bool MainWindow::confirmReadyForDestructiveAction()
 {
-    if(!m_editor || !m_editor->document()->isModified())
+    if (!m_editor || !m_editor->document()->isModified())
     {
         return true;
     }
 
 #if defined(GNOTE_TEST_HOOKS)
-    if(!m_testPromptResponses.empty())
+    if (!m_testPromptResponses.empty())
     {
         const auto response = m_testPromptResponses.front();
         m_testPromptResponses.pop_front();
-        if(response == QMessageBox::Save)
+        if (response == QMessageBox::Save)
         {
             return saveCurrentDocument();
         }
-        if(response == QMessageBox::Discard)
+        if (response == QMessageBox::Discard)
         {
             return true;
         }
@@ -949,24 +975,24 @@ bool MainWindow::confirmReadyForDestructiveAction()
 #endif
 
     const auto title = m_currentFilePath.isEmpty() ? tr(UntitledDocumentTitle) : QFileInfo(m_currentFilePath).fileName();
-        QMessageBox prompt(this);
-        prompt.setIcon(QMessageBox::Warning);
-        prompt.setWindowTitle(tr("GnotePad"));
-        prompt.setText(tr("Do you want to save changes to %1?").arg(title));
-        prompt.setStandardButtons(QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel);
-        prompt.setDefaultButton(QMessageBox::Save);
+    QMessageBox prompt(this);
+    prompt.setIcon(QMessageBox::Warning);
+    prompt.setWindowTitle(tr("GnotePad"));
+    prompt.setText(tr("Do you want to save changes to %1?").arg(title));
+    prompt.setStandardButtons(QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel);
+    prompt.setDefaultButton(QMessageBox::Save);
 
-        const auto result = static_cast<QMessageBox::StandardButton>(prompt.exec());
-        if(result == QMessageBox::Save)
-        {
-            return saveCurrentDocument();
-        }
-        if(result == QMessageBox::Discard)
-        {
-            return true;
-        }
+    const auto result = static_cast<QMessageBox::StandardButton>(prompt.exec());
+    if (result == QMessageBox::Save)
+    {
+        return saveCurrentDocument();
+    }
+    if (result == QMessageBox::Discard)
+    {
+        return true;
+    }
 
-        return false;
+    return false;
 }
 
 bool MainWindow::promptEncodingSelection(QStringConverter::Encoding& encoding, bool& bom)
@@ -978,20 +1004,20 @@ bool MainWindow::promptEncodingSelection(QStringConverter::Encoding& encoding, b
         bool includeBom;
     };
 
-    const std::array<EncodingChoice, 4> choices {
-        EncodingChoice {tr("UTF-8 (no BOM)"), QStringConverter::Utf8, false},
-        EncodingChoice {tr("UTF-8 with BOM"), QStringConverter::Utf8, true},
-        EncodingChoice {tr("UTF-16 LE"), QStringConverter::Utf16LE, true},
-        EncodingChoice {tr("UTF-16 BE"), QStringConverter::Utf16BE, true},
+    const std::array<EncodingChoice, 4> choices{
+        EncodingChoice{tr("UTF-8 (no BOM)"), QStringConverter::Utf8, false},
+        EncodingChoice{tr("UTF-8 with BOM"), QStringConverter::Utf8, true},
+        EncodingChoice{tr("UTF-16 LE"), QStringConverter::Utf16LE, true},
+        EncodingChoice{tr("UTF-16 BE"), QStringConverter::Utf16BE, true},
     };
 
     QStringList labels;
     labels.reserve(choices.size());
     int currentIndex = 0;
-    for(std::size_t i = 0; i < choices.size(); ++i)
+    for (std::size_t i = 0; i < choices.size(); ++i)
     {
         labels.append(choices[i].label);
-        if(choices[i].encoding == encoding && choices[i].includeBom == bom)
+        if (choices[i].encoding == encoding && choices[i].includeBom == bom)
         {
             currentIndex = static_cast<int>(i);
         }
@@ -999,16 +1025,18 @@ bool MainWindow::promptEncodingSelection(QStringConverter::Encoding& encoding, b
 
     bool accepted = false;
     const auto selection = QInputDialog::getItem(this, tr("Select Encoding"), tr("Encoding:"), labels, currentIndex, false, &accepted);
-    if(!accepted)
+    if (!accepted)
     {
         return false;
     }
 
-    const auto match = std::find_if(choices.cbegin(), choices.cend(), [&](const auto& choice) {
-        return choice.label == selection;
-    });
+    const auto match = std::find_if(choices.cbegin(), choices.cend(),
+                                    [&](const auto& choice)
+                                    {
+                                        return choice.label == selection;
+                                    });
 
-    if(match == choices.cend())
+    if (match == choices.cend())
     {
         return false;
     }
@@ -1031,29 +1059,30 @@ void MainWindow::loadSettings()
     const QFileInfo settingsFile(settings.fileName());
     const bool hasExistingPreferences = settingsFile.exists();
 
-    const bool hasRectKeys = settings.contains("window/posX") && settings.contains("window/posY") && settings.contains("window/width") && settings.contains("window/height");
+    const bool hasRectKeys = settings.contains("window/posX") && settings.contains("window/posY") && settings.contains("window/width") &&
+                             settings.contains("window/height");
     const bool windowMaximized = settings.value("window/maximized", false).toBool();
 
-    if(hasRectKeys)
+    if (hasRectKeys)
     {
         const int windowX = settings.value("window/posX", x()).toInt();
         const int windowY = settings.value("window/posY", y()).toInt();
         const int windowWidth = settings.value("window/width", width()).toInt();
         const int windowHeight = settings.value("window/height", height()).toInt();
 
-        if(windowWidth > 0 && windowHeight > 0)
+        if (windowWidth > 0 && windowHeight > 0)
         {
             resize(windowWidth, windowHeight);
         }
         move(windowX, windowY);
     }
-    else if(settings.contains("window/geometry"))
+    else if (settings.contains("window/geometry"))
     {
         const QByteArray legacyGeometry = settings.value("window/geometry").toByteArray();
         restoreGeometry(legacyGeometry);
     }
 
-    if(windowMaximized)
+    if (windowMaximized)
     {
         setWindowState(Qt::WindowMaximized);
     }
@@ -1066,7 +1095,7 @@ void MainWindow::loadSettings()
     m_lastSaveDirectory = settings.value("paths/lastSaveDirectory").toString();
 
     m_recentFiles = settings.value("documents/recentFiles").toStringList();
-    while(m_recentFiles.size() > MaxRecentFiles)
+    while (m_recentFiles.size() > MaxRecentFiles)
     {
         m_recentFiles.removeLast();
     }
@@ -1074,61 +1103,61 @@ void MainWindow::loadSettings()
 
     const QString fontFamily = settings.value("editor/fontFamily").toString();
     const qreal fontPointSize = settings.value("editor/fontPointSize", -1.0).toDouble();
-    if(m_editor && !fontFamily.isEmpty())
+    if (m_editor && !fontFamily.isEmpty())
     {
         QFont storedFont(fontFamily);
-        if(fontPointSize > 0)
+        if (fontPointSize > 0)
         {
             storedFont.setPointSizeF(fontPointSize);
         }
         m_editor->applyEditorFont(storedFont);
     }
-    else if(m_editor && settings.contains("editor/font"))
+    else if (m_editor && settings.contains("editor/font"))
     {
         const QFont legacyFont = settings.value("editor/font").value<QFont>();
-        if(!legacyFont.family().isEmpty())
+        if (!legacyFont.family().isEmpty())
         {
             m_editor->applyEditorFont(legacyFont);
         }
     }
-    else if(m_editor && !hasExistingPreferences)
+    else if (m_editor && !hasExistingPreferences)
     {
         applyDefaultEditorFont();
     }
 
     const bool lineNumbersVisible = settings.value("editor/lineNumbersVisible", true).toBool();
-    if(m_editor)
+    if (m_editor)
     {
         m_editor->setLineNumbersVisible(lineNumbersVisible);
     }
-    if(m_lineNumberToggle)
+    if (m_lineNumberToggle)
     {
         m_lineNumberToggle->setChecked(lineNumbersVisible);
     }
 
     const bool wrapEnabled = settings.value("editor/wordWrap", false).toBool();
-    if(m_editor)
+    if (m_editor)
     {
         m_editor->setWordWrapMode(wrapEnabled ? QTextOption::WordWrap : QTextOption::NoWrap);
     }
-    if(m_wordWrapAction)
+    if (m_wordWrapAction)
     {
         const QSignalBlocker blocker(m_wordWrapAction);
         m_wordWrapAction->setChecked(wrapEnabled);
     }
 
     const bool statusBarVisible = settings.value("editor/statusBarVisible", true).toBool();
-    if(m_statusBar)
+    if (m_statusBar)
     {
         m_statusBar->setVisible(statusBarVisible);
     }
-    if(m_statusBarToggle)
+    if (m_statusBarToggle)
     {
         m_statusBarToggle->setChecked(statusBarVisible);
     }
 
     m_tabSizeSpaces = std::clamp(settings.value("editor/tabSizeSpaces", m_tabSizeSpaces).toInt(), 1, 16);
-    if(m_editor)
+    if (m_editor)
     {
         m_editor->setTabSizeSpaces(m_tabSizeSpaces);
     }
@@ -1138,7 +1167,7 @@ void MainWindow::loadSettings()
     applyEncodingSelection(static_cast<QStringConverter::Encoding>(encodingValue), bom);
 
     const int zoomPercent = settings.value("editor/zoomPercent", 100).toInt();
-    if(m_editor)
+    if (m_editor)
     {
         m_editor->setZoomPercentage(zoomPercent);
     }
@@ -1148,7 +1177,7 @@ void MainWindow::loadSettings()
     }
 
     const QString dateFormatValue = settings.value("editor/dateFormat", QStringLiteral("short")).toString();
-    if(dateFormatValue.compare(QStringLiteral("long"), Qt::CaseInsensitive) == 0)
+    if (dateFormatValue.compare(QStringLiteral("long"), Qt::CaseInsensitive) == 0)
     {
         setDateFormatPreference(DateFormatPreference::Long);
     }
@@ -1173,7 +1202,7 @@ void MainWindow::saveSettings() const
     settings.setValue("paths/lastSaveDirectory", m_lastSaveDirectory);
     settings.setValue("documents/recentFiles", m_recentFiles);
 
-    if(m_editor)
+    if (m_editor)
     {
         const QFont editorFont = m_editor->font();
         settings.setValue("editor/fontFamily", editorFont.family());
@@ -1194,7 +1223,8 @@ void MainWindow::saveSettings() const
     settings.setValue("editor/defaultEncoding", static_cast<int>(m_currentEncoding));
     settings.setValue("editor/defaultBom", m_hasBom);
     settings.setValue("editor/zoomPercent", m_currentZoomPercent);
-    settings.setValue("editor/dateFormat", m_dateFormatPreference == DateFormatPreference::Long ? QStringLiteral("long") : QStringLiteral("short"));
+    settings.setValue("editor/dateFormat",
+                      m_dateFormatPreference == DateFormatPreference::Long ? QStringLiteral("long") : QStringLiteral("short"));
 
     settings.remove("window/geometry");
     settings.remove("window/state");
@@ -1203,20 +1233,20 @@ void MainWindow::saveSettings() const
 
 void MainWindow::addRecentFile(const QString& path)
 {
-    if(path.isEmpty())
+    if (path.isEmpty())
     {
         return;
     }
 
     const QString normalizedPath = QFileInfo(path).absoluteFilePath();
-    if(normalizedPath.isEmpty())
+    if (normalizedPath.isEmpty())
     {
         return;
     }
 
     m_recentFiles.removeAll(normalizedPath);
     m_recentFiles.prepend(normalizedPath);
-    while(m_recentFiles.size() > MaxRecentFiles)
+    while (m_recentFiles.size() > MaxRecentFiles)
     {
         m_recentFiles.removeLast();
     }
@@ -1225,22 +1255,22 @@ void MainWindow::addRecentFile(const QString& path)
 
 void MainWindow::refreshRecentFilesMenu()
 {
-    if(!m_recentFilesMenu)
+    if (!m_recentFilesMenu)
     {
         return;
     }
 
     m_recentFilesMenu->clear();
-    if(m_recentFiles.isEmpty())
+    if (m_recentFiles.isEmpty())
     {
         auto* emptyAction = m_recentFilesMenu->addAction(tr("(No Recent Files)"));
         emptyAction->setEnabled(false);
     }
     else
     {
-        for(const auto& path : m_recentFiles)
+        for (const auto& path : m_recentFiles)
         {
-            if(path.isEmpty())
+            if (path.isEmpty())
             {
                 continue;
             }
@@ -1260,7 +1290,7 @@ void MainWindow::refreshRecentFilesMenu()
 
 QString MainWindow::dialogDirectory(const QString& lastDir) const
 {
-    if(!lastDir.isEmpty())
+    if (!lastDir.isEmpty())
     {
         return lastDir;
     }
@@ -1270,7 +1300,7 @@ QString MainWindow::dialogDirectory(const QString& lastDir) const
 QString MainWindow::defaultDocumentsDirectory() const
 {
     const QString documentsLocation = QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation);
-    if(!documentsLocation.isEmpty())
+    if (!documentsLocation.isEmpty())
     {
         return documentsLocation;
     }
@@ -1279,7 +1309,7 @@ QString MainWindow::defaultDocumentsDirectory() const
 
 void MainWindow::setDateFormatPreference(DateFormatPreference preference)
 {
-    if(m_dateFormatPreference == preference)
+    if (m_dateFormatPreference == preference)
     {
         updateDateFormatActionState();
         return;
@@ -1291,12 +1321,12 @@ void MainWindow::setDateFormatPreference(DateFormatPreference preference)
 
 void MainWindow::updateDateFormatActionState()
 {
-    if(m_dateFormatShortAction)
+    if (m_dateFormatShortAction)
     {
         const QSignalBlocker blocker(m_dateFormatShortAction);
         m_dateFormatShortAction->setChecked(m_dateFormatPreference == DateFormatPreference::Short);
     }
-    if(m_dateFormatLongAction)
+    if (m_dateFormatLongAction)
     {
         const QSignalBlocker blocker(m_dateFormatLongAction);
         m_dateFormatLongAction->setChecked(m_dateFormatPreference == DateFormatPreference::Long);
@@ -1306,7 +1336,7 @@ void MainWindow::updateDateFormatActionState()
 QTextDocument::FindFlags MainWindow::buildFindFlags(QTextDocument::FindFlags baseFlags) const
 {
     QTextDocument::FindFlags flags = baseFlags;
-    if(m_lastCaseSensitivity == Qt::CaseSensitive)
+    if (m_lastCaseSensitivity == Qt::CaseSensitive)
     {
         flags |= QTextDocument::FindCaseSensitively;
     }
@@ -1316,7 +1346,7 @@ QTextDocument::FindFlags MainWindow::buildFindFlags(QTextDocument::FindFlags bas
 QIcon MainWindow::brandIcon() const
 {
     QIcon icon = windowIcon();
-    if(icon.isNull())
+    if (icon.isNull())
     {
         spdlog::info("brandIcon: windowIcon() failed.");
         icon = QIcon(QStringLiteral(":/gnotepad-icon.svg"));
@@ -1335,19 +1365,19 @@ QIcon MainWindow::brandIcon() const
 
 bool MainWindow::performFind(const QString& term, QTextDocument::FindFlags flags)
 {
-    if(!m_editor || term.isEmpty())
+    if (!m_editor || term.isEmpty())
     {
         return false;
     }
 
     QTextCursor originalCursor = m_editor->textCursor();
-    if(m_editor->find(term, flags))
+    if (m_editor->find(term, flags))
     {
         return true;
     }
 
     QTextCursor searchCursor = originalCursor;
-    if(flags.testFlag(QTextDocument::FindBackward))
+    if (flags.testFlag(QTextDocument::FindBackward))
     {
         searchCursor.movePosition(QTextCursor::End);
     }
@@ -1358,7 +1388,7 @@ bool MainWindow::performFind(const QString& term, QTextDocument::FindFlags flags
     m_editor->setTextCursor(searchCursor);
 
     const bool foundAfterWrap = m_editor->find(term, flags);
-    if(!foundAfterWrap)
+    if (!foundAfterWrap)
     {
         m_editor->setTextCursor(originalCursor);
     }
@@ -1367,16 +1397,16 @@ bool MainWindow::performFind(const QString& term, QTextDocument::FindFlags flags
 
 bool MainWindow::replaceNextOccurrence(const QString& term, const QString& replacement, QTextDocument::FindFlags flags)
 {
-    if(!m_editor || term.isEmpty())
+    if (!m_editor || term.isEmpty())
     {
         return false;
     }
 
     QTextCursor cursor = m_editor->textCursor();
     const bool selectionMatches = cursor.hasSelection() && QString::compare(cursor.selectedText(), term, m_lastCaseSensitivity) == 0;
-    if(!selectionMatches)
+    if (!selectionMatches)
     {
-        if(!performFind(term, flags))
+        if (!performFind(term, flags))
         {
             return false;
         }
@@ -1390,7 +1420,7 @@ bool MainWindow::replaceNextOccurrence(const QString& term, const QString& repla
 
 int MainWindow::replaceAllOccurrences(const QString& term, const QString& replacement, QTextDocument::FindFlags flags)
 {
-    if(!m_editor || term.isEmpty())
+    if (!m_editor || term.isEmpty())
     {
         return 0;
     }
@@ -1401,12 +1431,12 @@ int MainWindow::replaceAllOccurrences(const QString& term, const QString& replac
     m_editor->setTextCursor(searchCursor);
 
     int replacedCount = 0;
-    while(m_editor->find(term, flags))
+    while (m_editor->find(term, flags))
     {
         QTextCursor matchCursor = m_editor->textCursor();
-            matchCursor.insertText(replacement);
-            // Move cursor to the end of the replacement to avoid re-matching just-inserted text
-            matchCursor.movePosition(QTextCursor::NextCharacter, QTextCursor::MoveAnchor, static_cast<int>(replacement.length()));
+        matchCursor.insertText(replacement);
+        // Move cursor to the end of the replacement to avoid re-matching just-inserted text
+        matchCursor.movePosition(QTextCursor::NextCharacter, QTextCursor::MoveAnchor, static_cast<int>(replacement.length()));
         m_editor->setTextCursor(matchCursor);
         ++replacedCount;
     }
@@ -1418,22 +1448,22 @@ int MainWindow::replaceAllOccurrences(const QString& term, const QString& replac
 QString MainWindow::encodingLabel() const
 {
     QString label;
-    switch(m_currentEncoding)
+    switch (m_currentEncoding)
     {
-        case QStringConverter::Utf8:
-            label = tr("UTF-8");
-            break;
-        case QStringConverter::Utf16LE:
-            label = tr("UTF-16 LE");
-            break;
-        case QStringConverter::Utf16BE:
-            label = tr("UTF-16 BE");
-            break;
-        default:
-            label = tr("Encoding %1").arg(static_cast<int>(m_currentEncoding));
-            break;
+    case QStringConverter::Utf8:
+        label = tr("UTF-8");
+        break;
+    case QStringConverter::Utf16LE:
+        label = tr("UTF-16 LE");
+        break;
+    case QStringConverter::Utf16BE:
+        label = tr("UTF-16 BE");
+        break;
+    default:
+        label = tr("Encoding %1").arg(static_cast<int>(m_currentEncoding));
+        break;
     }
-    if(m_hasBom)
+    if (m_hasBom)
     {
         label.append(tr(" BOM"));
     }
@@ -1442,33 +1472,33 @@ QString MainWindow::encodingLabel() const
 
 QByteArray MainWindow::viewBomForEncoding(QStringConverter::Encoding encoding)
 {
-    switch(encoding)
+    switch (encoding)
     {
-        case QStringConverter::Utf8:
-            return QByteArray::fromHex("efbbbf");
-        case QStringConverter::Utf16LE:
-            return QByteArray::fromHex("fffe");
-        case QStringConverter::Utf16BE:
-            return QByteArray::fromHex("feff");
-        default:
-            return {};
+    case QStringConverter::Utf8:
+        return QByteArray::fromHex("efbbbf");
+    case QStringConverter::Utf16LE:
+        return QByteArray::fromHex("fffe");
+    case QStringConverter::Utf16BE:
+        return QByteArray::fromHex("feff");
+    default:
+        return {};
     }
 }
 
 QStringConverter::Encoding MainWindow::detectEncodingFromData(const QByteArray& data, int& bomLength)
 {
     bomLength = 0;
-    if(data.startsWith(QByteArray::fromHex("efbbbf")))
+    if (data.startsWith(QByteArray::fromHex("efbbbf")))
     {
         bomLength = 3;
         return QStringConverter::Utf8;
     }
-    if(data.startsWith(QByteArray::fromHex("fffe")))
+    if (data.startsWith(QByteArray::fromHex("fffe")))
     {
         bomLength = 2;
         return QStringConverter::Utf16LE;
     }
-    if(data.startsWith(QByteArray::fromHex("feff")))
+    if (data.startsWith(QByteArray::fromHex("feff")))
     {
         bomLength = 2;
         return QStringConverter::Utf16BE;
@@ -1487,7 +1517,7 @@ void MainWindow::setSearchStateForTest(const QString& term, Qt::CaseSensitivity 
 
 bool MainWindow::testFindNext(QTextDocument::FindFlags extraFlags)
 {
-    if(m_lastSearchTerm.isEmpty())
+    if (m_lastSearchTerm.isEmpty())
     {
         return false;
     }
@@ -1496,7 +1526,7 @@ bool MainWindow::testFindNext(QTextDocument::FindFlags extraFlags)
 
 bool MainWindow::testFindPrevious()
 {
-    if(m_lastSearchTerm.isEmpty())
+    if (m_lastSearchTerm.isEmpty())
     {
         return false;
     }
@@ -1505,7 +1535,7 @@ bool MainWindow::testFindPrevious()
 
 bool MainWindow::testReplaceNext(const QString& replacementOverride)
 {
-    if(m_lastSearchTerm.isEmpty())
+    if (m_lastSearchTerm.isEmpty())
     {
         return false;
     }

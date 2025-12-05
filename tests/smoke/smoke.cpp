@@ -322,7 +322,7 @@ void MainWindowSmokeTests::testEncodingRoundTripVariants()
 
         QFile savedFile(path);
         QVERIFY(savedFile.open(QIODevice::ReadOnly));
-        const int prefixLength = expectedBom.isEmpty() ? 3 : expectedBom.size();
+        const qint64 prefixLength = expectedBom.isEmpty() ? 3 : static_cast<qint64>(expectedBom.size());
         const QByteArray prefix = savedFile.read(prefixLength);
         savedFile.close();
 
@@ -590,7 +590,7 @@ void MainWindowSmokeTests::testShortcutCommands()
     auto* timeDateAction = window.timeDateActionForTest();
     QVERIFY(timeDateAction);
     QCOMPARE(timeDateAction->shortcut(), QKeySequence(Qt::Key_F5));
-    const int beforeLength = editor->toPlainText().length();
+    const qsizetype beforeLength = editor->toPlainText().length();
     timeDateAction->trigger();
     QTRY_VERIFY(editor->toPlainText().length() > beforeLength);
 }

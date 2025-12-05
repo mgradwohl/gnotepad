@@ -25,7 +25,6 @@ compile_commands.json
 *.pro.user.*
 *.qbs.user*
 *.qmlproject.user*
-.vscode/
 .idea/
 
 # OS files

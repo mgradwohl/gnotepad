@@ -1,0 +1,71 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "Build Debug",
+			"type": "shell",
+			"command": "bash",
+			"args": [
+				"-lc",
+				"cmake -S . -B build/debug -G Ninja -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_PREFIX_PATH=/usr/lib/x86_64-linux-gnu/cmake/Qt6 -DCMAKE_BUILD_TYPE=Debug && cmake --build build/debug"
+			],
+			"group": {
+				"kind": "build",
+				"isDefault": true
+			},
+			"problemMatcher": ["$gcc"]
+		},
+		{
+			"label": "Build Release",
+			"type": "shell",
+			"command": "bash",
+			"args": [
+				"-lc",
+				"cmake -S . -B build/release -G Ninja -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_PREFIX_PATH=/usr/lib/x86_64-linux-gnu/cmake/Qt6 -DCMAKE_BUILD_TYPE=Release && cmake --build build/release"
+			],
+			"group": "build",
+			"problemMatcher": ["$gcc"]
+		},
+		{
+			"label": "Build Optimized",
+			"type": "shell",
+			"command": "bash",
+			"args": [
+				"-lc",
+				"cmake -S . -B build/optimized -G Ninja -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_PREFIX_PATH=/usr/lib/x86_64-linux-gnu/cmake/Qt6 -DCMAKE_BUILD_TYPE=Release -DGNOTE_ENABLE_IPO=ON -DCMAKE_INTERPROCEDURAL_OPTIMIZATION=ON -DCMAKE_EXE_LINKER_FLAGS_RELEASE='-s' -DCMAKE_SHARED_LINKER_FLAGS_RELEASE='-s' && cmake --build build/optimized"
+			],
+			"group": "build",
+			"problemMatcher": ["$gcc"]
+		},
+		{
+			"label": "Clang-Tidy (Debug)",
+			"type": "shell",
+			"command": "bash",
+			"args": [
+				"-lc",
+				"cmake -S . -B build/debug -G Ninja -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_PREFIX_PATH=/usr/lib/x86_64-linux-gnu/cmake/Qt6 -DCMAKE_BUILD_TYPE=Debug -DGNOTE_ENABLE_CLANG_TIDY=ON && cmake --build build/debug"
+			],
+			"problemMatcher": ["$gcc"]
+		},
+		{
+			"label": "Scan-Build (Debug)",
+			"type": "shell",
+			"command": "bash",
+			"args": [
+				"-lc",
+				"cmake -S . -B build/analyze -G Ninja -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_PREFIX_PATH=/usr/lib/x86_64-linux-gnu/cmake/Qt6 -DCMAKE_BUILD_TYPE=Debug && scan-build -o scan-build-report --status-bugs cmake --build build/analyze"
+			],
+			"problemMatcher": ["$gcc"]
+		},
+		{
+			"label": "Clang-Format",
+			"type": "shell",
+			"command": "bash",
+			"args": [
+				"-lc",
+				"cmake --build build/debug --target run-clang-format"
+			],
+			"problemMatcher": []
+		}
+	]
+}

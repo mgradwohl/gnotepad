@@ -1,10 +1,13 @@
 #include "app/Application.h"
 
-#include <QCoreApplication>
-#include <QGuiApplication>
-#include <QIcon>
-#include <QSettings>
-#include <QString>
+#include <memory>
+
+#include <QtCore/qcoreapplication.h>
+#include <QtCore/qsettings.h>
+#include <QtCore/qstring.h>
+#include <QtCore/qstringliteral.h>
+#include <QtGui/qguiapplication.h>
+#include <QtGui/qicon.h>
 
 #include <spdlog/spdlog.h>
 
@@ -17,8 +20,7 @@
 namespace GnotePad
 {
 
-Application::Application(int& argc, char** argv)
-    : QApplication(argc, argv)
+Application::Application(int& argc, char** argv) : QApplication(argc, argv)
 {
     configureMetadata();
     QSettings::setDefaultFormat(QSettings::IniFormat);
@@ -31,7 +33,7 @@ Application::~Application() = default;
 int Application::run()
 {
     m_mainWindow = std::make_unique<ui::MainWindow>();
-    if(!m_applicationIcon.isNull())
+    if (!m_applicationIcon.isNull())
     {
         m_mainWindow->setWindowIcon(m_applicationIcon);
     }
@@ -54,14 +56,14 @@ void Application::configureIcon()
 {
 #if defined(Q_OS_LINUX)
     m_applicationIcon = QIcon::fromTheme(QStringLiteral("gnotepad"));
-    if(m_applicationIcon.isNull())
+    if (m_applicationIcon.isNull())
     {
         m_applicationIcon = QIcon(QStringLiteral(":/gnotepad-icon.svg"));
     }
 #else
     m_applicationIcon = QIcon(QStringLiteral(":/gnotepad-icon.svg"));
 #endif
-    if(m_applicationIcon.isNull())
+    if (m_applicationIcon.isNull())
     {
         spdlog::warn("Failed to load embedded application icon; UI will fall back to default icons");
     }
