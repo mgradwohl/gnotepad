@@ -12,9 +12,9 @@
 #include <QtGui/qfontmetrics.h>
 #include <QtGui/qpainter.h>
 #include <QtGui/qpalette.h>
-#include <QtGui/qtextobject.h>
 #include <QtGui/qtextcursor.h>
 #include <QtGui/qtextformat.h>
+#include <QtGui/qtextobject.h>
 #include <QtWidgets/qscrollbar.h>
 #include <QtWidgets/qtextedit.h>
 

@@ -7,10 +7,10 @@
 #include <QtCore/qbytearray.h>
 #include <QtCore/qnamespace.h>
 #include <QtCore/qobject.h>
+#include <QtCore/qsettings.h>
 #include <QtCore/qstring.h>
 #include <QtCore/qstringconverter.h>
 #include <QtCore/qstringlist.h>
-#include <QtCore/qsettings.h>
 #include <QtGui/qevent.h>
 #include <QtGui/qicon.h>
 #include <QtGui/qtextdocument.h>

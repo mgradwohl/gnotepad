@@ -57,7 +57,7 @@ private slots:
     void updateLineNumberArea(const QRect& rect, int dy);
     void highlightCurrentLine();
 
-private: //NOLINT(readability-redundant-access-specifiers)
+private: // NOLINT(readability-redundant-access-specifiers)
     class LineNumberArea;
 
     void updateZoomPercentageEstimate(int deltaSteps);

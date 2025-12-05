@@ -13,11 +13,11 @@
 #include <QtCore/qiodevice.h>
 #include <QtCore/qlocale.h>
 #include <QtCore/qnamespace.h>
+#include <QtCore/qobject.h>
 #include <QtCore/qrect.h>
 #include <QtCore/qsavefile.h>
 #include <QtCore/qsettings.h>
 #include <QtCore/qstandardpaths.h>
-#include <QtCore/qobject.h>
 #include <QtCore/qstring.h>
 #include <QtCore/qstringconverter.h>
 #include <QtCore/qstringlist.h>
@@ -33,9 +33,9 @@
 #include <QtGui/qicon.h>
 #include <QtGui/qkeysequence.h>
 #include <QtGui/qpixmap.h>
-#include <QtGui/qtextobject.h>
 #include <QtGui/qtextcursor.h>
 #include <QtGui/qtextdocument.h>
+#include <QtGui/qtextobject.h>
 #include <QtGui/qtextoption.h>
 #include <QtPrintSupport/qprinter.h>
 #include <QtWidgets/qboxlayout.h>
@@ -164,21 +164,33 @@ void MainWindow::buildMenus()
     m_wordWrapAction = formatMenu->addAction(tr("&Word Wrap"));
     m_wordWrapAction->setCheckable(true);
     connect(m_wordWrapAction, &QAction::toggled, this,
-            [this](bool checked)
-            {
-                m_editor->setWordWrapMode(checked ? QTextOption::WordWrap : QTextOption::NoWrap);
-            });
+            [this](bool checked) { m_editor->setWordWrapMode(checked ? QTextOption::WordWrap : QTextOption::NoWrap); });
 
+#if 0
     formatMenu->addAction(tr("&Font…"), this,
-                          [this]
-                          {
-                              bool accepted{false};
-                              const auto selectedFont = QFontDialog::getFont(&accepted, m_editor->font(), this, tr("Choose Font"));
-                              if (accepted)
-                              {
-                                  m_editor->applyEditorFont(selectedFont);
-                              }
-                          });
+        [this]
+        {
+            bool accepted{false};
+            const auto selectedFont = QFontDialog::getFont(&accepted, m_editor->font(), this, tr("Choose Font"));
+            if (accepted)
+            {
+                m_editor->applyEditorFont(selectedFont);
+            }
+        });
+#endif
+    formatMenu->addAction(tr("&Font…"), this, [this] {
+        QFontDialog dialog(m_editor->font(), this);
+    #if defined(Q_OS_LINUX)
+        //dialog.setOption(QFontDialog::DontUseNativeDialog); // only if you want the Qt-styled dialog
+    #endif
+        dialog.resize(640, 480);              // or dialog.setMinimumSize(...)
+        if (dialog.exec() == QDialog::Accepted) {
+            m_editor->applyEditorFont(dialog.selectedFont());
+        }
+    });
+#if 1
+#endif
+
 
     formatMenu->addAction(tr("Tab &Size…"), this, &MainWindow::handleSetTabSize);
 
@@ -190,20 +202,12 @@ void MainWindow::buildMenus()
     m_dateFormatShortAction = dateFormatMenu->addAction(tr("&Short"));
     m_dateFormatShortAction->setCheckable(true);
     m_dateFormatShortAction->setActionGroup(dateFormatGroup);
-    connect(m_dateFormatShortAction, &QAction::triggered, this,
-            [this]()
-            {
-                setDateFormatPreference(DateFormatPreference::Short);
-            });
+    connect(m_dateFormatShortAction, &QAction::triggered, this, [this]() { setDateFormatPreference(DateFormatPreference::Short); });
 
     m_dateFormatLongAction = dateFormatMenu->addAction(tr("&Long"));
     m_dateFormatLongAction->setCheckable(true);
     m_dateFormatLongAction->setActionGroup(dateFormatGroup);
-    connect(m_dateFormatLongAction, &QAction::triggered, this,
-            [this]()
-            {
-                setDateFormatPreference(DateFormatPreference::Long);
-            });
+    connect(m_dateFormatLongAction, &QAction::triggered, this, [this]() { setDateFormatPreference(DateFormatPreference::Long); });
 
     updateDateFormatActionState();
 
@@ -220,11 +224,7 @@ void MainWindow::buildMenus()
     zoomMenu->addAction(tr("Zoom &Out"), QKeySequence::ZoomOut, this, &MainWindow::handleZoomOut);
     zoomMenu->addAction(tr("Restore &Default Zoom"), QKeySequence(Qt::CTRL | Qt::Key_0), this, &MainWindow::handleZoomReset);
 
-    helpMenu->addAction(tr("View &Help"), QKeySequence::HelpContents, this,
-                        []
-                        {
-                            spdlog::info("Help placeholder triggered");
-                        });
+    helpMenu->addAction(tr("View &Help"), QKeySequence::HelpContents, this, [] { spdlog::info("Help placeholder triggered"); });
     helpMenu->addAction(tr("&About GnotePad"), this, &MainWindow::showAboutDialog);
 }
 
@@ -258,11 +258,7 @@ void MainWindow::wireSignals()
     connect(m_editor, &TextEditor::zoomPercentageChanged, this, &MainWindow::updateZoomLabel);
     if (m_editor && m_editor->document())
     {
-        connect(m_editor->document(), &QTextDocument::modificationChanged, this,
-                [this](bool)
-                {
-                    updateWindowTitle();
-                });
+        connect(m_editor->document(), &QTextDocument::modificationChanged, this, [this](bool) { updateWindowTitle(); });
     }
 }
 
@@ -372,8 +368,8 @@ void MainWindow::handleSetTabSize()
 
     bool accepted = false;
     const int currentSize = m_editor->tabSizeSpaces();
-    const int newSize =
-        QInputDialog::getInt(this, tr("Tab Size"), tr("Spaces per tab:"), currentSize, MinTabSizeSpaces, MaxTabSizeSpaces, TabSizeStep, &accepted);
+    const int newSize = QInputDialog::getInt(this, tr("Tab Size"), tr("Spaces per tab:"), currentSize, MinTabSizeSpaces, MaxTabSizeSpaces,
+                            TabSizeStep, &accepted);
     if (!accepted || newSize == currentSize)
     {
         return;
@@ -522,44 +518,44 @@ void MainWindow::handleReplace()
     };
 
     connect(findNextButton, &QPushButton::clicked, &dialog,
-            [this, applyDialogState]()
+        [this, applyDialogState]()
+        {
+            applyDialogState();
+            if (m_lastSearchTerm.isEmpty())
             {
-                applyDialogState();
-                if (m_lastSearchTerm.isEmpty())
-                {
-                    return;
-                }
-                if (!performFind(m_lastSearchTerm, buildFindFlags()))
-                {
-                    QMessageBox::information(this, tr("Replace"), tr("Cannot find \"%1\".").arg(m_lastSearchTerm));
-                }
-            });
+                return;
+            }
+            if (!performFind(m_lastSearchTerm, buildFindFlags()))
+            {
+                QMessageBox::information(this, tr("Replace"), tr("Cannot find \"%1\".").arg(m_lastSearchTerm));
+            }
+        });
 
     connect(replaceButton, &QPushButton::clicked, &dialog,
-            [this, applyDialogState]()
+        [this, applyDialogState]()
+        {
+            applyDialogState();
+            if (m_lastSearchTerm.isEmpty())
             {
-                applyDialogState();
-                if (m_lastSearchTerm.isEmpty())
-                {
-                    return;
-                }
-                if (!replaceNextOccurrence(m_lastSearchTerm, m_lastReplaceText, buildFindFlags()))
-                {
-                    QMessageBox::information(this, tr("Replace"), tr("Cannot find \"%1\".").arg(m_lastSearchTerm));
-                }
-            });
+                return;
+            }
+            if (!replaceNextOccurrence(m_lastSearchTerm, m_lastReplaceText, buildFindFlags()))
+            {
+                QMessageBox::information(this, tr("Replace"), tr("Cannot find \"%1\".").arg(m_lastSearchTerm));
+            }
+        });
 
     connect(replaceAllButton, &QPushButton::clicked, &dialog,
-            [this, applyDialogState]()
+        [this, applyDialogState]()
+        {
+            applyDialogState();
+            if (m_lastSearchTerm.isEmpty())
             {
-                applyDialogState();
-                if (m_lastSearchTerm.isEmpty())
-                {
-                    return;
-                }
-                const int count = replaceAllOccurrences(m_lastSearchTerm, m_lastReplaceText, buildFindFlags());
-                QMessageBox::information(this, tr("Replace"), tr("Replaced %1 occurrence(s).").arg(count));
-            });
+                return;
+            }
+            const int count = replaceAllOccurrences(m_lastSearchTerm, m_lastReplaceText, buildFindFlags());
+            QMessageBox::information(this, tr("Replace"), tr("Replaced %1 occurrence(s).").arg(count));
+        });
 
     connect(closeButton, &QPushButton::clicked, &dialog, &QDialog::reject);
 
@@ -683,7 +679,7 @@ void MainWindow::showAboutDialog()
     textLabel->setTextFormat(Qt::RichText);
     textLabel->setWordWrap(true);
     textLabel->setMinimumWidth(500);
-   
+
     contentLayout->addWidget(textLabel, 1);
 
     auto* buttons = new QDialogButtonBox(QDialogButtonBox::Ok, Qt::Horizontal, &dialog);
@@ -1056,11 +1052,7 @@ bool MainWindow::promptEncodingSelection(QStringConverter::Encoding& encoding, b
 
     // Iterator type may change with container tweaks; keep auto for flexibility.
     // NOLINTNEXTLINE(readability-qualified-auto)
-    const auto matchIt = std::find_if(choices.cbegin(), choices.cend(),
-                                      [&](const auto& choice)
-                                      {
-                                          return choice.label == selection;
-                                      });
+    const auto matchIt = std::find_if(choices.cbegin(), choices.cend(), [&](const auto& choice) { return choice.label == selection; });
 
     if (matchIt == choices.cend())
     {
@@ -1369,8 +1361,8 @@ void MainWindow::refreshRecentFilesMenu()
     clearAction->setEnabled(!m_recentFiles.isEmpty());
 }
 
-    // Intentionally non-static to allow future access to instance state.
-    // NOLINTNEXTLINE(readability-convert-member-functions-to-static)
+// Intentionally non-static to allow future access to instance state.
+// NOLINTNEXTLINE(readability-convert-member-functions-to-static)
 QString MainWindow::dialogDirectory(const QString& lastDir) const
 {
     if (!lastDir.isEmpty())
