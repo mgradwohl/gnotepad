@@ -18,6 +18,7 @@ function(gnote_apply_default_warnings target_name)
 
     if(CMAKE_CXX_COMPILER_ID MATCHES "Clang" OR CMAKE_CXX_COMPILER_ID MATCHES "GNU" OR CMAKE_CXX_COMPILER_ID MATCHES "AppleClang")
         target_compile_options(${target_name} PRIVATE
+            -Wall
             -Wextra
             -Wpedantic
             -Wconversion
@@ -28,10 +29,6 @@ function(gnote_apply_default_warnings target_name)
         target_compile_options(${target_name} PRIVATE /W4 /permissive- /EHsc)
     endif()
 endfunction()
-
-if(CMAKE_CXX_COMPILER_ID MATCHES "Clang" OR CMAKE_CXX_COMPILER_ID MATCHES "GNU" OR CMAKE_CXX_COMPILER_ID MATCHES "AppleClang")
-    add_compile_options($<$<CONFIG:Debug>:-Wall>)
-endif()
 
 find_program(CLANG_TIDY_EXE NAMES clang-tidy)
 find_program(CLANG_FORMAT_EXE NAMES clang-format)
