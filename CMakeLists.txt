@@ -40,6 +40,9 @@ if(GNOTE_ENABLE_CLANG_TIDY)
     if(NOT CLANG_TIDY_EXE)
         message(FATAL_ERROR "GNOTE_ENABLE_CLANG_TIDY is ON but clang-tidy was not found.")
     endif()
+endif()
+
+if(GNOTE_ENABLE_CLANG_TIDY AND CLANG_TIDY_EXE)
     set(CMAKE_CXX_CLANG_TIDY
         ${CLANG_TIDY_EXE}
         --config-file=${CMAKE_SOURCE_DIR}/.clang-tidy

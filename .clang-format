@@ -17,7 +17,7 @@ AlignConsecutiveAssignments: false
 AlignConsecutiveDeclarations: false
 AllowShortFunctionsOnASingleLine: false
 AllowShortBlocksOnASingleLine: false
-AllowShortLambdasOnASingleLine: None
+AllowShortLambdasOnASingleLine: Inline
 
 # Explicit Allman brace control for fine-grained consistency
 BraceWrapping:
