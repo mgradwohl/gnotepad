@@ -138,25 +138,26 @@ void MainWindow::buildMenus()
     fileMenu->addAction(tr("&Open…"), QKeySequence::Open, this, &MainWindow::handleOpenFile);
     m_recentFilesMenu = fileMenu->addMenu(tr("Open &Recent"));
     refreshRecentFilesMenu();
-    fileMenu->addAction(tr("&Save"), QKeySequence::Save, this, &MainWindow::handleSaveFile);
-    fileMenu->addAction(tr("Save &As…"), QKeySequence::SaveAs, this, &MainWindow::handleSaveFileAs);
+    m_saveAction = fileMenu->addAction(tr("&Save"), QKeySequence::Save, this, &MainWindow::handleSaveFile);
+    m_saveAsAction = fileMenu->addAction(tr("Save &As…"), QKeySequence::SaveAs, this, &MainWindow::handleSaveFileAs);
     fileMenu->addAction(tr("E&ncoding…"), this, &MainWindow::handleChangeEncoding);
     fileMenu->addSeparator();
-    fileMenu->addAction(tr("&Print to PDF…"), QKeySequence::Print, this, &MainWindow::handlePrintToPdf);
+    m_printAction = fileMenu->addAction(tr("&Print to PDF…"), QKeySequence::Print, this, &MainWindow::handlePrintToPdf);
     fileMenu->addSeparator();
     fileMenu->addAction(tr("E&xit"), QKeySequence::Quit, this, &QWidget::close);
 
     editMenu->addAction(tr("&Undo"), QKeySequence::Undo, m_editor, &QPlainTextEdit::undo);
-    editMenu->addAction(tr("Cu&t"), QKeySequence::Cut, m_editor, &QPlainTextEdit::cut);
-    editMenu->addAction(tr("&Copy"), QKeySequence::Copy, m_editor, &QPlainTextEdit::copy);
+    m_cutAction = editMenu->addAction(tr("Cu&t"), QKeySequence::Cut, m_editor, &QPlainTextEdit::cut);
+    m_copyAction = editMenu->addAction(tr("&Copy"), QKeySequence::Copy, m_editor, &QPlainTextEdit::copy);
     editMenu->addAction(tr("&Paste"), QKeySequence::Paste, m_editor, &QPlainTextEdit::paste);
-    editMenu->addAction(tr("De&lete"), m_editor, &QPlainTextEdit::cut);
+    m_deleteAction = editMenu->addAction(tr("De&lete"), m_editor, &QPlainTextEdit::cut);
     editMenu->addSeparator();
     m_findAction = editMenu->addAction(tr("&Find…"), QKeySequence::Find, this, &MainWindow::handleFind);
-    editMenu->addAction(tr("Find &Next"), QKeySequence(Qt::Key_F3), this, &MainWindow::handleFindNext);
-    editMenu->addAction(tr("Find &Previous"), QKeySequence(Qt::SHIFT | Qt::Key_F3), this, &MainWindow::handleFindPrevious);
+    m_findNextAction = editMenu->addAction(tr("Find &Next"), QKeySequence(Qt::Key_F3), this, &MainWindow::handleFindNext);
+    m_findPreviousAction =
+        editMenu->addAction(tr("Find &Previous"), QKeySequence(Qt::SHIFT | Qt::Key_F3), this, &MainWindow::handleFindPrevious);
     m_replaceAction = editMenu->addAction(tr("&Replace…"), QKeySequence::Replace, this, &MainWindow::handleReplace);
-    editMenu->addAction(tr("&Go To…"), QKeySequence(Qt::CTRL | Qt::Key_G), this, &MainWindow::handleGoToLine);
+    m_goToAction = editMenu->addAction(tr("&Go To…"), QKeySequence(Qt::CTRL | Qt::Key_G), this, &MainWindow::handleGoToLine);
     editMenu->addSeparator();
     editMenu->addAction(tr("Select &All"), QKeySequence::SelectAll, m_editor, &QPlainTextEdit::selectAll);
     m_timeDateAction = editMenu->addAction(tr("Time/&Date"), QKeySequence(Qt::Key_F5), this, &MainWindow::handleInsertTimeDate);
@@ -166,30 +167,7 @@ void MainWindow::buildMenus()
     connect(m_wordWrapAction, &QAction::toggled, this,
             [this](bool checked) { m_editor->setWordWrapMode(checked ? QTextOption::WordWrap : QTextOption::NoWrap); });
 
-#if 0
-    formatMenu->addAction(tr("&Font…"), this,
-        [this]
-        {
-            bool accepted{false};
-            const auto selectedFont = QFontDialog::getFont(&accepted, m_editor->font(), this, tr("Choose Font"));
-            if (accepted)
-            {
-                m_editor->applyEditorFont(selectedFont);
-            }
-        });
-#endif
-    formatMenu->addAction(tr("&Font…"), this, [this] {
-        QFontDialog dialog(m_editor->font(), this);
-    #if defined(Q_OS_LINUX)
-        //dialog.setOption(QFontDialog::DontUseNativeDialog); // only if you want the Qt-styled dialog
-    #endif
-        dialog.resize(640, 480);              // or dialog.setMinimumSize(...)
-        if (dialog.exec() == QDialog::Accepted) {
-            m_editor->applyEditorFont(dialog.selectedFont());
-        }
-    });
-#if 1
-#endif
+    formatMenu->addAction(tr("&Font…"), this, &MainWindow::handleChooseFont);
 
 
     formatMenu->addAction(tr("Tab &Size…"), this, &MainWindow::handleSetTabSize);
@@ -226,6 +204,8 @@ void MainWindow::buildMenus()
 
     helpMenu->addAction(tr("View &Help"), QKeySequence::HelpContents, this, [] { spdlog::info("Help placeholder triggered"); });
     helpMenu->addAction(tr("&About GnotePad"), this, &MainWindow::showAboutDialog);
+
+    updateActionStates();
 }
 
 void MainWindow::buildStatusBar()
@@ -255,10 +235,17 @@ void MainWindow::wireSignals()
 {
     connect(m_editor, &QPlainTextEdit::cursorPositionChanged, this, &MainWindow::handleUpdateCursorStatus);
     connect(m_editor, &QPlainTextEdit::textChanged, this, &MainWindow::updateDocumentStats);
+    connect(m_editor, &QPlainTextEdit::textChanged, this, &MainWindow::updateActionStates);
+    connect(m_editor, &QPlainTextEdit::selectionChanged, this, &MainWindow::updateActionStates);
     connect(m_editor, &TextEditor::zoomPercentageChanged, this, &MainWindow::updateZoomLabel);
     if (m_editor && m_editor->document())
     {
-        connect(m_editor->document(), &QTextDocument::modificationChanged, this, [this](bool) { updateWindowTitle(); });
+        connect(m_editor->document(), &QTextDocument::modificationChanged, this,
+            [this](bool)
+            {
+                updateWindowTitle();
+                updateActionStates();
+            });
     }
 }
 
@@ -300,7 +287,7 @@ void MainWindow::handleOpenFile()
 
 void MainWindow::handleOpenRecentFile()
 {
-    auto* action = qobject_cast<QAction*>(sender());
+    const auto* action = qobject_cast<const QAction*>(sender());
     if (!action)
     {
         return;
@@ -380,6 +367,38 @@ void MainWindow::handleSetTabSize()
     spdlog::info("Tab size updated to {} spaces", newSize);
 }
 
+void MainWindow::handleChooseFont()
+{
+    if (!m_editor)
+    {
+        return;
+    }
+
+    QFontDialog dialog(m_editor->font(), this);
+    // uncommenting the line below will force the use of Qt's font dialog instead of the native platform dialog
+    // dialog.setOption(QFontDialog::DontUseNativeDialog, true); // force Qt dialog
+
+    // these lines are ignored when using the native dialog
+    dialog.resize(FontDialogWidth, FontDialogHeight);
+    dialog.setMinimumSize(FontDialogWidth, FontDialogHeight);
+
+    // Configure options
+    dialog.setOption(QFontDialog::ScalableFonts, true);
+    dialog.setOption(QFontDialog::NonScalableFonts, true);
+    dialog.setOption(QFontDialog::MonospacedFonts, true);
+    dialog.setOption(QFontDialog::ProportionalFonts, true);
+    // Ensure dialog takes focus from parent
+    dialog.setWindowModality(Qt::WindowModal);
+    dialog.setFocusPolicy(Qt::StrongFocus);
+    dialog.raise();
+    dialog.activateWindow();
+
+    if (dialog.exec() == QDialog::Accepted)
+    {
+        m_editor->applyEditorFont(dialog.selectedFont());
+    }
+}
+
 void MainWindow::handleFind()
 {
     if (!m_editor)
@@ -397,15 +416,15 @@ void MainWindow::handleFind()
 
     // Dialog owns its child widgets; suppress ownership warnings for stack-local helpers.
     // NOLINTBEGIN(cppcoreguidelines-owning-memory)
-    auto* form = new QFormLayout(&dialog);
-    auto* findField = new QLineEdit(m_lastSearchTerm, &dialog);
-    auto* matchCase = new QCheckBox(tr("Match case"), &dialog);
+    auto* const form = new QFormLayout(&dialog);
+    auto* const findField = new QLineEdit(m_lastSearchTerm, &dialog);
+    auto* const matchCase = new QCheckBox(tr("Match case"), &dialog);
     matchCase->setChecked(m_lastCaseSensitivity == Qt::CaseSensitive);
 
     form->addRow(tr("Find what:"), findField);
     form->addRow(QString(), matchCase);
 
-    auto* buttons = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal, &dialog);
+    auto* const buttons = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal, &dialog);
     form->addWidget(buttons);
     // NOLINTEND(cppcoreguidelines-owning-memory)
 
@@ -483,26 +502,26 @@ void MainWindow::handleReplace()
 
     // Dialog owns child controls created below; raw pointers mirror Qt patterns.
     // NOLINTBEGIN(cppcoreguidelines-owning-memory)
-    auto* layout = new QVBoxLayout(&dialog);
-    auto* formLayout = new QFormLayout();
+    auto* const layout = new QVBoxLayout(&dialog);
+    auto* const formLayout = new QFormLayout();
     layout->addLayout(formLayout);
 
-    auto* findField = new QLineEdit(m_lastSearchTerm, &dialog);
-    auto* replaceField = new QLineEdit(m_lastReplaceText, &dialog);
-    auto* matchCase = new QCheckBox(tr("Match case"), &dialog);
+    auto* const findField = new QLineEdit(m_lastSearchTerm, &dialog);
+    auto* const replaceField = new QLineEdit(m_lastReplaceText, &dialog);
+    auto* const matchCase = new QCheckBox(tr("Match case"), &dialog);
     matchCase->setChecked(m_lastCaseSensitivity == Qt::CaseSensitive);
 
     formLayout->addRow(tr("Find what:"), findField);
     formLayout->addRow(tr("Replace with:"), replaceField);
     formLayout->addRow(QString(), matchCase);
 
-    auto* buttonsLayout = new QHBoxLayout();
+    auto* const buttonsLayout = new QHBoxLayout();
     layout->addLayout(buttonsLayout);
 
-    auto* findNextButton = new QPushButton(tr("Find Next"), &dialog);
-    auto* replaceButton = new QPushButton(tr("Replace"), &dialog);
-    auto* replaceAllButton = new QPushButton(tr("Replace All"), &dialog);
-    auto* closeButton = new QPushButton(tr("Close"), &dialog);
+    auto* const findNextButton = new QPushButton(tr("Find Next"), &dialog);
+    auto* const replaceButton = new QPushButton(tr("Replace"), &dialog);
+    auto* const replaceAllButton = new QPushButton(tr("Replace All"), &dialog);
+    auto* const closeButton = new QPushButton(tr("Close"), &dialog);
 
     buttonsLayout->addWidget(findNextButton);
     buttonsLayout->addWidget(replaceButton);
@@ -678,7 +697,7 @@ void MainWindow::showAboutDialog()
     QLabel* textLabel = new QLabel(details, &dialog);
     textLabel->setTextFormat(Qt::RichText);
     textLabel->setWordWrap(true);
-    textLabel->setMinimumWidth(500);
+    textLabel->setMinimumWidth(AboutDialogMinTextWidth);
 
     contentLayout->addWidget(textLabel, 1);
 
@@ -798,6 +817,73 @@ void MainWindow::updateZoomLabel(int percentage)
     }
 }
 
+void MainWindow::updateActionStates()
+{
+    const bool hasContent = documentHasContent();
+    const bool hasSelection = editorHasSelection();
+
+    if (m_saveAction)
+    {
+        m_saveAction->setEnabled(hasContent);
+    }
+    if (m_saveAsAction)
+    {
+        m_saveAsAction->setEnabled(hasContent);
+    }
+    if (m_printAction)
+    {
+        m_printAction->setEnabled(hasContent);
+    }
+    if (m_findAction)
+    {
+        m_findAction->setEnabled(hasContent);
+    }
+    if (m_findNextAction)
+    {
+        m_findNextAction->setEnabled(hasContent);
+    }
+    if (m_findPreviousAction)
+    {
+        m_findPreviousAction->setEnabled(hasContent);
+    }
+    if (m_replaceAction)
+    {
+        m_replaceAction->setEnabled(hasContent);
+    }
+    if (m_goToAction)
+    {
+        m_goToAction->setEnabled(hasContent);
+    }
+    if (m_cutAction)
+    {
+        m_cutAction->setEnabled(hasSelection);
+    }
+    if (m_copyAction)
+    {
+        m_copyAction->setEnabled(hasSelection);
+    }
+    if (m_deleteAction)
+    {
+        m_deleteAction->setEnabled(hasSelection);
+    }
+}
+
+bool MainWindow::documentHasContent() const
+{
+    if (!m_editor)
+    {
+        return false;
+    }
+
+    const auto* document = m_editor->document();
+    return document && !document->isEmpty();
+}
+
+bool MainWindow::editorHasSelection() const
+{
+    return m_editor && m_editor->textCursor().hasSelection();
+}
+
 void MainWindow::updateWindowTitle()
 {
     const auto baseName = m_currentFilePath.isEmpty() ? tr(UntitledDocumentTitle) : QFileInfo(m_currentFilePath).fileName();
@@ -858,6 +944,7 @@ bool MainWindow::loadDocumentFromPath(const QString& filePath)
     m_lastOpenDirectory = QFileInfo(filePath).absolutePath();
     updateWindowTitle();
     updateDocumentStats();
+    updateActionStates();
     return true;
 }
 
@@ -917,6 +1004,7 @@ bool MainWindow::saveDocumentToPath(const QString& filePath)
         m_editor->document()->setModified(false);
     }
     updateWindowTitle();
+    updateActionStates();
     return true;
 }
 
@@ -966,6 +1054,7 @@ void MainWindow::resetDocumentState()
     updateEncodingDisplay(encodingLabel());
     updateWindowTitle();
     updateDocumentStats();
+    updateActionStates();
 }
 
 bool MainWindow::confirmReadyForDestructiveAction()

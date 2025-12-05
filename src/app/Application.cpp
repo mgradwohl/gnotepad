@@ -43,7 +43,7 @@ int Application::run()
 
 // Intentionally non-static to keep parity with other setup helpers.
 // NOLINTNEXTLINE(readability-convert-member-functions-to-static)
-void Application::configureMetadata()
+void Application::configureMetadata() const
 {
     QCoreApplication::setOrganizationName("GnotePad");
     QCoreApplication::setOrganizationDomain("gnotepad.app");

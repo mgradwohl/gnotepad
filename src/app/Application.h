@@ -30,7 +30,7 @@ public:
     int run();
 
 private:
-    void configureMetadata();
+    void configureMetadata() const;
     void configureIcon();
 
     std::unique_ptr<ui::MainWindow> m_mainWindow;
