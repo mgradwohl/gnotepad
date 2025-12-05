@@ -68,7 +68,7 @@ public:
     bool testFindPrevious();
     bool testReplaceNext(const QString& replacementOverride = {});
     int testReplaceAll(const QString& term, const QString& replacement, QTextDocument::FindFlags extraFlags = {});
-    QStringList recentFilesForTest() const
+    const QStringList& recentFilesForTest() const
     {
         return m_recentFiles;
     }
@@ -131,6 +131,7 @@ private slots:
     void handleUpdateCursorStatus();
     void showAboutDialog();
     void handleSetTabSize();
+    void handleChooseFont();
     void handleOpenRecentFile();
     void handleClearRecentFiles();
 
@@ -150,6 +151,9 @@ private:
     static constexpr int MaxTabSizeSpaces = 16;
     static constexpr int TabSizeStep = 1;
     static constexpr int AboutDialogIconSize = 64;
+    static constexpr int AboutDialogMinTextWidth = 500;
+    static constexpr int FontDialogWidth = 640;
+    static constexpr int FontDialogHeight = 480;
     static constexpr qreal InvalidFontPointSize = -1.0;
 
     void buildMenus();
@@ -160,6 +164,10 @@ private:
     void updateWindowTitle();
     void updateDocumentStats();
     void updateZoomLabel(int percentage);
+    void updateActionStates();
+    bool documentHasContent() const;
+    bool editorHasSelection() const;
+    bool canSaveDocument() const;
     void applyDefaultEditorFont();
 
     bool loadDocumentFromPath(const QString& filePath);
@@ -212,10 +220,19 @@ private:
     QAction* m_statusBarToggle{nullptr};
     QAction* m_lineNumberToggle{nullptr};
     QAction* m_wordWrapAction{nullptr};
+    QAction* m_saveAction{nullptr};
+    QAction* m_saveAsAction{nullptr};
+    QAction* m_printAction{nullptr};
+    QAction* m_cutAction{nullptr};
+    QAction* m_copyAction{nullptr};
+    QAction* m_deleteAction{nullptr};
     QAction* m_dateFormatShortAction{nullptr};
     QAction* m_dateFormatLongAction{nullptr};
     QAction* m_findAction{nullptr};
+    QAction* m_findNextAction{nullptr};
+    QAction* m_findPreviousAction{nullptr};
     QAction* m_replaceAction{nullptr};
+    QAction* m_goToAction{nullptr};
     QAction* m_timeDateAction{nullptr};
     QMenu* m_recentFilesMenu{nullptr};
 

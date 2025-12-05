@@ -63,7 +63,7 @@ private: // NOLINT(readability-redundant-access-specifiers)
     void updateZoomPercentageEstimate(int deltaSteps);
     void updateTabStopDistance();
 
-    QWidget* m_lineNumberArea{nullptr};
+    LineNumberArea* const m_lineNumberArea;
     bool m_lineNumbersVisible{true};
     QFont m_defaultFont;
     int m_zoomPercentage{100};
@@ -81,7 +81,7 @@ protected:
     void paintEvent(QPaintEvent* event) override;
 
 private:
-    TextEditor* m_editor{nullptr};
+    TextEditor* const m_editor;
 };
 
 } // namespace GnotePad::ui
