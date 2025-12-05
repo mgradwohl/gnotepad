@@ -106,4 +106,3 @@ clang-tidy plus `.clangd`'s `-fno-modules` flag help surface violations locally.
 - Improve large-file responsiveness via async load indicators and targeted profiling.
 - Modernize ownership in `MainWindow`/`TextEditor`: move long-lived members (status labels, menus, the editor widget, etc.) away from naked `new` to safer ownership constructs (smart pointers or stack members) while still honoring Qt parent-child lifetimes.
 - Replace UI-related magic numbers (window sizes, zoom defaults, pixmap dimensions) with named constants.
-- Refactor `MainWindow::loadSettings` / `saveSettings` into smaller helpers to clarify defaults and reduce duplication.
