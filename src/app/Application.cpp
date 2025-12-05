@@ -1,10 +1,13 @@
 #include "app/Application.h"
 
-#include <QCoreApplication>
-#include <QGuiApplication>
-#include <QIcon>
-#include <QSettings>
-#include <QString>
+#include <memory>
+
+#include <QtCore/qcoreapplication.h>
+#include <QtCore/qsettings.h>
+#include <QtCore/qstring.h>
+#include <QtCore/qstringliteral.h>
+#include <QtGui/qguiapplication.h>
+#include <QtGui/qicon.h>
 
 #include <spdlog/spdlog.h>
 

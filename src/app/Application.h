@@ -2,8 +2,9 @@
 
 #include <memory>
 
-#include <QApplication>
-#include <QIcon>
+#include <QtCore/qobject.h>
+#include <QtGui/qicon.h>
+#include <QtWidgets/qapplication.h>
 
 namespace GnotePad::ui
 {
@@ -20,6 +21,11 @@ class Application : public QApplication
 public:
     Application(int& argc, char** argv);
     ~Application();
+
+    Application(const Application&) = delete;
+    Application& operator=(const Application&) = delete;
+    Application(Application&&) = delete;
+    Application& operator=(Application&&) = delete;
 
     int run();
 

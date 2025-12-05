@@ -3,6 +3,12 @@ add_executable(GnotePadSmoke
 	smoke/MainWindowSmokeTests.h
 )
 
+set_source_files_properties(
+	smoke/smoke.cpp
+	smoke/MainWindowSmokeTests.h
+	PROPERTIES SKIP_CLANG_TIDY TRUE
+)
+
 target_compile_features(GnotePadSmoke PRIVATE cxx_std_23)
 
 if(COMMAND gnote_apply_default_warnings)

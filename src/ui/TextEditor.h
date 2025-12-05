@@ -1,6 +1,11 @@
 #pragma once
 
-#include <QPlainTextEdit>
+#include <QtCore/qobject.h>
+#include <QtCore/qrect.h>
+#include <QtCore/qsize.h>
+#include <QtGui/qfont.h>
+#include <QtWidgets/qplaintextedit.h>
+#include <QtWidgets/qwidget.h>
 
 class QPaintEvent;
 class QResizeEvent;

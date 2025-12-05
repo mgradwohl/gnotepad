@@ -99,6 +99,12 @@ set(GNOTE_HEADERS
 
 qt_add_resources(GNOTE_RESOURCES resources/gnotepad.qrc)
 
+if(GNOTE_RESOURCES)
+    foreach(resource_source IN LISTS GNOTE_RESOURCES)
+        set_source_files_properties(${resource_source} PROPERTIES SKIP_CLANG_TIDY TRUE)
+    endforeach()
+endif()
+
 if(CLANG_TIDY_EXE)
     add_custom_target(run-clang-tidy
         COMMAND ${CLANG_TIDY_EXE}

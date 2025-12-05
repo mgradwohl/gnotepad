@@ -81,6 +81,22 @@ After building, launch the executable from `build/<config>/GnotePad` (Linux/macO
 - **Editor configuration** – VS Code’s C/C++ IntelliSense engine is disabled to avoid conflicting diagnostics; clangd via CMake Tools drives code completion using the generated `compile_commands.json`.
 - **Other clang utilities** – clangd powers completions, and clang-query/clang-apply-replacements can be layered on later for AST exploration or batch rewrites if needed.
 
+## Include Guidelines
+
+Keeping headers tidy shrinks rebuild times and keeps clang-tidy's include-cleaner happy. Follow these rules whenever you touch headers or add new modules:
+
+1. **Include what you use.** If a symbol appears in a translation unit, include the header that provides it instead of relying on transitive includes.
+2. **Use `#pragma once`.** All project headers already opt in—match that style on any new files.
+3. **Honor the include order:**
+   - (Only in `.cpp` files) the corresponding header: `#include "ThisFile.h"`
+   - C++ standard library headers, alphabetical
+   - Third-party/library headers, alphabetical (e.g., `<spdlog/spdlog.h>`, `<QtCore/qstring.h>`)
+   - Project headers, alphabetical
+   Separate each group with a blank line and avoid redundant includes.
+4. **New files inherit the same rules.** Start with the include skeleton above so diffs stay small.
+
+clang-tidy plus `.clangd`'s `-fno-modules` flag help surface violations locally. Running `cmake --build build/debug --target run-clang-tidy` (or the VS Code **Clang-Tidy (Debug)** task) will confirm that headers stay clean.
+
 ## Next Steps
 
 - Add broader Unicode/encoding regression tests using published sample corpora and round-trip validation

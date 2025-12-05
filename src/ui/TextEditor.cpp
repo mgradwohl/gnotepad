@@ -1,16 +1,22 @@
 #include "ui/TextEditor.h"
 
-#include <QApplication>
-#include <QList>
-#include <QPaintEvent>
-#include <QPainter>
-#include <QScrollBar>
-#include <QTextBlock>
-#include <QTextEdit>
-#include <QTextFormat>
-#include <QWheelEvent>
-
 #include <algorithm>
+
+#include <QtCore/qchar.h>
+#include <QtCore/qlist.h>
+#include <QtCore/qnamespace.h>
+#include <QtCore/qstring.h>
+#include <QtCore/qstringliteral.h>
+#include <QtGui/qcolor.h>
+#include <QtGui/qevent.h>
+#include <QtGui/qfontmetrics.h>
+#include <QtGui/qpainter.h>
+#include <QtGui/qpalette.h>
+#include <QtGui/qtextobject.h>
+#include <QtGui/qtextcursor.h>
+#include <QtGui/qtextformat.h>
+#include <QtWidgets/qscrollbar.h>
+#include <QtWidgets/qtextedit.h>
 
 namespace GnotePad::ui
 {

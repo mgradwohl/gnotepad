@@ -1,14 +1,21 @@
 #pragma once
 
-#include <QByteArray>
-#include <QCloseEvent>
-#include <QMainWindow>
-#include <QMessageBox>
-#include <QString>
-#include <QStringConverter>
-#include <QStringList>
-#include <QTextDocument>
+#if defined(GNOTE_TEST_HOOKS)
 #include <deque>
+#endif
+
+#include <QtCore/qbytearray.h>
+#include <QtCore/qnamespace.h>
+#include <QtCore/qobject.h>
+#include <QtCore/qstring.h>
+#include <QtCore/qstringconverter.h>
+#include <QtCore/qstringlist.h>
+#include <QtGui/qevent.h>
+#include <QtGui/qicon.h>
+#include <QtGui/qtextdocument.h>
+#include <QtWidgets/qmainwindow.h>
+#include <QtWidgets/qmessagebox.h>
+#include <QtWidgets/qwidget.h>
 
 class QAction;
 class QLabel;

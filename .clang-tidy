@@ -15,7 +15,6 @@ Checks: >
   -readability-magic-numbers
 WarningsAsErrors: ''
 HeaderFilterRegex: '^(src|tests)/.*\.(h|hpp|cpp)$'
-AnalyzeTemporaryDtors: false
 FormatStyle: file
 User: "GnotePad"
 
@@ -28,3 +27,5 @@ CheckOptions:
     value: '1'
   - key: readability-identifier-length.MinimumExceptionNameLength
     value: '1'
+  - key: misc-include-cleaner.IgnoreHeaders
+    value: '(.*/qt6/.*|.*/qsharedpointer_impl\.h)'
