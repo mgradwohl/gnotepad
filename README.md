@@ -100,9 +100,19 @@ clang-tidy plus `.clangd`'s `-fno-modules` flag help surface violations locally.
 
 ## Backlog & Next Steps
 
+**Remaining focus areas**
+
 - Broaden Unicode/encoding regression tests with round-trip corpora to validate decoder/encoder behavior.
-- Finish Notepad UX parity: Page Setup, Print Preview, ensure the font dialog reopens with the last selections (family/size/script) in addition to persisting the editor font, and add multi-document handling.
+- Finish Notepad UX parity:
+  - Page Setup and Print Preview commands.
+  - Ensure the font dialog remembers prior selections (family/size/script) across launches and persists those settings alongside the editor font.
+  - Add multi-document handling (tabs or multi-window management that mirrors modern Notepad).
 - Ship desktop-ready packages (AppImage, MSIX, dmg) and the associated integration assets.
 - Improve large-file responsiveness via async load indicators and targeted profiling.
 - Modernize ownership in `MainWindow`/`TextEditor`: move long-lived members (status labels, menus, the editor widget, etc.) away from naked `new` to safer ownership constructs (smart pointers or stack members) while still honoring Qt parent-child lifetimes.
 - Replace UI-related magic numbers (window sizes, zoom defaults, pixmap dimensions) with named constants.
+
+**Recently completed**
+
+- Menu actions (Save/Save As/Find/Cut/Copy/etc.) now enable and disable automatically based on document content and selection state to match Windows Notepad behavior.
+- Font dialog launch moved out of an inline lambda and centralized in `handleChooseFont()`, opening the door for future persistence improvements.
