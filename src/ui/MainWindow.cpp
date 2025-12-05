@@ -821,11 +821,10 @@ void MainWindow::updateActionStates()
 {
     const bool hasContent = documentHasContent();
     const bool hasSelection = editorHasSelection();
-    const bool canSave = canSaveDocument();
 
     if (m_saveAction)
     {
-        m_saveAction->setEnabled(canSave);
+        m_saveAction->setEnabled(hasContent);
     }
     if (m_saveAsAction)
     {
@@ -883,17 +882,6 @@ bool MainWindow::documentHasContent() const
 bool MainWindow::editorHasSelection() const
 {
     return m_editor && m_editor->textCursor().hasSelection();
-}
-
-bool MainWindow::canSaveDocument() const
-{
-    if (!m_editor)
-    {
-        return false;
-    }
-
-    const auto* document = m_editor->document();
-    return document && document->isModified();
 }
 
 void MainWindow::updateWindowTitle()

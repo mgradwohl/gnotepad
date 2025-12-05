@@ -167,7 +167,6 @@ private:
     void updateActionStates();
     bool documentHasContent() const;
     bool editorHasSelection() const;
-    bool canSaveDocument() const;
     void applyDefaultEditorFont();
 
     bool loadDocumentFromPath(const QString& filePath);
