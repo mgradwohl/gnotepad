@@ -829,7 +829,7 @@ void MainWindow::updateActionStates()
     }
     if (m_saveAsAction)
     {
-        m_saveAsAction->setEnabled(canSave);
+        m_saveAsAction->setEnabled(hasContent);
     }
     if (m_printAction)
     {
