@@ -74,6 +74,10 @@ After building, launch the executable from `build/<config>/GnotePad` (Linux/macO
   - Install the [clangd extension](https://marketplace.visualstudio.com/items?itemName=llvm-vs-code-extensions.vscode-clangd) (`llvm-vs-code-extensions.vscode-clangd`) for full IDE features.
   - The extension is automatically recommended when opening the workspace.
   - `.vscode/settings.json` configures clangd to use the compilation database from `build/compile_commands.json`.
+  ```bash
+  cmake -S . -B build/debug -G Ninja -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_PREFIX_PATH=/usr/lib/x86_64-linux-gnu/cmake/Qt6 -DCMAKE_BUILD_TYPE=Debug
+  cmake --build build/debug --target run-clang-format
+- **Editor configuration** – VS Code’s C/C++ IntelliSense engine is disabled to avoid conflicting diagnostics; clangd via CMake Tools drives code completion using the generated `compile_commands.json`.
 - **Other clang utilities** – clangd powers completions, and clang-query/clang-apply-replacements can be layered on later for AST exploration or batch rewrites if needed.
 
 ## Next Steps
