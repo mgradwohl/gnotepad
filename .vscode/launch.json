@@ -12,7 +12,7 @@
                 "LD_LIBRARY_PATH": ""
            },
             "preLaunchTask": "Build Debug",
-            "terminal": "integrated",
+            "terminal": "integrated"
         },
         {
             "name": "Run GnotePad (Release Build)",
