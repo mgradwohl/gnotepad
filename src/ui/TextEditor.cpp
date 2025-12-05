@@ -18,6 +18,9 @@
 #include <QtWidgets/qscrollbar.h>
 #include <QtWidgets/qtextedit.h>
 
+// NOTE: Qt parent-child ownership deletes child QObjects automatically, so raw pointers
+// assigned from new within this file are intentional and safe.
+
 namespace GnotePad::ui
 {
 
@@ -37,9 +40,9 @@ QSize TextEditor::LineNumberArea::sizeHint() const
 {
     if (!m_editor)
     {
-        return QSize(0, 0);
+        return {0, 0};
     }
-    return QSize(m_editor->lineNumberAreaWidth(), 0);
+    return {m_editor->lineNumberAreaWidth(), 0};
 }
 
 void TextEditor::LineNumberArea::paintEvent(QPaintEvent* event)
@@ -132,7 +135,7 @@ void TextEditor::lineNumberAreaPaintEvent(QPaintEvent* event)
     }
 }
 
-void TextEditor::updateLineNumberAreaWidth(int)
+void TextEditor::updateLineNumberAreaWidth([[maybe_unused]] int newBlockCount)
 {
     setViewportMargins(lineNumberAreaWidth(), 0, 0, 0);
 }

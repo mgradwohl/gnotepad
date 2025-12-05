@@ -2,7 +2,7 @@
 
 GnotePad is a cross-platform Qt 6 clone of the Windows 10 Notepad experience. The project targets modern C++23, depends on clang + CMake, and keeps its functionality portable across Linux and Windows.
 
-Current work happens on the `feature/user-preferences` branch, which adds persistent settings, MRU tracking, and richer editor controls on top of the original scaffold.
+Active development tracks the backlog outlined below on `main`, folding in incremental UX and tooling improvements as they land.
 
 ## Prerequisites
 
@@ -68,6 +68,7 @@ After building, launch the executable from `build/<config>/GnotePad` (Linux/macO
 ## Static Analysis & Tooling
 
 - **clang-tidy** – The repo ships a `.clang-tidy` profile plus a CMake toggle. Run `cmake -S . -B build/debug -G Ninja -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_PREFIX_PATH=/usr/lib/x86_64-linux-gnu/cmake/Qt6 -DCMAKE_BUILD_TYPE=Debug -DGNOTE_ENABLE_CLANG_TIDY=ON && cmake --build build/debug` or invoke the VS Code task **Clang-Tidy (Debug)**. You can also call `cmake --build build/debug --target run-clang-tidy` after configuring to re-check just the sources.
+  - The profile currently suppresses `readability-implicit-bool-conversion` (pointer guards stay terse) and ignores generated Qt headers plus `qsharedpointer_impl.h` to keep diagnostics focused on project sources.
 - **scan-build (clang static analyzer)** – Use `tools/run-scan-build.sh` (defaults to `build/analyze`) or the VS Code task **Scan-Build (Debug)**. Reports land in `scan-build-report/` and can be opened in a browser.
 - **clang-format** – Formatting rules live in `.clang-format`. Run `cmake --build build/debug --target run-clang-format` (or the **Clang-Format** VS Code task) to apply styling in-place. Configure editors to honor the same profile for on-save formatting.
 
@@ -97,9 +98,12 @@ Keeping headers tidy shrinks rebuild times and keeps clang-tidy's include-cleane
 
 clang-tidy plus `.clangd`'s `-fno-modules` flag help surface violations locally. Running `cmake --build build/debug --target run-clang-tidy` (or the VS Code **Clang-Tidy (Debug)** task) will confirm that headers stay clean.
 
-## Next Steps
+## Backlog & Next Steps
 
-- Add broader Unicode/encoding regression tests using published sample corpora and round-trip validation
-- Implement remaining Notepad UX (Page Setup, print preview, font dialog persistence, multi-document handling)
-- Package builds for macOS/Windows/Linux (AppImage/MSIX/dmg) plus desktop integration assets
-- Investigate large-file performance improvements and background loading indicators
+- Broaden Unicode/encoding regression tests with round-trip corpora to validate decoder/encoder behavior.
+- Finish Notepad UX parity: Page Setup, Print Preview, font dialog persistence, multi-document handling.
+- Ship desktop-ready packages (AppImage, MSIX, dmg) and the associated integration assets.
+- Improve large-file responsiveness via async load indicators and targeted profiling.
+- Modernize ownership in `MainWindow`/`TextEditor` by replacing long-lived raw pointers with smart pointers.
+- Replace UI-related magic numbers (window sizes, zoom defaults, pixmap dimensions) with named constants.
+- Refactor `MainWindow::loadSettings` / `saveSettings` into smaller helpers to clarify defaults and reduce duplication.
