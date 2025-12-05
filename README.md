@@ -101,9 +101,9 @@ clang-tidy plus `.clangd`'s `-fno-modules` flag help surface violations locally.
 ## Backlog & Next Steps
 
 - Broaden Unicode/encoding regression tests with round-trip corpora to validate decoder/encoder behavior.
-- Finish Notepad UX parity: Page Setup, Print Preview, font dialog persistence, multi-document handling.
+- Finish Notepad UX parity: Page Setup, Print Preview, ensure the font dialog reopens with the last selections (family/size/script) in addition to persisting the editor font, and add multi-document handling.
 - Ship desktop-ready packages (AppImage, MSIX, dmg) and the associated integration assets.
 - Improve large-file responsiveness via async load indicators and targeted profiling.
-- Modernize ownership in `MainWindow`/`TextEditor` by replacing long-lived raw pointers with smart pointers.
+- Modernize ownership in `MainWindow`/`TextEditor`: move long-lived members (status labels, menus, the editor widget, etc.) away from naked `new` to safer ownership constructs (smart pointers or stack members) while still honoring Qt parent-child lifetimes.
 - Replace UI-related magic numbers (window sizes, zoom defaults, pixmap dimensions) with named constants.
 - Refactor `MainWindow::loadSettings` / `saveSettings` into smaller helpers to clarify defaults and reduce duplication.
