@@ -397,7 +397,6 @@ void MainWindow::handleChooseFont()
     {
         m_editor->applyEditorFont(dialog.selectedFont());
     }
-    this->show();
 }
 
 void MainWindow::handleFind()
