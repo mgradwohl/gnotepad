@@ -6,19 +6,18 @@
         "CMAKE_CXX_STANDARD": "23",
         "CMAKE_CXX_STANDARD_REQUIRED": "ON"
     },
-    "C_Cpp.intelliSenseEngine": "Disabled",
+    "C_Cpp.intelliSenseEngine": "disabled",
     "C_Cpp.default.compilerPath": "/usr/bin/clang++",
     "C_Cpp.default.configurationProvider": "ms-vscode.cmake-tools",
-    "C_Cpp.errorSquiggles": "Disabled",
+    "C_Cpp.errorSquiggles": "disabled",
     "C_Cpp.default.cppStandard": "c++23",
     "C_Cpp.default.cStandard": "c17",
+    "clangd.path": "clangd",
     "clangd.arguments": [
-        "--compile-commands-dir=${workspaceFolder}/build",
+        "--compile-commands-dir=${workspaceFolder}/build/debug",
         "--background-index",
         "--clang-tidy",
-        "--completion-style=detailed",
-        "--header-insertion=iwyu",
-        "--pch-storage=memory"
-    ],
-    "clangd.path": "clangd"
+        "--completion-style=detailed"
+        "--header-insertion=iwyu"
+    ]
 }
