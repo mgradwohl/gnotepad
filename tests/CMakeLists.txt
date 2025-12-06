@@ -68,11 +68,11 @@ set(GNOTE_SMOKE_TEST_FUNCTIONS
 foreach(test_name IN LISTS GNOTE_SMOKE_TEST_FUNCTIONS)
 	add_test(
 		NAME gnotepad_${test_name}
-		COMMAND GnotePadSmoke ${test_name}
+		COMMAND $<TARGET_FILE:GnotePadSmoke> ${test_name}
 	)
 endforeach()
 
-add_test(NAME gnotepad_smoke_all COMMAND GnotePadSmoke)
+add_test(NAME gnotepad_smoke_all COMMAND $<TARGET_FILE:GnotePadSmoke>)
 
 # Command-line parsing tests
 add_executable(GnotePadCmdLine
