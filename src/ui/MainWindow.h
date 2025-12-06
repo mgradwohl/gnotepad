@@ -128,6 +128,7 @@ private slots:
     void handleReplace();
     void handleGoToLine();
     void handleInsertTimeDate();
+    void handleViewHelp();
     void handleUpdateCursorStatus();
     void showAboutDialog();
     void handleSetTabSize();
