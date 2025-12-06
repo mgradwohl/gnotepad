@@ -84,7 +84,7 @@ After building, launch the executable from `build/<config>/GnotePad` (Linux/macO
 
 ## Packaging (AppImage)
 
-- Prereqs: `patchelf`, `chrpath`, `desktop-file-validate`, `appstreamcli`, `qmake6`, `zsync`; `tools/package-appimage.sh` downloads `linuxdeployqt` automatically.
+- Prereqs: `patchelf`, `chrpath`, `desktop-file-validate`, `appstreamcli`, `qmake6`, `zsync`, `sha256sum`; `tools/package-appimage.sh` downloads `linuxdeployqt` automatically with SHA256 checksum verification for security.
 - Build artifact: `bash tools/package-appimage.sh` (requires `build/optimized`); outputs `packaging/dist/GnotePad-<version>-x86_64.AppImage` and logs to `packaging/dist/linuxdeployqt.log`.
 - Desktop/AppStream IDs: `app.gnotepad.GnotePad.desktop` and `app.gnotepad.GnotePad.appdata.xml` are baked into the AppImage.
 - Headless smoke (CI-friendly): `QT_QPA_PLATFORM=offscreen ./packaging/dist/GnotePad-<version>-x86_64.AppImage --quit-after-init`.
