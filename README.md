@@ -58,6 +58,26 @@ After building, launch the executable from `build/<config>/GnotePad` (Linux/macO
 - Find/Replace dialogs, Go To line, time/date insertion, PDF export, and recent-files submenu mirroring Windows Notepad
 - Structured logging through spdlog and CTest-driven smoke tests
 
+## Command-Line Options
+
+GnotePad supports the following command-line options:
+
+- `--help`, `-h` – Display help information and exit
+- `--version`, `-v` – Display version information and exit
+- `--quit-after-init`, `--headless-smoke` – Quit shortly after startup (useful for headless smoke tests and CI environments)
+
+Example usage:
+```bash
+# Display help
+./GnotePad --help
+
+# Display version
+./GnotePad --version
+
+# Run headless smoke test
+QT_QPA_PLATFORM=offscreen ./GnotePad --quit-after-init
+```
+
 ## Development Notes
 
 - Sources live in `src/` and are split by responsibility (`app/`, `ui/`).
@@ -84,7 +104,7 @@ After building, launch the executable from `build/<config>/GnotePad` (Linux/macO
 
 ## Packaging (AppImage)
 
-- Prereqs: `patchelf`, `chrpath`, `desktop-file-validate`, `appstreamcli`, `qmake6`, `zsync`; `tools/package-appimage.sh` downloads `linuxdeployqt` automatically.
+- Prereqs: `patchelf`, `chrpath`, `desktop-file-validate`, `appstreamcli`, `qmake6`, `zsync`, `sha256sum`; `tools/package-appimage.sh` downloads `linuxdeployqt` automatically with SHA256 checksum verification for security.
 - Build artifact: `bash tools/package-appimage.sh` (requires `build/optimized`); outputs `packaging/dist/GnotePad-<version>-x86_64.AppImage` and logs to `packaging/dist/linuxdeployqt.log`.
 - Desktop/AppStream IDs: `app.gnotepad.GnotePad.desktop` and `app.gnotepad.GnotePad.appdata.xml` are baked into the AppImage.
 - Headless smoke (CI-friendly): `QT_QPA_PLATFORM=offscreen ./packaging/dist/GnotePad-<version>-x86_64.AppImage --quit-after-init`.

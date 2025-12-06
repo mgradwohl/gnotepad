@@ -73,3 +73,48 @@ foreach(test_name IN LISTS GNOTE_SMOKE_TEST_FUNCTIONS)
 endforeach()
 
 add_test(NAME gnotepad_smoke_all COMMAND $<TARGET_FILE:GnotePadSmoke>)
+
+# Command-line parsing tests
+add_executable(GnotePadCmdLine
+	cmdline/cmdline.cpp
+	cmdline/ApplicationCmdLineTests.h
+)
+
+set_source_files_properties(
+	cmdline/cmdline.cpp
+	cmdline/ApplicationCmdLineTests.h
+	PROPERTIES SKIP_CLANG_TIDY TRUE
+)
+
+target_compile_features(GnotePadCmdLine PRIVATE cxx_std_23)
+
+if(COMMAND gnote_apply_default_warnings)
+	gnote_apply_default_warnings(GnotePadCmdLine)
+endif()
+
+target_include_directories(GnotePadCmdLine PRIVATE
+	${CMAKE_SOURCE_DIR}/src
+)
+
+set_target_properties(GnotePadCmdLine PROPERTIES AUTOMOC ON)
+
+target_link_libraries(GnotePadCmdLine PRIVATE
+	Qt6::Core
+	Qt6::Test
+)
+
+set(GNOTE_CMDLINE_TEST_FUNCTIONS
+	testQuitAfterInitParsing
+	testHeadlessSmokeParsing
+	testNoFlagsParsing
+	testQuitAfterInitBehavior
+)
+
+foreach(test_name IN LISTS GNOTE_CMDLINE_TEST_FUNCTIONS)
+	add_test(
+		NAME gnotepad_${test_name}
+		COMMAND $<TARGET_FILE:GnotePadCmdLine> ${test_name}
+	)
+endforeach()
+
+add_test(NAME gnotepad_cmdline_all COMMAND $<TARGET_FILE:GnotePadCmdLine>)

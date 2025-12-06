@@ -16,6 +16,13 @@ APPDIR="${ROOT_DIR}/packaging/dist/AppDir"
 INSTALL_PREFIX="${APPDIR}/usr"
 LINUXDEPLOY_BIN="${ROOT_DIR}/tools/linuxdeployqt.AppImage"
 LINUXDEPLOY_URL="${LINUXDEPLOY_URL:-https://github.com/probonopd/linuxdeployqt/releases/download/continuous/linuxdeployqt-continuous-x86_64.AppImage}"
+# SHA256 checksum for linuxdeployqt from the continuous release (updated 2025-10-21)
+# Source: https://github.com/probonopd/linuxdeployqt/releases/tag/continuous
+# The GitHub API provides checksums: https://api.github.com/repos/probonopd/linuxdeployqt/releases/tags/continuous
+# Look for the "digest" field in the assets array for linuxdeployqt-continuous-x86_64.AppImage
+# To update: download the file and verify with `sha256sum linuxdeployqt-continuous-x86_64.AppImage`
+# Then compare against the digest shown in the GitHub release assets API
+LINUXDEPLOY_SHA256="${LINUXDEPLOY_SHA256:-974a87457ed26241b793bed7841978fcdf84158d13220e53833a06515f173b0b}"
 LOG_FILE="${ROOT_DIR}/packaging/dist/linuxdeployqt.log"
 APPSTREAM_TEMPLATE="${ROOT_DIR}/packaging/linux/app.gnotepad.GnotePad.appdata.xml.in"
 APPRUN_TEMPLATE="${ROOT_DIR}/packaging/linux/AppRun"
@@ -27,7 +34,7 @@ require_cmd() {
     fi
 }
 
-for tool in cmake patchelf chrpath desktop-file-validate appstreamcli zsyncmake; do
+for tool in cmake patchelf chrpath desktop-file-validate appstreamcli zsyncmake sha256sum; do
     require_cmd "${tool}"
 done
 
@@ -53,6 +60,21 @@ if [[ ! -x "${LINUXDEPLOY_BIN}" ]]; then
         echo "Need curl or wget to download linuxdeployqt" >&2
         exit 1
     fi
+    
+    # Verify the SHA256 checksum to prevent supply chain attacks
+    echo "Verifying download integrity..." >&2
+    ACTUAL_SHA256="$(sha256sum "${LINUXDEPLOY_BIN}" | awk '{print $1}')"
+    if [[ "${ACTUAL_SHA256}" != "${LINUXDEPLOY_SHA256}" ]]; then
+        echo "ERROR: SHA256 checksum verification failed!" >&2
+        echo "Expected: ${LINUXDEPLOY_SHA256}" >&2
+        echo "Actual:   ${ACTUAL_SHA256}" >&2
+        echo "The downloaded file may be corrupted or tampered with." >&2
+        echo "Removing the downloaded file for safety." >&2
+        rm -f "${LINUXDEPLOY_BIN}"
+        exit 1
+    fi
+    echo "Checksum verified successfully." >&2
+    
     chmod +x "${LINUXDEPLOY_BIN}"
 fi
 
