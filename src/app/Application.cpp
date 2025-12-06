@@ -97,7 +97,6 @@ void Application::parseCommandLine(const QStringList& arguments)
     parser.addHelpOption();
     parser.addVersionOption();
     parser.setSingleDashWordOptionMode(QCommandLineParser::ParseAsLongOptions);
-    
     QCommandLineOption quitAfterInitOption(
         {QStringLiteral("quit-after-init"), QStringLiteral("headless-smoke")},
         QStringLiteral("Quit shortly after startup (useful for headless smoke tests)."));
