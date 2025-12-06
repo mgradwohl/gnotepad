@@ -1,0 +1,76 @@
+app-id: app.gnotepad.GnotePad
+runtime: org.kde.Platform
+runtime-version: "6.7"
+sdk: org.kde.Sdk
+command: GnotePad
+finish-args:
+  - --share=ipc
+  - --socket=x11
+  - --socket=wayland
+  - --device=dri
+  - --filesystem=host
+  - --talk-name=org.freedesktop.portal.Desktop
+  - --env=QT_QPA_PLATFORMTHEME=xdgdesktopportal
+build-options:
+  append-path: /app/llvm/bin
+  env:
+    CC: clang
+    CXX: clang++
+    AR: llvm-ar
+    NM: llvm-nm
+    RANLIB: llvm-ranlib
+modules:
+  - name: icon
+    buildsystem: simple
+    build-commands:
+      - install -Dm644 app.gnotepad.GnotePad.svg /app/share/icons/hicolor/scalable/apps/app.gnotepad.GnotePad.svg
+    sources:
+      - type: file
+        path: app.gnotepad.GnotePad.svg
+
+  - name: llvm-toolchain
+    buildsystem: simple
+    build-options:
+      strip: false
+      no-debuginfo: true
+    build-commands:
+      - set -euo pipefail; install -d /app/llvm; cp -a llvm-src/. /app/llvm; ln -sf /usr/lib/x86_64-linux-gnu/libtinfo.so.6 /app/llvm/lib/libtinfo.so.5
+    sources:
+      - type: archive
+        url: https://github.com/llvm/llvm-project/releases/download/llvmorg-18.1.8/clang+llvm-18.1.8-x86_64-linux-gnu-ubuntu-18.04.tar.xz
+        sha256: 54ec30358afcc9fb8aa74307db3046f5187f9fb89fb37064cdde906e062ebf36
+        dest: llvm-src
+        strip-components: 1
+
+  - name: spdlog
+    buildsystem: cmake-ninja
+    config-opts:
+      - -DSPDLOG_BUILD_SHARED=OFF
+      - -DSPDLOG_BUILD_STATIC=OFF
+      - -DSPDLOG_BUILD_HEADER_ONLY=ON
+      - -DSPDLOG_FMT_EXTERNAL=OFF
+      - -DSPDLOG_BUILD_EXAMPLE=OFF
+      - -DSPDLOG_BUILD_EXAMPLE_HO=OFF
+      - -DSPDLOG_BUILD_TESTS=OFF
+      - -DSPDLOG_INSTALL=ON
+    sources:
+      - type: archive
+        url: https://github.com/gabime/spdlog/archive/refs/tags/v1.13.0.tar.gz
+        sha256: 534f2ee1a4dcbeb22249856edfb2be76a1cf4f708a20b0ac2ed090ee24cfdbc9
+
+  - name: gnotepad
+    buildsystem: cmake-ninja
+    config-opts:
+      - -DCMAKE_C_COMPILER=clang
+      - -DCMAKE_CXX_COMPILER=clang++
+      - -DCMAKE_BUILD_TYPE=Release
+      - -DGNOTE_ENABLE_IPO=ON
+      - -DCMAKE_INTERPROCEDURAL_OPTIMIZATION=ON
+      - -DCMAKE_EXE_LINKER_FLAGS=-fuse-ld=lld
+      - -DCMAKE_SHARED_LINKER_FLAGS=-fuse-ld=lld
+      - -DFETCHCONTENT_FULLY_DISCONNECTED=ON
+      - -DFETCHCONTENT_SOURCE_DIR_SPDLOG=/app/include
+    sources:
+      - type: archive
+        url: https://github.com/mgradwohl/GnotePad/archive/b077112c0c3193a0e6aec89aaee3629bfc672fc7.tar.gz
+        sha256: 434a0a89f54d14365eab40d48b6315c0c29defcf72f2230a06685b26e1884fed
