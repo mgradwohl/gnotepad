@@ -14,7 +14,7 @@
     </ul>
   </description>
   <launchable type="desktop-id">app.gnotepad.GnotePad.desktop</launchable>
-  <developer id="app.gnotepad">
+  <developer id="app.gnotepad.GnotePad">
     <name>GnotePad contributors</name>
   </developer>
   <url type="homepage">https://github.com/mgradwohl/GnotePad</url>
