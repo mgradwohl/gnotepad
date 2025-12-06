@@ -1,5 +1,5 @@
 # Build directories
-/build/
+/build/ 
 /build-* 
 /out/
 /Debug/
@@ -8,6 +8,13 @@
 /release/
 /optimized/
 /.cache/
+
+# Builder caches
+/.flatpak-builder/
+/build-dir/
+/build-dir-flathub/
+/scan-build-report/
+/packaging/logs/
 
 # Packaging artifacts
 /packaging/dist/
@@ -40,3 +47,4 @@ Thumbs.db
 # CodeQL
 _codeql_build_dir/
 _codeql_detected_source_root
+GnotePad-0.8.1-x86_64.AppImage
