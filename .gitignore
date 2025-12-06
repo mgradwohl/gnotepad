@@ -9,6 +9,12 @@
 /optimized/
 /.cache/
 
+# Packaging artifacts
+/packaging/dist/
+/squashfs-root/
+/tools/linuxdeployqt.AppImage
+/tools/linuxdeployqt.AppImage.zsync
+
 # CMake artifacts
 CMakeCache.txt
 CMakeFiles/

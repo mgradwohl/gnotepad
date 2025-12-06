@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.26)
 
-project(GnotePad VERSION 0.1.0 LANGUAGES CXX)
+project(GnotePad VERSION 0.8.0 LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -175,13 +175,34 @@ install(TARGETS GnotePad
 )
 
 if(UNIX AND NOT APPLE)
-    set(GNOTE_DESKTOP_FILE ${CMAKE_CURRENT_BINARY_DIR}/gnotepad.desktop)
-    configure_file(${CMAKE_CURRENT_SOURCE_DIR}/packaging/linux/gnotepad.desktop.in ${GNOTE_DESKTOP_FILE} @ONLY)
+    set(GNOTE_DESKTOP_FILE ${CMAKE_CURRENT_BINARY_DIR}/app.gnotepad.GnotePad.desktop)
+    configure_file(${CMAKE_CURRENT_SOURCE_DIR}/packaging/linux/app.gnotepad.GnotePad.desktop.in ${GNOTE_DESKTOP_FILE} @ONLY)
     install(FILES ${GNOTE_DESKTOP_FILE} DESTINATION share/applications)
     install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/resources/icons/gnotepad-icon.svg
         DESTINATION share/icons/hicolor/scalable/apps
-        RENAME gnotepad.svg)
+        RENAME app.gnotepad.GnotePad.svg)
 endif()
+
+set(CPACK_PACKAGE_NAME "gnotepad")
+set(CPACK_PACKAGE_VENDOR "GnotePad")
+set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "GnotePad - Qt-based text editor")
+set(CPACK_PACKAGE_HOMEPAGE_URL "https://github.com/mgradwohl/GnotePad")
+set(CPACK_PACKAGE_CONTACT "GnotePad contributors")
+set(CPACK_PACKAGE_VERSION "${PROJECT_VERSION}")
+set(CPACK_GENERATOR "DEB;RPM")
+set(CPACK_PACKAGING_INSTALL_PREFIX "/usr")
+set(CPACK_STRIP_FILES TRUE)
+
+set(CPACK_DEBIAN_PACKAGE_MAINTAINER "GnotePad contributors")
+set(CPACK_DEBIAN_PACKAGE_SECTION "utils")
+set(CPACK_DEBIAN_PACKAGE_SHLIBDEPS ON)
+
+set(CPACK_RPM_PACKAGE_LICENSE "MIT")
+set(CPACK_RPM_PACKAGE_GROUP "Applications/Text")
+set(CPACK_RPM_PACKAGE_URL "https://github.com/mgradwohl/GnotePad")
+set(CPACK_RPM_EXCLUDE_FROM_AUTO_FILELIST_ADDITION "/usr/share/applications" "/usr/share/icons")
+
+include(CPack)
 
 enable_testing()
 add_subdirectory(tests)
