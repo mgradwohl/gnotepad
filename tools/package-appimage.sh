@@ -27,7 +27,7 @@ require_cmd() {
     fi
 }
 
-for tool in cmake patchelf chrpath desktop-file-validate appstreamcli; do
+for tool in cmake patchelf chrpath desktop-file-validate appstreamcli zsyncmake; do
     require_cmd "${tool}"
 done
 
