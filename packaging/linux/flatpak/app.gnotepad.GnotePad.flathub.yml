@@ -72,5 +72,5 @@ modules:
       - -DFETCHCONTENT_SOURCE_DIR_SPDLOG=/app/include/
     sources:
       - type: archive
-        url: https://github.com/mgradwohl/GnotePad/archive/b077112c0c3193a0e6aec89aaee3629bfc672fc7.tar.gz
-        sha256: 434a0a89f54d14365eab40d48b6315c0c29defcf72f2230a06685b26e1884fed
+        url: https://github.com/mgradwohl/GnotePad/archive/refs/tags/v0.8.1.tar.gz
+        sha256: 5d59e2898d1db67d2ccd2ae1b5f1b58e8c89fd7b7983f25728046949fe39f840
