@@ -93,13 +93,17 @@ void Application::configureIcon()
 void Application::parseCommandLine(const QStringList& arguments)
 {
     QCommandLineParser parser;
+    parser.setApplicationDescription(QStringLiteral("GnotePad - A modern Qt text editor"));
+    parser.addHelpOption();
+    parser.addVersionOption();
     parser.setSingleDashWordOptionMode(QCommandLineParser::ParseAsLongOptions);
+    
     QCommandLineOption quitAfterInitOption(
         {QStringLiteral("quit-after-init"), QStringLiteral("headless-smoke")},
         QStringLiteral("Quit shortly after startup (useful for headless smoke tests)."));
 
     parser.addOption(quitAfterInitOption);
-    parser.parse(arguments);
+    parser.process(arguments);
 
     m_quitAfterInit = parser.isSet(quitAfterInitOption);
 }
