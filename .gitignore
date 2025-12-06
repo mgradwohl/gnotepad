@@ -43,6 +43,7 @@ compile_commands.json
 # OS files
 .DS_Store
 Thumbs.db
+/.local/
 
 # CodeQL
 _codeql_build_dir/
