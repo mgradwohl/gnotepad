@@ -202,7 +202,7 @@ void MainWindow::buildMenus()
     zoomMenu->addAction(tr("Zoom &Out"), QKeySequence::ZoomOut, this, &MainWindow::handleZoomOut);
     zoomMenu->addAction(tr("Restore &Default Zoom"), QKeySequence(Qt::CTRL | Qt::Key_0), this, &MainWindow::handleZoomReset);
 
-    helpMenu->addAction(tr("View &Help"), QKeySequence::HelpContents, this, [] { spdlog::info("Help placeholder triggered"); });
+    helpMenu->addAction(tr("View &Help"), QKeySequence::HelpContents, this, &MainWindow::handleViewHelp);
     helpMenu->addAction(tr("&About GnotePad"), this, &MainWindow::showAboutDialog);
 
     updateActionStates();
@@ -644,15 +644,28 @@ void MainWindow::handleInsertTimeDate()
     m_editor->insertPlainText(stamp);
 }
 
+void MainWindow::handleViewHelp()
+{
+    const QUrl helpUrl(QStringLiteral("https://github.com/mgradwohl/GnotePad#readme"));
+    if (!QDesktopServices::openUrl(helpUrl))
+    {
+        QMessageBox::information(this, tr("Help"), tr("Open %1 in your browser for the latest documentation.").arg(helpUrl.toString()));
+    }
+}
+
 void MainWindow::showAboutDialog()
 {
     const QString appName = QCoreApplication::applicationName();
     const QString version = QCoreApplication::applicationVersion();
     const QString org = QCoreApplication::organizationName();
+    const QString maintainer = org.isEmpty() ? tr("the GnotePad contributors") : org;
     const QString details = tr("<p><b>%1</b> %2</p>"
-                               "<p>A lightweight text editor inspired by Windows Notepad.</p>"
-                               "<p>For Linux and Windows, coded in C++, with Qt %3.</p>")
-                                .arg(appName, version, QString::fromLatin1(qVersion()));
+                               "<p>Modern Qt 6 / C++23 refresh of the Windows Notepad experience for Linux, Windows, and macOS.</p>"
+                               "<p>Maintained by %3 and built with Qt %4.</p>"
+                               "<p>Source & documentation: <a href=\"https://github.com/mgradwohl/GnotePad\">github.com/mgradwohl/GnotePad</a></p>"
+                               "<p>Licensed under the MIT License. Not affiliated with the legacy gnotepad or gnotepad+ projects.</p>"
+                               "<p>Contributions, bug reports, and packaging help are welcome!</p>")
+                                .arg(appName, version, maintainer, QString::fromLatin1(qVersion()));
     const QIcon icon = brandIcon();
 
     QDialog dialog(this);
