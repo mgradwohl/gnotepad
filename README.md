@@ -58,6 +58,26 @@ After building, launch the executable from `build/<config>/GnotePad` (Linux/macO
 - Find/Replace dialogs, Go To line, time/date insertion, PDF export, and recent-files submenu mirroring Windows Notepad
 - Structured logging through spdlog and CTest-driven smoke tests
 
+## Command-Line Options
+
+GnotePad supports the following command-line options:
+
+- `--help`, `-h` – Display help information and exit
+- `--version`, `-v` – Display version information and exit
+- `--quit-after-init`, `--headless-smoke` – Quit shortly after startup (useful for headless smoke tests and CI environments)
+
+Example usage:
+```bash
+# Display help
+./GnotePad --help
+
+# Display version
+./GnotePad --version
+
+# Run headless smoke test
+QT_QPA_PLATFORM=offscreen ./GnotePad --quit-after-init
+```
+
 ## Development Notes
 
 - Sources live in `src/` and are split by responsibility (`app/`, `ui/`).
