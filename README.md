@@ -58,6 +58,26 @@ After building, launch the executable from `build/<config>/GnotePad` (Linux/macO
 - Find/Replace dialogs, Go To line, time/date insertion, PDF export, and recent-files submenu mirroring Windows Notepad
 - Structured logging through spdlog and CTest-driven smoke tests
 
+## Command-Line Options
+
+GnotePad supports the following command-line options:
+
+- `--help`, `-h` – Display help information and exit
+- `--version`, `-v` – Display version information and exit
+- `--quit-after-init`, `--headless-smoke` – Quit shortly after startup (useful for headless smoke tests and CI environments)
+
+Example usage:
+```bash
+# Display help
+./GnotePad --help
+
+# Display version
+./GnotePad --version
+
+# Run headless smoke test
+QT_QPA_PLATFORM=offscreen ./GnotePad --quit-after-init
+```
+
 ## Development Notes
 
 - Sources live in `src/` and are split by responsibility (`app/`, `ui/`).
@@ -75,12 +95,41 @@ After building, launch the executable from `build/<config>/GnotePad` (Linux/macO
 - **Editor configuration** – VS Code's C/C++ IntelliSense engine is disabled to avoid conflicting diagnostics; clangd via CMake Tools drives code completion using the generated `compile_commands.json`.
   - Install the [clangd extension](https://marketplace.visualstudio.com/items?itemName=llvm-vs-code-extensions.vscode-clangd) (`llvm-vs-code-extensions.vscode-clangd`) for full IDE features.
   - The extension is automatically recommended when opening the workspace.
-  - `.vscode/settings.json` configures clangd to use the compilation database from `build/compile_commands.json`.
-  ```bash
-  cmake -S . -B build/debug -G Ninja -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_PREFIX_PATH=/usr/lib/x86_64-linux-gnu/cmake/Qt6 -DCMAKE_BUILD_TYPE=Debug
-  cmake --build build/debug --target run-clang-format
-- **Editor configuration** – VS Code’s C/C++ IntelliSense engine is disabled to avoid conflicting diagnostics; clangd via CMake Tools drives code completion using the generated `compile_commands.json`.
+  - `.vscode/settings.json` points clangd at `build/compile_commands.json`; generate it by configuring once, e.g.:
+    ```bash
+    cmake -S . -B build/debug -G Ninja -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_PREFIX_PATH=/usr/lib/x86_64-linux-gnu/cmake/Qt6 -DCMAKE_BUILD_TYPE=Debug
+    ```
+  - Run formatting when needed: `cmake --build build/debug --target run-clang-format`.
 - **Other clang utilities** – clangd powers completions, and clang-query/clang-apply-replacements can be layered on later for AST exploration or batch rewrites if needed.
+
+## Packaging (AppImage)
+
+- Prereqs: `patchelf`, `chrpath`, `desktop-file-validate`, `appstreamcli`, `qmake6`, `zsync`, `sha256sum`; `tools/package-appimage.sh` downloads `linuxdeployqt` automatically with SHA256 checksum verification for security.
+- Build artifact: `bash tools/package-appimage.sh` (requires `build/optimized`); outputs `packaging/dist/GnotePad-<version>-x86_64.AppImage` and logs to `packaging/dist/linuxdeployqt.log`.
+- Desktop/AppStream IDs: `app.gnotepad.GnotePad.desktop` and `app.gnotepad.GnotePad.appdata.xml` are baked into the AppImage.
+- Headless smoke (CI-friendly): `QT_QPA_PLATFORM=offscreen ./packaging/dist/GnotePad-<version>-x86_64.AppImage --quit-after-init`.
+
+## Packaging (DEB/RPM)
+
+- Prereqs: `dpkg-dev` (usually present on Ubuntu) and `rpm` (for rpmbuild).
+- Build: from `build/optimized`, run:
+  ```bash
+  cpack -G DEB -C Release -B ../../packaging/dist
+  cpack -G RPM -C Release -B ../../packaging/dist
+  ```
+- Outputs land in `packaging/dist/` as `gnotepad-<version>-Linux.deb` and `gnotepad-<version>-Linux.rpm`.
+
+## Packaging (Flatpak)
+
+- Prereqs: `flatpak-builder`, plus runtimes `org.kde.Platform//6.7` and `org.kde.Sdk//6.7`.
+- Manifest: `packaging/linux/flatpak/app.gnotepad.GnotePad.yml` (builds from the repo checkout) vendors LLVM 18.1.8 and forces clang/lld with IPO enabled; no host GCC toolchain is used inside the sandbox. A `libtinfo.so.5` symlink is added to satisfy clang binaries in the vendor tree.
+- Flathub-ready manifest: `packaging/linux/flatpak/app.gnotepad.GnotePad.flathub.yml` (pinned source archive + sha256 for submissions). Keep the LLVM tarball URL + sha256 in sync when bumping releases.
+- Build (from repo root):
+  ```bash
+  flatpak-builder build-dir packaging/linux/flatpak/app.gnotepad.GnotePad.yml --install --user
+  flatpak run app.gnotepad.GnotePad
+  ```
+  To test the Flathub-pinned manifest, swap the manifest path: `flatpak-builder build-dir packaging/linux/flatpak/app.gnotepad.GnotePad.flathub.yml --install --user`.
 
 ## Include Guidelines
 

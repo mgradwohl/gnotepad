@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# Ensure Qt can find bundled plugins and libs inside the AppImage
+APPDIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+export PATH="${APPDIR}/usr/bin:${PATH:-}"
+export LD_LIBRARY_PATH="${APPDIR}/usr/lib:${LD_LIBRARY_PATH:-}"
+export QT_PLUGIN_PATH="${APPDIR}/usr/plugins"
+export QT_QPA_PLATFORM_PLUGIN_PATH="${APPDIR}/usr/plugins/platforms"
+export QML2_IMPORT_PATH="${APPDIR}/usr/qml"
+
+exec "${APPDIR}/usr/bin/GnotePad" "$@"

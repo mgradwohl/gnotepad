@@ -3,6 +3,7 @@
 #include <memory>
 
 #include <QtCore/qobject.h>
+#include <QtCore/qstringlist.h>
 #include <QtGui/qicon.h>
 #include <QtWidgets/qapplication.h>
 
@@ -30,11 +31,13 @@ public:
     int run();
 
 private:
+    void parseCommandLine(const QStringList& arguments);
     void configureMetadata() const;
     void configureIcon();
 
     std::unique_ptr<ui::MainWindow> m_mainWindow;
     QIcon m_applicationIcon;
+    bool m_quitAfterInit {false};
 };
 
 } // namespace GnotePad

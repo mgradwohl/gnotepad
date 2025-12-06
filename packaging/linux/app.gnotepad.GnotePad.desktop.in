@@ -1,10 +1,10 @@
 [Desktop Entry]
-Version=@PROJECT_VERSION@
+Version=1.5
 Type=Application
 Name=GnotePad
 Comment=Lightweight Qt-based text editor
 Exec=GnotePad
-Icon=gnotepad
+Icon=app.gnotepad.GnotePad
 Terminal=false
 Categories=Utility;TextEditor;
 StartupNotify=true
