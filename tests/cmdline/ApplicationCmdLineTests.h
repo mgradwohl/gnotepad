@@ -1,11 +1,7 @@
 #pragma once
 
 #include <QObject>
-
-namespace GnotePad
-{
-class Application;
-}
+#include <QtCore/QCommandLineParser>
 
 class ApplicationCmdLineTests : public QObject
 {
@@ -19,4 +15,7 @@ private slots:
     void testHeadlessSmokeParsing();
     void testNoFlagsParsing();
     void testQuitAfterInitBehavior();
+
+private:
+    void setupParser(QCommandLineParser& parser);
 };
