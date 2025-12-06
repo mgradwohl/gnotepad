@@ -58,6 +58,7 @@
    - [ ] Draft release notes (features, fixes, known issues). Attach AppImage, Flatpak bundle, DEB/RPM, Windows installer, macOS dmg (skip Snap unless we opt in).
    - [ ] Include SHA256 hashes for all binaries.
    - [ ] Publish the release (remove draft/pre-release flag once validated).
+   - [ ] For downstream endpoints (Flathub/AppImageHub/AUR), follow `packaging/PUBLISHING.md`; validate Flathub with `tools/flatpak-build.sh --flathub --install` before submitting.
 
 12. **Publish to distribution endpoints**
    - [ ] Flathub MR with updated pinned manifest and release notes.

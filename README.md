@@ -108,6 +108,7 @@ QT_QPA_PLATFORM=offscreen ./GnotePad --quit-after-init
 - Build artifact: `bash tools/package-appimage.sh` (requires `build/optimized`); outputs `packaging/dist/GnotePad-<version>-x86_64.AppImage` and logs to `packaging/dist/linuxdeployqt.log`.
 - Desktop/AppStream IDs: `app.gnotepad.GnotePad.desktop` and `app.gnotepad.GnotePad.appdata.xml` are baked into the AppImage.
 - Headless smoke (CI-friendly): `QT_QPA_PLATFORM=offscreen ./packaging/dist/GnotePad-<version>-x86_64.AppImage --quit-after-init`.
+- Publishing pointers: see `packaging/PUBLISHING.md` for AppImageHub/AppImage notes.
 
 ## Packaging (DEB/RPM)
 
@@ -124,12 +125,14 @@ QT_QPA_PLATFORM=offscreen ./GnotePad --quit-after-init
 - Prereqs: `flatpak-builder`, plus runtimes `org.kde.Platform//6.7` and `org.kde.Sdk//6.7`.
 - Manifest: `packaging/linux/flatpak/app.gnotepad.GnotePad.yml` (builds from the repo checkout) vendors LLVM 18.1.8 and forces clang/lld with IPO enabled; no host GCC toolchain is used inside the sandbox. A `libtinfo.so.5` symlink is added to satisfy clang binaries in the vendor tree.
 - Flathub-ready manifest: `packaging/linux/flatpak/app.gnotepad.GnotePad.flathub.yml` (pinned source archive + sha256 for submissions). Keep the LLVM tarball URL + sha256 in sync when bumping releases.
-- Build (from repo root):
+- Build helper: `tools/flatpak-build.sh --flathub --install` (default) runs the pinned manifest with a clean build-dir. Use `--local` to target the checkout manifest.
+- Manual build (from repo root):
   ```bash
   flatpak-builder build-dir packaging/linux/flatpak/app.gnotepad.GnotePad.yml --install --user
   flatpak run app.gnotepad.GnotePad
   ```
-  To test the Flathub-pinned manifest, swap the manifest path: `flatpak-builder build-dir packaging/linux/flatpak/app.gnotepad.GnotePad.flathub.yml --install --user`.
+  To test the Flathub-pinned manifest manually, swap the manifest path: `flatpak-builder build-dir packaging/linux/flatpak/app.gnotepad.GnotePad.flathub.yml --install --user`.
+- Publishing pointers: see `packaging/PUBLISHING.md` for Flathub submission steps.
 
 ## Include Guidelines
 
