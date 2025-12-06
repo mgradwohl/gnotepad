@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <id>app.gnotepad.GnotePad</id>
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>MIT</project_license>
+  <name>GnotePad</name>
+  <summary>Modern Qt text editor inspired by Windows Notepad</summary>
+  <description>
+    <p>GnotePad is a Qt 6 / C++23 refresh of the classic Notepad workflow with first-class support for Linux, Windows, and macOS.</p>
+    <ul>
+      <li>Fast plain-text editing with Unicode-aware encoding controls.</li>
+      <li>Find/replace, go-to-line, zoom, line numbers, and recent files mirroring Windows Notepad.</li>
+      <li>Cross-platform builds using CMake, Ninja, and clang with a native Qt UI.</li>
+    </ul>
+  </description>
+  <launchable type="desktop-id">app.gnotepad.GnotePad.desktop</launchable>
+  <developer id="app.gnotepad">
+    <name>GnotePad contributors</name>
+  </developer>
+  <url type="homepage">https://github.com/mgradwohl/GnotePad</url>
+  <url type="bugtracker">https://github.com/mgradwohl/GnotePad/issues</url>
+  <content_rating type="oars-1.1" />
+  <categories>
+    <category>Utility</category>
+    <category>TextEditor</category>
+  </categories>
+  <keywords>
+    <keyword>text</keyword>
+    <keyword>editor</keyword>
+    <keyword>notepad</keyword>
+    <keyword>qt</keyword>
+  </keywords>
+  <releases>
+    <release version="@VERSION@" date="@RELEASE_DATE@">
+      <description>
+        <p>Automated AppImage build produced from the optimized configuration.</p>
+      </description>
+    </release>
+  </releases>
+</component>
