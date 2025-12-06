@@ -4,7 +4,7 @@
 
 1. **Prep environment**
    - [ ] Verify all submodules and dependencies are current (`git pull --rebase`, `cmake --version`, `clang++ --version`).
-   - [ ] Install/verify packaging prerequisites: `sudo apt install patchelf chrpath desktop-file-utils appstream qt6-base-dev-tools zsync rpm` (provides `qmake6`, `zsyncmake`, and `rpmbuild`).
+   - [ ] Install/verify packaging prerequisites: `sudo apt install patchelf chrpath desktop-file-utils appstream qt6-base-dev-tools zsync rpm` (provides `qmake6`, `zsyncmake`, `rpmbuild`, and `sha256sum`).
    - [ ] Ensure Qt 6 toolchain, Flatpak SDK, Snapcraft, and code-signing keys are available.
    - [ ] Clean previous artifacts: `rm -rf build/optimized packaging/dist`.
 
@@ -22,8 +22,8 @@
    - [ ] Capture logs (store under `packaging/logs/<version>`).
 
 5. **Stage installation tree & kick off AppImage build**
-   - [ ] Run `tools/package-appimage.sh` (optionally set `VERSION`/`RELEASE_DATE` env vars). The script wipes `packaging/dist/AppDir`, reinstalls the optimized tree, copies `packaging/linux/AppRun`, renders `app.gnotepad.GnotePad.appdata.xml`, downloads/executes `tools/linuxdeployqt.AppImage` if needed, and logs to `packaging/dist/linuxdeployqt.log`.
-   - [ ] Confirm the script found `patchelf`, `chrpath`, `desktop-file-validate`, `appstreamcli`, `qmake6`, and `zsyncmake`. Install any missing tools and retry if it aborts early.
+   - [ ] Run `tools/package-appimage.sh` (optionally set `VERSION`/`RELEASE_DATE` env vars). The script wipes `packaging/dist/AppDir`, reinstalls the optimized tree, copies `packaging/linux/AppRun`, renders `app.gnotepad.GnotePad.appdata.xml`, downloads/executes `tools/linuxdeployqt.AppImage` with SHA256 checksum verification if needed, and logs to `packaging/dist/linuxdeployqt.log`.
+   - [ ] Confirm the script found `patchelf`, `chrpath`, `desktop-file-validate`, `appstreamcli`, `qmake6`, `zsyncmake`, and `sha256sum`. Install any missing tools and retry if it aborts early.
    - [ ] After a successful run, the AppImage and `.zsync` live in `packaging/dist/` as `GnotePad-${VERSION}-x86_64.AppImage(.zsync)`. If linuxdeployqt fails, inspect the log before iterating.
 
 6. **AppImage validation (primary Linux distribution)**
