@@ -27,3 +27,7 @@ Attach from `docs/screenshots/`:
 ## Usage notes
 - AppImage: `chmod +x GnotePad-0.8.1-x86_64.AppImage && ./GnotePad-0.8.1-x86_64.AppImage`
 - DEB/RPM: install on a clean system and ensure the desktop icon appears without manual cache resets.
+
+## Feedback & contribute
+- Feedback/bugs: https://github.com/mgradwohl/GnotePad/issues (please include platform and steps)
+- Contribute: see `CONTRIBUTING.md`; quick start for local install: `bash tools/install-local.sh` (build optimized first), or `tools/flatpak-build.sh --flathub --install` to test the Flatpak manifest.
