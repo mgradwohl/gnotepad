@@ -22,14 +22,17 @@ This guide covers pushing the 0.8.1 release to downstream endpoints: Flathub, Ap
    - Note the benign Qt cached DPR warning observed during headless run.
 
 ## AppImageHub submission (optional but recommended)
-1. Ensure AppImage and `.zsync` are available. If `.zsync` is missing, regenerate via:
+1. Ensure AppImage is available; `.zsync` is optional for the first release (no deltas yet). If you want to offer deltas for future updates, generate a `.zsync` via:
    ```bash
+   # rebuild AppImage; add zsync if desired
    bash tools/package-appimage.sh
+   # or create zsync in-place
+   (cd packaging/dist && zsyncmake GnotePad-0.8.1-x86_64.AppImage)
    ```
    Artifacts land in `packaging/dist/`.
 2. Publish artifacts on the GitHub release (already done).
 3. Submit to AppImageHub (appimage.github.io): open a pull request or issue providing:
-   - Direct links to the AppImage and `.zsync` from the GitHub release.
+   - Direct link to the AppImage (and `.zsync` if generated) from the GitHub release.
    - The AppImage SHA256 from `packaging/dist/SHA256SUMS.txt`.
    - A short changelog from `packaging/RELEASE_NOTES_v0.8.1.md`.
 
@@ -48,6 +51,7 @@ This guide covers pushing the 0.8.1 release to downstream endpoints: Flathub, Ap
   ```bash
   bash tools/package-appimage.sh
   ```
+   Optional delta support (not required for first release): `(cd packaging/dist && zsyncmake GnotePad-0.8.1-x86_64.AppImage)`
 - DEB/RPM from optimized build:
   ```bash
   (cd build/optimized && cpack -G DEB -C Release -B ../../packaging/dist)
