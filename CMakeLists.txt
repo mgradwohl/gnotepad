@@ -181,6 +181,8 @@ if(UNIX AND NOT APPLE)
     install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/resources/icons/gnotepad-icon.svg
         DESTINATION share/icons/hicolor/scalable/apps
         RENAME app.gnotepad.GnotePad.svg)
+    install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/resources/icons/app.gnotepad.GnotePad.png
+        DESTINATION share/icons/hicolor/256x256/apps)
 endif()
 
 set(CPACK_PACKAGE_NAME "gnotepad")
