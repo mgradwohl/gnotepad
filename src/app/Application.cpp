@@ -61,7 +61,9 @@ Application::~Application() = default;
 
 int Application::run()
 {
+#if defined(_WIN32)
     QApplication::setStyle("windows11");
+#endif
 
     const auto platformName = QGuiApplication::platformName();
     const auto styles = QStyleFactory::keys();
