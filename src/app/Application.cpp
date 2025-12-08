@@ -1,7 +1,10 @@
 #include "app/Application.h"
 
-#include <memory>
+#if defined(_WIN32)
+#include <windows.h>
+#endif
 
+#include <memory>
 #include <QtCore/qcommandlineoption.h>
 #include <QtCore/qcommandlineparser.h>
 #include <QtCore/qcoreapplication.h>
@@ -11,8 +14,14 @@
 #include <QtCore/qtimer.h>
 #include <QtGui/qguiapplication.h>
 #include <QtGui/qicon.h>
+#include <QtWidgets/qstyle.h>
+#include <QtWidgets/qstylefactory.h>
 
 #include <spdlog/spdlog.h>
+#if defined(_WIN32)
+#include <spdlog/sinks/msvc_sink.h>
+#include <spdlog/sinks/stdout_color_sinks.h>
+#endif
 
 #ifndef GNOTE_VERSION
 #define GNOTE_VERSION "0.0.0-dev"
@@ -30,6 +39,18 @@ namespace GnotePad
 
 Application::Application(int& argc, char** argv) : QApplication(argc, argv)
 {
+#if defined(_WIN32) && !defined(NDEBUG)
+    AttachConsole(ATTACH_PARENT_PROCESS);
+    // Route logs to both the debugger output window and the console (Windows Terminal).
+    auto msvcSink = std::make_shared<spdlog::sinks::msvc_sink_mt>();
+    auto consoleSink = std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
+    auto dualSinkLogger = std::make_shared<spdlog::logger>("debugger+console", spdlog::sinks_init_list{msvcSink, consoleSink});
+    spdlog::set_default_logger(dualSinkLogger);
+#endif
+    #if !defined(NDEBUG)
+        spdlog::set_level(spdlog::level::debug);
+        spdlog::flush_on(spdlog::level::debug);
+	#endif
     configureMetadata();
     QSettings::setDefaultFormat(QSettings::IniFormat);
     configureIcon();
@@ -41,6 +62,21 @@ Application::~Application() = default;
 
 int Application::run()
 {
+#if defined(_WIN32)
+    QApplication::setStyle("windows11");
+#endif
+
+    const auto platformName = QGuiApplication::platformName();
+    const auto styles = QStyleFactory::keys();
+    const auto* currentStyle = qApp->style();
+    const std::string currentStyleName = currentStyle != nullptr
+                                            ? currentStyle->objectName().toStdString()
+                                            : std::string("<none>");
+
+    spdlog::debug("Qt platform: {}", platformName.toStdString());
+    spdlog::debug("Available Qt styles: {}", styles.join(", ").toStdString());
+    spdlog::debug("Current Qt style: {}", currentStyleName);
+
     m_mainWindow = std::make_unique<ui::MainWindow>();
     if (!m_applicationIcon.isNull())
     {

@@ -10,7 +10,7 @@ Active development tracks the backlog outlined below on `main`, folding in incre
 - Ninja or Make (Ninja recommended)
 - Clang 15+ (or Apple Clang 15+ on macOS)
 - Qt 6.5+ development packages (Widgets, Gui, Core, PrintSupport)
-- Python 3.x (optional, for future tooling)
+- Python 3.x (optional; not required for building/running)
 
 On **Ubuntu/Debian** you can install requirements with:
 
@@ -18,11 +18,12 @@ On **Ubuntu/Debian** you can install requirements with:
 sudo apt install clang ninja-build qt6-base-dev qt6-base-dev-tools qt6-tools-dev cmake git
 ```
 
-On **Windows** (PowerShell with winget and vcpkg/Qt online installer):
+On **Windows** (PowerShell + vcpkg, clang++/lld, Qt6 via vcpkg):
 1. Install LLVM: `winget install LLVM.LLVM`
 2. Install CMake + Ninja: `winget install Kitware.CMake Ninja-build.Ninja`
-3. Install Qt 6 (MSVC or MinGW) via the Qt Maintenance Tool or vcpkg (`vcpkg install qtbase:x64-windows`).
-4. Ensure `clang-cl.exe` and Qt `bin/` folders are on your PATH before configuring.
+3. Install Qt: `vcpkg install qtbase:x64-windows qtsvg:x64-windows`
+4. Ensure `C:/Program Files/LLVM/bin` is on PATH (contains `clang++.exe` and `lld-link.exe`).
+5. Note: vcpkg layouts plugins under `.../installed/x64-windows/Qt6/plugins` (debug plugins under `.../debug/Qt6/plugins`). CMake now stages the Qt runtime (bin + plugins) plus a `qt.conf` into each `build/win-*` output, so you can launch `GnotePad.exe` directly from those folders without setting plugin environment variables.
 
 ## Configure & Build (Linux/macOS)
 
@@ -37,21 +38,31 @@ ctest --test-dir build/debug
 
 Adjust `-DCMAKE_PREFIX_PATH` to match your Qt6 installation (e.g., `/opt/Qt/6.xx/gcc_64/lib/cmake/Qt6`). Swap `Debug` for `Release` or `RelWithDebInfo` as needed.
 
-## Configure & Build (Windows, clang-cl)
+## Configure & Build (Windows, clang++/lld, vcpkg Qt6)
 
 ```powershell
-cmake -S . -B build -G "Ninja" `
-  -DCMAKE_C_COMPILER=clang-cl `
-  -DCMAKE_CXX_COMPILER=clang-cl `
-  -DCMAKE_PREFIX_PATH="C:/Qt/6.6.3/msvc2019_64" `
-  -DCMAKE_BUILD_TYPE=RelWithDebInfo
-cmake --build build
-ctest --test-dir build
+cmake -S . -B build/win-debug -G Ninja `
+  -DCMAKE_C_COMPILER="C:/Program Files/LLVM/bin/clang++.exe" `
+  -DCMAKE_CXX_COMPILER="C:/Program Files/LLVM/bin/clang++.exe" `
+  -DCMAKE_C_STANDARD=17 -DCMAKE_C_STANDARD_REQUIRED=ON `
+  -DCMAKE_CXX_STANDARD=23 -DCMAKE_CXX_STANDARD_REQUIRED=ON -DCMAKE_CXX_EXTENSIONS=OFF `
+  -DCMAKE_TOOLCHAIN_FILE="$env:USERPROFILE/source/vcpkg/scripts/buildsystems/vcpkg.cmake" `
+  -DCMAKE_BUILD_TYPE=Debug `
+  -DCMAKE_EXE_LINKER_FLAGS="-fuse-ld=lld" -DCMAKE_SHARED_LINKER_FLAGS="-fuse-ld=lld"
+cmake --build build/win-debug
 ```
+
+For release-like builds, swap `build/win-debug`/`Debug` for `build/win-relwithdebinfo` + `RelWithDebInfo`, `build/win-release` + `Release`, or `build/win-optimized` + `Release` with IPO enabled (see VS Code tasks). VS Code tasks (`Build Debug (Windows)`, `Build RelWithDebInfo (Windows)`, etc.) already use these flags and the vcpkg toolchain.
 
 ## Running
 
-After building, launch the executable from `build/<config>/GnotePad` (Linux/macOS) or `build/<config>/GnotePad.exe` (Windows). The current feature set includes:
+After building, launch the executable from `build/<config>/GnotePad` (Linux/macOS) or `build/<config>/GnotePad.exe` (Windows).
+
+Windows runtime note (Qt platform plugin):
+- vcpkg places platform plugins at `.../installed/x64-windows/Qt6/plugins/platforms/qwindows.dll` (debug: `.../debug/Qt6/plugins/platforms/qwindowsd.dll`).
+- CMake post-build steps copy the appropriate Qt bin and plugin trees plus a `qt.conf` into each `build/win-*` folder. You can run `GnotePad.exe` from those folders without setting `QT_PLUGIN_PATH`/`QT_QPA_PLATFORM_PLUGIN_PATH`.
+
+The current feature set includes:
 - Native QFileDialog open/save flows with UTF BOM detection, encoding picker, and per-file encoding display
 - Persistent preferences via QSettings (window geometry, MRU list, directories, tab size, word wrap, line numbers, zoom, status bar visibility)
 - Rich editor surface powered by `TextEditor` (line-number gutter, zoom in/out/reset, configurable tab spacing, cursor + document statistics, encoding indicator)
@@ -95,10 +106,7 @@ QT_QPA_PLATFORM=offscreen ./GnotePad --quit-after-init
 - **Editor configuration** – VS Code's C/C++ IntelliSense engine is disabled to avoid conflicting diagnostics; clangd via CMake Tools drives code completion using the generated `compile_commands.json`.
   - Install the [clangd extension](https://marketplace.visualstudio.com/items?itemName=llvm-vs-code-extensions.vscode-clangd) (`llvm-vs-code-extensions.vscode-clangd`) for full IDE features.
   - The extension is automatically recommended when opening the workspace.
-  - `.vscode/settings.json` points clangd at `build/compile_commands.json`; generate it by configuring once, e.g.:
-    ```bash
-    cmake -S . -B build/debug -G Ninja -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_PREFIX_PATH=/usr/lib/x86_64-linux-gnu/cmake/Qt6 -DCMAKE_BUILD_TYPE=Debug
-    ```
+  - `.vscode/settings.json` points clangd at the workspace root and `cmake.copyCompileCommands` copies the active build's `compile_commands.json` there on every configure. Run the appropriate configure task for whichever config you are using (e.g., `Build Debug (Windows)` or `Build Debug (Linux)`) so clangd stays in sync; re-run configure after switching build dirs like `build/win-release` vs. `build/debug`.
   - Run formatting when needed: `cmake --build build/debug --target run-clang-format`.
 - **Other clang utilities** – clangd powers completions, and clang-query/clang-apply-replacements can be layered on later for AST exploration or batch rewrites if needed.
 
