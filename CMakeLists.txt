@@ -210,16 +210,13 @@ if(WIN32)
     add_custom_command(TARGET GnotePad POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E make_directory "$<TARGET_FILE_DIR:GnotePad>/plugins"
         COMMAND ${CMAKE_COMMAND} -E copy_directory
-            $<$<CONFIG:Debug>:"${QT6_DEBUG_BIN}">
-            $<$<NOT:$<CONFIG:Debug>>:"${QT6_RELEASE_BIN}">
+            $<IF:$<CONFIG:Debug>,${QT6_DEBUG_BIN},${QT6_RELEASE_BIN}>
             "$<TARGET_FILE_DIR:GnotePad>"
         COMMAND ${CMAKE_COMMAND} -E copy_directory
-            $<$<CONFIG:Debug>:"${QT6_DEBUG_PLUGINS}">
-            $<$<NOT:$<CONFIG:Debug>>:"${QT6_RELEASE_PLUGINS}">
+            $<IF:$<CONFIG:Debug>,${QT6_DEBUG_PLUGINS},${QT6_RELEASE_PLUGINS}>
             "$<TARGET_FILE_DIR:GnotePad>/plugins"
         COMMAND ${CMAKE_COMMAND} -E copy_if_different
-            $<$<CONFIG:Debug>:"${CMAKE_CURRENT_BINARY_DIR}/qt.debug.conf">
-            $<$<NOT:$<CONFIG:Debug>>:"${CMAKE_CURRENT_BINARY_DIR}/qt.release.conf">
+            $<IF:$<CONFIG:Debug>,${CMAKE_CURRENT_BINARY_DIR}/qt.debug.conf,${CMAKE_CURRENT_BINARY_DIR}/qt.release.conf>
             "$<TARGET_FILE_DIR:GnotePad>/qt.conf"
         COMMENT "Copying Qt runtime and plugins beside GnotePad.exe"
     )
