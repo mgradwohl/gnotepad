@@ -4,6 +4,7 @@
 #include <windows.h>
 #endif
 
+#include <memory>
 #include <QtCore/qcommandlineoption.h>
 #include <QtCore/qcommandlineparser.h>
 #include <QtCore/qcoreapplication.h>
