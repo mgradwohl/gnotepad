@@ -23,7 +23,7 @@
 #endif
 
 #ifndef GNOTE_VERSION
-#define GNOTE_VERSION "0.8.1-dev"
+#define GNOTE_VERSION "0.0.0-dev"
 #endif
 
 #include "ui/MainWindow.h"
