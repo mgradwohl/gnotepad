@@ -49,7 +49,7 @@ Application::Application(int& argc, char** argv) : QApplication(argc, argv)
     #if !defined(NDEBUG)
         spdlog::set_level(spdlog::level::debug);
         spdlog::flush_on(spdlog::level::debug);
-    #endif
+	#endif
     configureMetadata();
     QSettings::setDefaultFormat(QSettings::IniFormat);
     configureIcon();
