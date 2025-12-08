@@ -116,7 +116,7 @@
             "preLaunchTask": "Build Release (Windows)",
             "presentation": {
                 "group": "run-windows",
-                "order": 3  
+                "order": 3
             }
         },
         {
