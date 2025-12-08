@@ -12,7 +12,7 @@
             "env": {
                 "LD_LIBRARY_PATH": ""
             },
-            "preLaunchTask": "Build Debug",
+            "preLaunchTask": "Build Debug (Linux)",
             "terminal": "integrated",
             "presentation": {
                 "group": "run-linux",
