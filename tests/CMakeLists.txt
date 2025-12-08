@@ -40,6 +40,35 @@ target_link_libraries(GnotePadSmoke PRIVATE
 
 target_compile_definitions(GnotePadSmoke PRIVATE GNOTE_TEST_HOOKS)
 
+if(WIN32)
+	# Stage Qt runtime and plugins beside the test binary so offscreen platform plugin is found.
+	get_filename_component(QT6_PREFIX "${Qt6_DIR}/../.." ABSOLUTE)
+	set(QT6_DEBUG_BIN "${QT6_PREFIX}/debug/bin")
+	set(QT6_RELEASE_BIN "${QT6_PREFIX}/bin")
+	set(QT6_DEBUG_PLUGINS "${QT6_PREFIX}/debug/Qt6/plugins")
+	set(QT6_RELEASE_PLUGINS "${QT6_PREFIX}/Qt6/plugins")
+
+	file(GENERATE OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/qt.tests.debug.conf" CONTENT "[Paths]\nPlugins=plugins\n")
+	file(GENERATE OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/qt.tests.release.conf" CONTENT "[Paths]\nPlugins=plugins\n")
+
+	add_custom_command(TARGET GnotePadSmoke POST_BUILD
+		COMMAND ${CMAKE_COMMAND} -E make_directory "$<TARGET_FILE_DIR:GnotePadSmoke>/plugins"
+		COMMAND ${CMAKE_COMMAND} -E copy_directory
+			$<$<CONFIG:Debug>:${QT6_DEBUG_BIN}>
+			$<$<NOT:$<CONFIG:Debug>>:${QT6_RELEASE_BIN}>
+			"$<TARGET_FILE_DIR:GnotePadSmoke>"
+		COMMAND ${CMAKE_COMMAND} -E copy_directory
+			$<$<CONFIG:Debug>:${QT6_DEBUG_PLUGINS}>
+			$<$<NOT:$<CONFIG:Debug>>:${QT6_RELEASE_PLUGINS}>
+			"$<TARGET_FILE_DIR:GnotePadSmoke>/plugins"
+		COMMAND ${CMAKE_COMMAND} -E copy_if_different
+			$<$<CONFIG:Debug>:${CMAKE_CURRENT_BINARY_DIR}/qt.tests.debug.conf>
+			$<$<NOT:$<CONFIG:Debug>>:${CMAKE_CURRENT_BINARY_DIR}/qt.tests.release.conf>
+			"$<TARGET_FILE_DIR:GnotePadSmoke>/qt.conf"
+		COMMENT "Copying Qt runtime and plugins beside GnotePadSmoke.exe"
+	)
+endif()
+
 add_custom_command(TARGET GnotePadSmoke POST_BUILD
 	COMMAND ${CMAKE_COMMAND} -E copy_directory
 		${CMAKE_SOURCE_DIR}/tests/testfiles
@@ -102,6 +131,25 @@ target_link_libraries(GnotePadCmdLine PRIVATE
 	Qt6::Core
 	Qt6::Test
 )
+
+if(WIN32)
+	add_custom_command(TARGET GnotePadCmdLine POST_BUILD
+		COMMAND ${CMAKE_COMMAND} -E make_directory "$<TARGET_FILE_DIR:GnotePadCmdLine>/plugins"
+		COMMAND ${CMAKE_COMMAND} -E copy_directory
+			$<$<CONFIG:Debug>:${QT6_DEBUG_BIN}>
+			$<$<NOT:$<CONFIG:Debug>>:${QT6_RELEASE_BIN}>
+			"$<TARGET_FILE_DIR:GnotePadCmdLine>"
+		COMMAND ${CMAKE_COMMAND} -E copy_directory
+			$<$<CONFIG:Debug>:${QT6_DEBUG_PLUGINS}>
+			$<$<NOT:$<CONFIG:Debug>>:${QT6_RELEASE_PLUGINS}>
+			"$<TARGET_FILE_DIR:GnotePadCmdLine>/plugins"
+		COMMAND ${CMAKE_COMMAND} -E copy_if_different
+			$<$<CONFIG:Debug>:${CMAKE_CURRENT_BINARY_DIR}/qt.tests.debug.conf>
+			$<$<NOT:$<CONFIG:Debug>>:${CMAKE_CURRENT_BINARY_DIR}/qt.tests.release.conf>
+			"$<TARGET_FILE_DIR:GnotePadCmdLine>/qt.conf"
+		COMMENT "Copying Qt runtime and plugins beside GnotePadCmdLine.exe"
+	)
+endif()
 
 set(GNOTE_CMDLINE_TEST_FUNCTIONS
 	testQuitAfterInitParsing

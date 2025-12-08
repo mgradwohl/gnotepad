@@ -2,12 +2,12 @@
 	"version": "2.0.0",
 	"tasks": [
 		{
-			"label": "Build Debug",
+			"label": "Build Debug (Linux)",
 			"type": "shell",
 			"command": "bash",
 			"args": [
 				"-lc",
-				"cmake -S . -B build/debug -G Ninja -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_PREFIX_PATH=/usr/lib/x86_64-linux-gnu/cmake/Qt6 -DCMAKE_BUILD_TYPE=Debug && cmake --build build/debug"
+				"cmake -S . -B build/debug -G Ninja -DCMAKE_C_COMPILER=clang++ -DCMAKE_C_STANDARD=17 -DCMAKE_C_STANDARD_REQUIRED=ON -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_CXX_STANDARD=23 -DCMAKE_CXX_STANDARD_REQUIRED=ON -DCMAKE_CXX_EXTENSIONS=OFF -DCMAKE_PREFIX_PATH=/usr/lib/x86_64-linux-gnu/cmake/Qt6 -DCMAKE_BUILD_TYPE=Debug && cmake --build build/debug"
 			],
 			"group": {
 				"kind": "build",
@@ -16,49 +16,186 @@
 			"problemMatcher": ["$gcc"]
 		},
 		{
-			"label": "Build Release",
+			"label": "Build RelWithDebInfo (Linux)",
 			"type": "shell",
 			"command": "bash",
 			"args": [
 				"-lc",
-				"cmake -S . -B build/release -G Ninja -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_PREFIX_PATH=/usr/lib/x86_64-linux-gnu/cmake/Qt6 -DCMAKE_BUILD_TYPE=Release && cmake --build build/release"
+				"cmake -S . -B build/relwithdebinfo -G Ninja -DCMAKE_C_COMPILER=clang++ -DCMAKE_C_STANDARD=17 -DCMAKE_C_STANDARD_REQUIRED=ON -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_CXX_STANDARD=23 -DCMAKE_CXX_STANDARD_REQUIRED=ON -DCMAKE_CXX_EXTENSIONS=OFF -DCMAKE_PREFIX_PATH=/usr/lib/x86_64-linux-gnu/cmake/Qt6 -DCMAKE_BUILD_TYPE=RelWithDebInfo && cmake --build build/relwithdebinfo"
 			],
 			"group": "build",
 			"problemMatcher": ["$gcc"]
 		},
 		{
-			"label": "Build Optimized",
+			"label": "Build Release (Linux)",
 			"type": "shell",
 			"command": "bash",
 			"args": [
 				"-lc",
-				"cmake -S . -B build/optimized -G Ninja -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_PREFIX_PATH=/usr/lib/x86_64-linux-gnu/cmake/Qt6 -DCMAKE_BUILD_TYPE=Release -DGNOTE_ENABLE_IPO=ON -DCMAKE_INTERPROCEDURAL_OPTIMIZATION=ON -DCMAKE_EXE_LINKER_FLAGS_RELEASE='-s' -DCMAKE_SHARED_LINKER_FLAGS_RELEASE='-s' && cmake --build build/optimized"
+				"cmake -S . -B build/release -G Ninja -DCMAKE_C_COMPILER=clang++ -DCMAKE_C_STANDARD=17 -DCMAKE_C_STANDARD_REQUIRED=ON -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_CXX_STANDARD=23 -DCMAKE_CXX_STANDARD_REQUIRED=ON -DCMAKE_CXX_EXTENSIONS=OFF -DCMAKE_PREFIX_PATH=/usr/lib/x86_64-linux-gnu/cmake/Qt6 -DCMAKE_BUILD_TYPE=Release && cmake --build build/release"
 			],
 			"group": "build",
 			"problemMatcher": ["$gcc"]
 		},
 		{
-			"label": "Clang-Tidy (Debug)",
+			"label": "Build Optimized (Linux)",
 			"type": "shell",
 			"command": "bash",
 			"args": [
 				"-lc",
-				"cmake -S . -B build/debug -G Ninja -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_PREFIX_PATH=/usr/lib/x86_64-linux-gnu/cmake/Qt6 -DCMAKE_BUILD_TYPE=Debug -DGNOTE_ENABLE_CLANG_TIDY=ON && cmake --build build/debug"
+				"cmake -S . -B build/optimized -G Ninja -DCMAKE_C_COMPILER=clang++ -DCMAKE_C_STANDARD=17 -DCMAKE_C_STANDARD_REQUIRED=ON -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_CXX_STANDARD=23 -DCMAKE_CXX_STANDARD_REQUIRED=ON -DCMAKE_CXX_EXTENSIONS=OFF -DCMAKE_PREFIX_PATH=/usr/lib/x86_64-linux-gnu/cmake/Qt6 -DCMAKE_BUILD_TYPE=Release -DGNOTE_ENABLE_IPO=ON -DCMAKE_INTERPROCEDURAL_OPTIMIZATION=ON -DCMAKE_EXE_LINKER_FLAGS_RELEASE='-s' -DCMAKE_SHARED_LINKER_FLAGS_RELEASE='-s' && cmake --build build/optimized"
 			],
+			"group": "build",
 			"problemMatcher": ["$gcc"]
 		},
 		{
-			"label": "Scan-Build (Debug)",
+			"label": "Configure Debug (Windows)",
+			"type": "shell",
+			"command": "cmake",
+			"args": [
+				"-S", ".",
+				"-B", "build/win-debug",
+				"-G", "Ninja",
+				"-DCMAKE_C_COMPILER=C:/Program Files/LLVM/bin/clang++.exe",
+				"-DCMAKE_C_STANDARD=17",
+				"-DCMAKE_C_STANDARD_REQUIRED=ON",
+				"-DCMAKE_CXX_COMPILER=C:/Program Files/LLVM/bin/clang++.exe",
+				"-DCMAKE_CXX_STANDARD=23",
+				"-DCMAKE_CXX_STANDARD_REQUIRED=ON",
+				"-DCMAKE_CXX_EXTENSIONS=OFF",
+				"-DCMAKE_TOOLCHAIN_FILE=${env:USERPROFILE}/source/vcpkg/scripts/buildsystems/vcpkg.cmake",
+				"-DCMAKE_BUILD_TYPE=Debug",
+				"-DCMAKE_EXE_LINKER_FLAGS=-fuse-ld=lld",
+				"-DCMAKE_SHARED_LINKER_FLAGS=-fuse-ld=lld"
+			],
+			"group": "build",
+			"problemMatcher": ["$gcc"]
+		},
+		{
+			"label": "Build Debug (Windows)",
+			"type": "shell",
+			"command": "cmake",
+			"args": ["--build", "build/win-debug"],
+			"dependsOn": "Configure Debug (Windows)",
+			"problemMatcher": ["$gcc"]
+		},
+		{
+			"label": "Configure RelWithDebInfo (Windows)",
+			"type": "shell",
+			"command": "cmake",
+			"args": [
+				"-S", ".",
+				"-B", "build/win-relwithdebinfo",
+				"-G", "Ninja",
+				"-DCMAKE_C_COMPILER=C:/Program Files/LLVM/bin/clang++.exe",
+				"-DCMAKE_C_STANDARD=17",
+				"-DCMAKE_C_STANDARD_REQUIRED=ON",
+				"-DCMAKE_CXX_COMPILER=C:/Program Files/LLVM/bin/clang++.exe",
+				"-DCMAKE_CXX_STANDARD=23",
+				"-DCMAKE_CXX_STANDARD_REQUIRED=ON",
+				"-DCMAKE_CXX_EXTENSIONS=OFF",
+				"-DCMAKE_TOOLCHAIN_FILE=${env:USERPROFILE}/source/vcpkg/scripts/buildsystems/vcpkg.cmake",
+				"-DCMAKE_BUILD_TYPE=RelWithDebInfo",
+				"-DCMAKE_EXE_LINKER_FLAGS=-fuse-ld=lld",
+				"-DCMAKE_SHARED_LINKER_FLAGS=-fuse-ld=lld"
+			],
+			"group": "build",
+			"problemMatcher": ["$gcc"]
+		},
+		{
+			"label": "Build RelWithDebInfo (Windows)",
+			"type": "shell",
+			"command": "cmake",
+			"args": ["--build", "build/win-relwithdebinfo"],
+			"dependsOn": "Configure RelWithDebInfo (Windows)",
+			"problemMatcher": ["$gcc"]
+		},
+		{
+			"label": "Configure Release (Windows)",
+			"type": "shell",
+			"command": "cmake",
+			"args": [
+				"-S", ".",
+				"-B", "build/win-release",
+				"-G", "Ninja",
+				"-DCMAKE_C_COMPILER=C:/Program Files/LLVM/bin/clang++.exe",
+				"-DCMAKE_C_STANDARD=17",
+				"-DCMAKE_C_STANDARD_REQUIRED=ON",
+				"-DCMAKE_CXX_COMPILER=C:/Program Files/LLVM/bin/clang++.exe",
+				"-DCMAKE_CXX_STANDARD=23",
+				"-DCMAKE_CXX_STANDARD_REQUIRED=ON",
+				"-DCMAKE_CXX_EXTENSIONS=OFF",
+				"-DCMAKE_TOOLCHAIN_FILE=${env:USERPROFILE}/source/vcpkg/scripts/buildsystems/vcpkg.cmake",
+				"-DCMAKE_BUILD_TYPE=Release",
+				"-DCMAKE_EXE_LINKER_FLAGS=-fuse-ld=lld",
+				"-DCMAKE_SHARED_LINKER_FLAGS=-fuse-ld=lld"
+			],
+			"group": "build",
+			"problemMatcher": ["$gcc"]
+		},
+		{
+			"label": "Build Release (Windows)",
+			"type": "shell",
+			"command": "cmake",
+			"args": ["--build", "build/win-release"],
+			"dependsOn": "Configure Release (Windows)",
+			"problemMatcher": ["$gcc"]
+		},
+		{
+			"label": "Configure Optimized (Windows)",
+			"type": "shell",
+			"command": "cmake",
+			"args": [
+				"-S", ".",
+				"-B", "build/win-optimized",
+				"-G", "Ninja",
+				"-DCMAKE_C_COMPILER=C:/Program Files/LLVM/bin/clang++.exe",
+				"-DCMAKE_C_STANDARD=17",
+				"-DCMAKE_C_STANDARD_REQUIRED=ON",
+				"-DCMAKE_CXX_COMPILER=C:/Program Files/LLVM/bin/clang++.exe",
+				"-DCMAKE_CXX_STANDARD=23",
+				"-DCMAKE_CXX_STANDARD_REQUIRED=ON",
+				"-DCMAKE_CXX_EXTENSIONS=OFF",
+				"-DCMAKE_TOOLCHAIN_FILE=${env:USERPROFILE}/source/vcpkg/scripts/buildsystems/vcpkg.cmake",
+				"-DCMAKE_BUILD_TYPE=Release",
+				"-DGNOTE_ENABLE_IPO=ON",
+				"-DCMAKE_INTERPROCEDURAL_OPTIMIZATION=ON",
+				"-DCMAKE_EXE_LINKER_FLAGS=-fuse-ld=lld",
+				"-DCMAKE_SHARED_LINKER_FLAGS=-fuse-ld=lld"
+			],
+			"group": "build",
+			"problemMatcher": ["$gcc"]
+		},
+		{
+			"label": "Build Optimized (Windows)",
+			"type": "shell",
+			"command": "cmake",
+			"args": ["--build", "build/win-optimized"],
+			"dependsOn": "Configure Optimized (Windows)",
+			"problemMatcher": ["$gcc"]
+		},
+		{
+			"label": "Clang-Tidy (Debug, Linux)",
 			"type": "shell",
 			"command": "bash",
 			"args": [
 				"-lc",
-				"cmake -S . -B build/analyze -G Ninja -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_PREFIX_PATH=/usr/lib/x86_64-linux-gnu/cmake/Qt6 -DCMAKE_BUILD_TYPE=Debug && scan-build -o scan-build-report --status-bugs cmake --build build/analyze"
+				"cmake -S . -B build/debug -G Ninja -DCMAKE_C_COMPILER=clang++ -DCMAKE_C_STANDARD=17 -DCMAKE_C_STANDARD_REQUIRED=ON -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_CXX_STANDARD=23 -DCMAKE_CXX_STANDARD_REQUIRED=ON -DCMAKE_CXX_EXTENSIONS=OFF -DCMAKE_PREFIX_PATH=/usr/lib/x86_64-linux-gnu/cmake/Qt6 -DCMAKE_BUILD_TYPE=Debug -DGNOTE_ENABLE_CLANG_TIDY=ON && cmake --build build/debug"
 			],
 			"problemMatcher": ["$gcc"]
 		},
 		{
-			"label": "Clang-Format",
+			"label": "Scan-Build (Debug, Linux)",
+			"type": "shell",
+			"command": "bash",
+			"args": [
+				"-lc",
+				"cmake -S . -B build/analyze -G Ninja -DCMAKE_C_COMPILER=clang++ -DCMAKE_C_STANDARD=17 -DCMAKE_C_STANDARD_REQUIRED=ON -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_CXX_STANDARD=23 -DCMAKE_CXX_STANDARD_REQUIRED=ON -DCMAKE_CXX_EXTENSIONS=OFF -DCMAKE_PREFIX_PATH=/usr/lib/x86_64-linux-gnu/cmake/Qt6 -DCMAKE_BUILD_TYPE=Debug && scan-build -o scan-build-report --status-bugs cmake --build build/analyze"
+			],
+			"problemMatcher": ["$gcc"]
+		},
+		{
+			"label": "Clang-Format (Linux)",
 			"type": "shell",
 			"command": "bash",
 			"args": [

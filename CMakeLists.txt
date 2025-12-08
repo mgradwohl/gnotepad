@@ -5,7 +5,20 @@ project(GnotePad VERSION 0.8.1 LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
+set(CMAKE_C_STANDARD 17)
+set(CMAKE_C_STANDARD_REQUIRED ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
+# Keep clangd fed regardless of config: copy compile_commands.json to source root on build.
+if(NOT CMAKE_SOURCE_DIR STREQUAL CMAKE_BINARY_DIR)
+    add_custom_target(copy-compile-commands ALL
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            "${CMAKE_BINARY_DIR}/compile_commands.json"
+            "${CMAKE_SOURCE_DIR}/compile_commands.json"
+        BYPRODUCTS "${CMAKE_SOURCE_DIR}/compile_commands.json"
+        COMMENT "Copying compile_commands.json to source tree for clangd"
+    )
+endif()
 
 option(GNOTE_ENABLE_IPO "Enable interprocedural optimization" ON)
 option(GNOTE_ENABLE_WARNINGS "Enable extra compiler warnings" ON)
@@ -30,8 +43,12 @@ function(gnote_apply_default_warnings target_name)
     endif()
 endfunction()
 
-find_program(CLANG_TIDY_EXE NAMES clang-tidy)
-find_program(CLANG_FORMAT_EXE NAMES clang-format)
+find_program(CLANG_TIDY_EXE NAMES clang-tidy
+    HINTS "C:/Program Files/LLVM/bin"
+)
+find_program(CLANG_FORMAT_EXE NAMES clang-format
+    HINTS "C:/Program Files/LLVM/bin"
+)
 
 if(GNOTE_ENABLE_CLANG_TIDY)
     if(NOT CLANG_TIDY_EXE)
@@ -69,19 +86,23 @@ endif()
 
 find_package(Qt6 6.4 REQUIRED COMPONENTS Core Gui Widgets PrintSupport Svg SvgWidgets Test)
 
+# Prefer header-only spdlog and std::format to sidestep MSVC fmt deprecation noise.
+set(SPDLOG_HEADER_ONLY ON CACHE BOOL "Build spdlog in header-only mode" FORCE)
+
 FetchContent_Declare(
     spdlog
     GIT_REPOSITORY https://github.com/gabime/spdlog.git
     GIT_TAG v1.13.0
 )
 
-FetchContent_GetProperties(spdlog)
-if(NOT spdlog_POPULATED)
-    FetchContent_Populate(spdlog)
-    add_library(spdlog_header_only INTERFACE)
-    target_include_directories(spdlog_header_only INTERFACE ${spdlog_SOURCE_DIR}/include)
-    target_compile_definitions(spdlog_header_only INTERFACE SPDLOG_USE_STD_FORMAT=1)
-    add_library(spdlog::spdlog_header_only ALIAS spdlog_header_only)
+FetchContent_MakeAvailable(spdlog)
+
+if(TARGET spdlog_header_only)
+    target_compile_definitions(spdlog_header_only INTERFACE SPDLOG_USE_STD_FORMAT _SILENCE_STDEXT_ARR_ITERS_DEPRECATION_WARNING)
+endif()
+
+if(TARGET spdlog)
+    target_compile_definitions(spdlog PUBLIC SPDLOG_USE_STD_FORMAT _SILENCE_STDEXT_ARR_ITERS_DEPRECATION_WARNING)
 endif()
 
 set(GNOTE_SOURCES
@@ -146,10 +167,15 @@ endif()
 
 if(WIN32)
     target_compile_definitions(GnotePad PRIVATE NOMINMAX WIN32_LEAN_AND_MEAN)
+    set_target_properties(GnotePad PROPERTIES WIN32_EXECUTABLE TRUE)
+    if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+        target_link_options(GnotePad PRIVATE "-Xlinker" "/ENTRY:wWinMainCRTStartup")
+    else()
+        target_link_options(GnotePad PRIVATE "/ENTRY:wWinMainCRTStartup")
+    endif()
 endif()
 
 set_target_properties(GnotePad PROPERTIES
-    WIN32_EXECUTABLE TRUE
     MACOSX_BUNDLE TRUE
 )
 
@@ -168,6 +194,36 @@ target_link_libraries(GnotePad PRIVATE
 )
 
 target_compile_definitions(GnotePad PRIVATE GNOTE_VERSION="${PROJECT_VERSION}")
+
+if(WIN32)
+    # Derive Qt prefix to locate debug/release runtime paths (vcpkg layout: installed/x64-windows[/debug]).
+    get_filename_component(QT6_PREFIX "${Qt6_DIR}/../.." ABSOLUTE)
+    set(QT6_DEBUG_BIN "${QT6_PREFIX}/debug/bin")
+    set(QT6_RELEASE_BIN "${QT6_PREFIX}/bin")
+    set(QT6_DEBUG_PLUGINS "${QT6_PREFIX}/debug/Qt6/plugins")
+    set(QT6_RELEASE_PLUGINS "${QT6_PREFIX}/Qt6/plugins")
+
+    file(GENERATE OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/qt.debug.conf" CONTENT "[Paths]\nPlugins=plugins\n")
+    file(GENERATE OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/qt.release.conf" CONTENT "[Paths]\nPlugins=plugins\n")
+
+    # Copy Qt runtime DLLs and plugins next to the executable so it can run outside VS Code without env vars.
+    add_custom_command(TARGET GnotePad POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E make_directory "$<TARGET_FILE_DIR:GnotePad>/plugins"
+        COMMAND ${CMAKE_COMMAND} -E copy_directory
+            $<$<CONFIG:Debug>:"${QT6_DEBUG_BIN}">
+            $<$<NOT:$<CONFIG:Debug>>:"${QT6_RELEASE_BIN}">
+            "$<TARGET_FILE_DIR:GnotePad>"
+        COMMAND ${CMAKE_COMMAND} -E copy_directory
+            $<$<CONFIG:Debug>:"${QT6_DEBUG_PLUGINS}">
+            $<$<NOT:$<CONFIG:Debug>>:"${QT6_RELEASE_PLUGINS}">
+            "$<TARGET_FILE_DIR:GnotePad>/plugins"
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            $<$<CONFIG:Debug>:"${CMAKE_CURRENT_BINARY_DIR}/qt.debug.conf">
+            $<$<NOT:$<CONFIG:Debug>>:"${CMAKE_CURRENT_BINARY_DIR}/qt.release.conf">
+            "$<TARGET_FILE_DIR:GnotePad>/qt.conf"
+        COMMENT "Copying Qt runtime and plugins beside GnotePad.exe"
+    )
+endif()
 
 install(TARGETS GnotePad
     BUNDLE DESTINATION .
