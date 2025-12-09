@@ -14,7 +14,7 @@ if (Test-Path "$llvm\bin") {
 $cmake = "C:\Program Files\CMake\bin"
 if (Test-Path $cmake) {
     $env:PATH = "$cmake;$env:PATH"
-    $env:CMAKE_ROOT = $cmake
+    $env:CMAKE_BIN_DIR = $cmake
 }
 
 # Prepend VCPKG
