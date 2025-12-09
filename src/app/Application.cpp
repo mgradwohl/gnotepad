@@ -4,7 +4,6 @@
 #include <windows.h>
 #endif
 
-#include <memory>
 #include <QtCore/qcommandlineoption.h>
 #include <QtCore/qcommandlineparser.h>
 #include <QtCore/qcoreapplication.h>
@@ -16,6 +15,7 @@
 #include <QtGui/qicon.h>
 #include <QtWidgets/qstyle.h>
 #include <QtWidgets/qstylefactory.h>
+#include <memory>
 
 #include <spdlog/spdlog.h>
 #if defined(_WIN32)
@@ -47,10 +47,10 @@ Application::Application(int& argc, char** argv) : QApplication(argc, argv)
     auto dualSinkLogger = std::make_shared<spdlog::logger>("debugger+console", spdlog::sinks_init_list{msvcSink, consoleSink});
     spdlog::set_default_logger(dualSinkLogger);
 #endif
-    #if !defined(NDEBUG)
-        spdlog::set_level(spdlog::level::debug);
-        spdlog::flush_on(spdlog::level::debug);
-	#endif
+#if !defined(NDEBUG)
+    spdlog::set_level(spdlog::level::debug);
+    spdlog::flush_on(spdlog::level::debug);
+#endif
     configureMetadata();
     QSettings::setDefaultFormat(QSettings::IniFormat);
     configureIcon();
@@ -62,16 +62,12 @@ Application::~Application() = default;
 
 int Application::run()
 {
-#if defined(_WIN32)
-    QApplication::setStyle("windows11");
-#endif
+    configureStyle();
 
     const auto platformName = QGuiApplication::platformName();
     const auto styles = QStyleFactory::keys();
     const auto* currentStyle = qApp->style();
-    const std::string currentStyleName = currentStyle != nullptr
-                                            ? currentStyle->objectName().toStdString()
-                                            : std::string("<none>");
+    const std::string currentStyleName = currentStyle != nullptr ? currentStyle->objectName().toStdString() : std::string("<none>");
 
     spdlog::debug("Qt platform: {}", platformName.toStdString());
     spdlog::debug("Available Qt styles: {}", styles.join(", ").toStdString());
@@ -133,14 +129,55 @@ void Application::parseCommandLine(const QStringList& arguments)
     parser.addHelpOption();
     parser.addVersionOption();
     parser.setSingleDashWordOptionMode(QCommandLineParser::ParseAsLongOptions);
-    QCommandLineOption quitAfterInitOption(
-        {QStringLiteral("quit-after-init"), QStringLiteral("headless-smoke")},
-        QStringLiteral("Quit shortly after startup (useful for headless smoke tests)."));
+    QCommandLineOption quitAfterInitOption({QStringLiteral("quit-after-init"), QStringLiteral("headless-smoke")},
+                                           QStringLiteral("Quit shortly after startup (useful for headless smoke tests)."));
 
     parser.addOption(quitAfterInitOption);
     parser.process(arguments);
 
     m_quitAfterInit = parser.isSet(quitAfterInitOption);
+}
+
+void Application::configureStyle()
+{
+    const QStringList availableStyles = QStyleFactory::keys();
+
+#if defined(_WIN32)
+    // Windows: prefer windows11, fallback to fusion, then default
+    if (availableStyles.contains(QStringLiteral("windows11"), Qt::CaseInsensitive))
+    {
+        QApplication::setStyle(QStringLiteral("windows11"));
+        spdlog::debug("Qt style set to 'windows11'");
+    }
+    else if (availableStyles.contains(QStringLiteral("fusion"), Qt::CaseInsensitive))
+    {
+        QApplication::setStyle(QStringLiteral("fusion"));
+        spdlog::debug("Qt style 'windows11' not available; using 'fusion' instead");
+    }
+    else
+    {
+        spdlog::debug("Qt styles 'windows11' and 'fusion' not available; using default style");
+    }
+#elif defined(Q_OS_LINUX)
+    // Linux: prefer fusion, fallback to windows, then default
+    if (availableStyles.contains(QStringLiteral("fusion"), Qt::CaseInsensitive))
+    {
+        QApplication::setStyle(QStringLiteral("fusion"));
+        spdlog::debug("Qt style set to 'fusion'");
+    }
+    else if (availableStyles.contains(QStringLiteral("windows"), Qt::CaseInsensitive))
+    {
+        QApplication::setStyle(QStringLiteral("windows"));
+        spdlog::debug("Qt style 'fusion' not available; using 'windows' instead");
+    }
+    else
+    {
+        spdlog::debug("Qt styles 'fusion' and 'windows' not available; using default style");
+    }
+#else
+    // macOS and other platforms: use default style
+    spdlog::debug("Using default Qt style for this platform");
+#endif
 }
 
 } // namespace GnotePad

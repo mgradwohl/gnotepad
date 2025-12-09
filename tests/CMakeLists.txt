@@ -166,3 +166,70 @@ foreach(test_name IN LISTS GNOTE_CMDLINE_TEST_FUNCTIONS)
 endforeach()
 
 add_test(NAME gnotepad_cmdline_all COMMAND $<TARGET_FILE:GnotePadCmdLine>)
+
+# Qt style configuration tests
+add_executable(GnotePadStyle
+	style/style.cpp
+	style/StyleConfigTests.h
+	style/StyleConfigTests.cpp
+)
+
+set_source_files_properties(
+	style/style.cpp
+	style/StyleConfigTests.h
+	style/StyleConfigTests.cpp
+	PROPERTIES SKIP_CLANG_TIDY TRUE
+)
+
+target_compile_features(GnotePadStyle PRIVATE cxx_std_23)
+
+if(COMMAND gnote_apply_default_warnings)
+	gnote_apply_default_warnings(GnotePadStyle)
+endif()
+
+target_include_directories(GnotePadStyle PRIVATE
+	${CMAKE_SOURCE_DIR}/src
+)
+
+set_target_properties(GnotePadStyle PROPERTIES AUTOMOC ON)
+
+target_link_libraries(GnotePadStyle PRIVATE
+	Qt6::Core
+	Qt6::Widgets
+	Qt6::Test
+)
+
+if(WIN32)
+	add_custom_command(TARGET GnotePadStyle POST_BUILD
+		COMMAND ${CMAKE_COMMAND} -E make_directory "$<TARGET_FILE_DIR:GnotePadStyle>/plugins"
+		COMMAND ${CMAKE_COMMAND} -E copy_directory
+			$<$<CONFIG:Debug>:${QT6_DEBUG_BIN}>
+			$<$<NOT:$<CONFIG:Debug>>:${QT6_RELEASE_BIN}>
+			"$<TARGET_FILE_DIR:GnotePadStyle>"
+		COMMAND ${CMAKE_COMMAND} -E copy_directory
+			$<$<CONFIG:Debug>:${QT6_DEBUG_PLUGINS}>
+			$<$<NOT:$<CONFIG:Debug>>:${QT6_RELEASE_PLUGINS}>
+			"$<TARGET_FILE_DIR:GnotePadStyle>/plugins"
+		COMMAND ${CMAKE_COMMAND} -E copy_if_different
+			$<$<CONFIG:Debug>:${CMAKE_CURRENT_BINARY_DIR}/qt.tests.debug.conf>
+			$<$<NOT:$<CONFIG:Debug>>:${CMAKE_CURRENT_BINARY_DIR}/qt.tests.release.conf>
+			"$<TARGET_FILE_DIR:GnotePadStyle>/qt.conf"
+		COMMENT "Copying Qt runtime and plugins beside GnotePadStyle.exe"
+	)
+endif()
+
+set(GNOTE_STYLE_TEST_FUNCTIONS
+	testStyleFactoryKeysNotEmpty
+	testFusionStyleAvailable
+	testWindowsStyleAvailable
+	testStyleSelectionDoesNotCrash
+)
+
+foreach(test_name IN LISTS GNOTE_STYLE_TEST_FUNCTIONS)
+	add_test(
+		NAME gnotepad_${test_name}
+		COMMAND $<TARGET_FILE:GnotePadStyle> ${test_name}
+	)
+endforeach()
+
+add_test(NAME gnotepad_style_all COMMAND $<TARGET_FILE:GnotePadStyle>)
