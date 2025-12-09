@@ -4,9 +4,9 @@ Import-Module "C:\Program Files\Microsoft Visual Studio\18\Insiders\Common7\Tool
 Enter-VsDevShell a73be645 -SkipAutomaticLocation -DevCmdArguments "-arch=x64 -host_arch=x64"
 
 # Prepend LLVM
-$llvm = "C:\Program Files\LLVM\bin"
-if (Test-Path $llvm) {
-    $env:PATH = "$llvm;$env:PATH"
+$llvm = "C:\Program Files\LLVM"
+if (Test-Path "$llvm\bin") {
+    $env:PATH = "$llvm\bin;$env:PATH"
     $env:LLVM_ROOT = $llvm
 }
 
