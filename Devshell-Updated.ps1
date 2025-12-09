@@ -32,7 +32,22 @@ if (Test-Path $qtConfig) {
     $env:Qt6_DIR = $qtConfig
 }
 
-Write-Host "Using clang from:  $((Get-Command clang++.exe).Source)" -ForegroundColor Green
-Write-Host "Using cmake from: $((Get-Command cmake.exe).Source)" -ForegroundColor Green
-Write-Host "Using vcpkg from: $((Get-Command vcpkg.exe).Source)" -ForegroundColor Green
+try {
+    $clangPath = (Get-Command clang++.exe -ErrorAction Stop).Source
+    Write-Host "Using clang from:  $clangPath" -ForegroundColor Green
+} catch {
+    Write-Warning "clang++.exe not found in PATH"
+}
+try {
+    $cmakePath = (Get-Command cmake.exe -ErrorAction Stop).Source
+    Write-Host "Using cmake from: $cmakePath" -ForegroundColor Green
+} catch {
+    Write-Warning "cmake.exe not found in PATH"
+}
+try {
+    $vcpkgPath = (Get-Command vcpkg.exe -ErrorAction Stop).Source
+    Write-Host "Using vcpkg from: $vcpkgPath" -ForegroundColor Green
+} catch {
+    Write-Warning "vcpkg.exe not found in PATH"
+}
 if ($env:Qt6_DIR) { Write-Host "Using Qt6 from:  $env:Qt6_DIR" -ForegroundColor Green }
