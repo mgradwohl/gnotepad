@@ -30,7 +30,7 @@ On **Windows** (PowerShell + vcpkg, clang++/lld, Qt6 via vcpkg):
 
 - Keep **LLVM** and **CMake** current: `winget upgrade LLVM.LLVM` and `winget upgrade Kitware.CMake` (Ninja usually updates with CMake). New installs are the same commands with `install` instead of `upgrade`.
 - Keep **vcpkg** current: clone to `${env:USERPROFILE}\source\vcpkg` with `git clone https://github.com/microsoft/vcpkg ${env:USERPROFILE}\source\vcpkg` and bootstrap via `& ${env:USERPROFILE}\source\vcpkg\bootstrap-vcpkg.bat -disableMetrics`. Periodically `git pull` in that directory to stay up to date. The CMake toolchain path for this repo expects `VCPKG_ROOT` pointing at that folder.
-- PATH order should prefer your freshly installed tools ahead of older Visual Studio toolchains: `${env:LLVM_ROOT}\bin` (or `C:/Program Files/LLVM/bin`), `${env:CMAKE_ROOT}\bin` (or `C:/Program Files/CMake/bin`), then `%VCPKG_ROOT%`.
+- PATH order should prefer your freshly installed tools ahead of older Visual Studio toolchains: `${env:LLVM_ROOT}\bin` (or `C:/Program Files/LLVM/bin`), `${env:CMAKE_ROOT}\bin` (or `C:/Program Files/CMake/bin`), then `${env:VCPKG_ROOT}`.
 - `Devshell-Updated.ps1` (in the repo root) prepends LLVM, CMake, and vcpkg to PATH and exports `LLVM_ROOT`, `CMAKE_ROOT`, and `VCPKG_ROOT` for the current PowerShell session. Run it before configuring/building in a new shell: `pwsh -NoProfile -ExecutionPolicy Bypass -File .\Devshell-Updated.ps1`.
 
 ## Configure & Build (Linux/macOS)
