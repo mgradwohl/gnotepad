@@ -24,6 +24,14 @@ On **Windows** (PowerShell + vcpkg, clang++/lld, Qt6 via vcpkg):
 3. Install Qt: `vcpkg install qtbase:x64-windows qtsvg:x64-windows`
 4. Ensure `C:/Program Files/LLVM/bin` is on PATH (contains `clang++.exe` and `lld-link.exe`).
 5. Note: vcpkg layouts plugins under `.../installed/x64-windows/Qt6/plugins` (debug plugins under `.../debug/Qt6/plugins`). CMake now stages the Qt runtime (bin + plugins) plus a `qt.conf` into each `build/win-*` output, so you can launch `GnotePad.exe` directly from those folders without setting plugin environment variables.
+6. If CMake cannot find Qt6, point it at the vcpkg install: set `$env:Qt6_DIR="$env:VCPKG_ROOT/installed/x64-windows/share/Qt6"` and optionally `$env:QT6_PREFIX_PATH="$env:VCPKG_ROOT/installed/x64-windows"` before running configure or the VS Code tasks.
+
+### Windows toolchain notes (keep paths latest-first)
+
+- Keep **LLVM** and **CMake** current: `winget upgrade LLVM.LLVM` and `winget upgrade Kitware.CMake` (Ninja usually updates with CMake). New installs are the same commands with `install` instead of `upgrade`.
+- Keep **vcpkg** current: clone to `${env:USERPROFILE}\source\vcpkg` with `git clone https://github.com/microsoft/vcpkg %USERPROFILE%\source\vcpkg` and bootstrap via `%USERPROFILE%\source\vcpkg\bootstrap-vcpkg.bat -disableMetrics`. Periodically `git pull` in that directory to stay up to date. The CMake toolchain path for this repo expects `VCPKG_ROOT` pointing at that folder.
+- PATH order should prefer your freshly installed tools ahead of older Visual Studio toolchains: `${env:LLVM_ROOT}\bin` (or `C:/Program Files/LLVM/bin`), `${env:CMAKE_ROOT}\bin` (or `C:/Program Files/CMake/bin`), then `%VCPKG_ROOT%`.
+- `Devshell-Updated.ps1` (in the repo root) prepends LLVM, CMake, and vcpkg to PATH and exports `LLVM_ROOT`, `CMAKE_ROOT`, and `VCPKG_ROOT` for the current PowerShell session. Run it before configuring/building in a new shell: `pwsh -NoProfile -ExecutionPolicy Bypass -File .\Devshell-Updated.ps1`.
 
 ## Configure & Build (Linux/macOS)
 
@@ -42,11 +50,12 @@ Adjust `-DCMAKE_PREFIX_PATH` to match your Qt6 installation (e.g., `/opt/Qt/6.xx
 
 ```powershell
 cmake -S . -B build/win-debug -G Ninja `
-  -DCMAKE_C_COMPILER="C:/Program Files/LLVM/bin/clang++.exe" `
   -DCMAKE_CXX_COMPILER="C:/Program Files/LLVM/bin/clang++.exe" `
   -DCMAKE_C_STANDARD=17 -DCMAKE_C_STANDARD_REQUIRED=ON `
   -DCMAKE_CXX_STANDARD=23 -DCMAKE_CXX_STANDARD_REQUIRED=ON -DCMAKE_CXX_EXTENSIONS=OFF `
   -DCMAKE_TOOLCHAIN_FILE="$env:USERPROFILE/source/vcpkg/scripts/buildsystems/vcpkg.cmake" `
+  -DQt6_DIR="$env:VCPKG_ROOT/installed/x64-windows/share/Qt6" `
+  -DCMAKE_PREFIX_PATH="$env:VCPKG_ROOT/installed/x64-windows" `
   -DCMAKE_BUILD_TYPE=Debug `
   -DCMAKE_EXE_LINKER_FLAGS="-fuse-ld=lld" -DCMAKE_SHARED_LINKER_FLAGS="-fuse-ld=lld"
 cmake --build build/win-debug

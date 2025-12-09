@@ -70,9 +70,9 @@
             "program": "${workspaceFolder}/build/win-debug/GnotePad.exe",
             "cwd": "${workspaceFolder}",
             "env": {
-                "PATH": "${env:USERPROFILE}\\source\\vcpkg\\installed\\x64-windows\\debug\\bin;${env:USERPROFILE}\\source\\vcpkg\\installed\\x64-windows\\bin;${env:PATH}",
-                "QT_PLUGIN_PATH": "${env:USERPROFILE}\\source\\vcpkg\\installed\\x64-windows\\debug\\Qt6\\plugins;${env:USERPROFILE}\\source\\vcpkg\\installed\\x64-windows\\Qt6\\plugins",
-                "QT_QPA_PLATFORM_PLUGIN_PATH": "${env:USERPROFILE}\\source\\vcpkg\\installed\\x64-windows\\debug\\Qt6\\plugins\\platforms;${env:USERPROFILE}\\source\\vcpkg\\installed\\x64-windows\\Qt6\\plugins\\platforms",
+                "PATH": "${env:VCPKG_ROOT}\\installed\\x64-windows\\debug\\bin;${env:VCPKG_ROOT}\\installed\\x64-windows\\bin;${env:PATH}",
+                "QT_PLUGIN_PATH": "${env:VCPKG_ROOT}\\installed\\x64-windows\\debug\\Qt6\\plugins;${env:VCPKG_ROOT}\\installed\\x64-windows\\Qt6\\plugins",
+                "QT_QPA_PLATFORM_PLUGIN_PATH": "${env:VCPKG_ROOT}\\installed\\x64-windows\\debug\\Qt6\\plugins\\platforms;${env:VCPKG_ROOT}\\installed\\x64-windows\\Qt6\\plugins\\platforms",
                 "QT_DEBUG_PLUGINS": "1"
             },
             "preLaunchTask": "Build Debug (Windows)",
@@ -89,9 +89,9 @@
             "program": "${workspaceFolder}/build/win-relwithdebinfo/GnotePad.exe",
             "cwd": "${workspaceFolder}",
             "env": {
-                "PATH": "${env:USERPROFILE}\\source\\vcpkg\\installed\\x64-windows\\debug\\bin;${env:USERPROFILE}\\source\\vcpkg\\installed\\x64-windows\\bin;${env:PATH}",
-                "QT_PLUGIN_PATH": "${env:USERPROFILE}\\source\\vcpkg\\installed\\x64-windows\\debug\\Qt6\\plugins;${env:USERPROFILE}\\source\\vcpkg\\installed\\x64-windows\\Qt6\\plugins",
-                "QT_QPA_PLATFORM_PLUGIN_PATH": "${env:USERPROFILE}\\source\\vcpkg\\installed\\x64-windows\\debug\\Qt6\\plugins\\platforms;${env:USERPROFILE}\\source\\vcpkg\\installed\\x64-windows\\Qt6\\plugins\\platforms",
+                "PATH": "${env:VCPKG_ROOT}\\installed\\x64-windows\\debug\\bin;${env:VCPKG_ROOT}\\installed\\x64-windows\\bin;${env:PATH}",
+                "QT_PLUGIN_PATH": "${env:VCPKG_ROOT}\\installed\\x64-windows\\debug\\Qt6\\plugins;${env:VCPKG_ROOT}\\installed\\x64-windows\\Qt6\\plugins",
+                "QT_QPA_PLATFORM_PLUGIN_PATH": "${env:VCPKG_ROOT}\\installed\\x64-windows\\debug\\Qt6\\plugins\\platforms;${env:VCPKG_ROOT}\\installed\\x64-windows\\Qt6\\plugins\\platforms",
                 "QT_DEBUG_PLUGINS": "1"
             },
             "preLaunchTask": "Build RelWithDebInfo (Windows)",
@@ -108,9 +108,9 @@
             "program": "${workspaceFolder}/build/win-release/GnotePad.exe",
             "cwd": "${workspaceFolder}",
             "env": {
-                "PATH": "${env:USERPROFILE}\\source\\vcpkg\\installed\\x64-windows\\debug\\bin;${env:USERPROFILE}\\source\\vcpkg\\installed\\x64-windows\\bin;${env:PATH}",
-                "QT_PLUGIN_PATH": "${env:USERPROFILE}\\source\\vcpkg\\installed\\x64-windows\\debug\\Qt6\\plugins;${env:USERPROFILE}\\source\\vcpkg\\installed\\x64-windows\\Qt6\\plugins",
-                "QT_QPA_PLATFORM_PLUGIN_PATH": "${env:USERPROFILE}\\source\\vcpkg\\installed\\x64-windows\\debug\\Qt6\\plugins\\platforms;${env:USERPROFILE}\\source\\vcpkg\\installed\\x64-windows\\Qt6\\plugins\\platforms",
+                "PATH": "${env:VCPKG_ROOT}\\installed\\x64-windows\\debug\\bin;${env:VCPKG_ROOT}\\installed\\x64-windows\\bin;${env:PATH}",
+                "QT_PLUGIN_PATH": "${env:VCPKG_ROOT}\\installed\\x64-windows\\debug\\Qt6\\plugins;${env:VCPKG_ROOT}\\installed\\x64-windows\\Qt6\\plugins",
+                "QT_QPA_PLATFORM_PLUGIN_PATH": "${env:VCPKG_ROOT}\\installed\\x64-windows\\debug\\Qt6\\plugins\\platforms;${env:VCPKG_ROOT}\\installed\\x64-windows\\Qt6\\plugins\\platforms",
                 "QT_DEBUG_PLUGINS": "1"
             },
             "preLaunchTask": "Build Release (Windows)",
@@ -126,9 +126,9 @@
             "program": "${workspaceFolder}/build/win-optimized/GnotePad.exe",
             "cwd": "${workspaceFolder}",
             "env": {
-                "PATH": "${env:USERPROFILE}\\source\\vcpkg\\installed\\x64-windows\\debug\\bin;${env:USERPROFILE}\\source\\vcpkg\\installed\\x64-windows\\bin;${env:PATH}",
-                "QT_PLUGIN_PATH": "${env:USERPROFILE}\\source\\vcpkg\\installed\\x64-windows\\debug\\Qt6\\plugins;${env:USERPROFILE}\\source\\vcpkg\\installed\\x64-windows\\Qt6\\plugins",
-                "QT_QPA_PLATFORM_PLUGIN_PATH": "${env:USERPROFILE}\\source\\vcpkg\\installed\\x64-windows\\debug\\Qt6\\plugins\\platforms;${env:USERPROFILE}\\source\\vcpkg\\installed\\x64-windows\\Qt6\\plugins\\platforms",
+                "PATH": "${env:VCPKG_ROOT}\\installed\\x64-windows\\debug\\bin;${env:VCPKG_ROOT}\\installed\\x64-windows\\bin;${env:PATH}",
+                "QT_PLUGIN_PATH": "${env:VCPKG_ROOT}\\installed\\x64-windows\\debug\\Qt6\\plugins;${env:VCPKG_ROOT}\\installed\\x64-windows\\Qt6\\plugins",
+                "QT_QPA_PLATFORM_PLUGIN_PATH": "${env:VCPKG_ROOT}\\installed\\x64-windows\\debug\\Qt6\\plugins\\platforms;${env:VCPKG_ROOT}\\installed\\x64-windows\\Qt6\\plugins\\platforms",
                 "QT_DEBUG_PLUGINS": "1"
             },
             "preLaunchTask": "Build Optimized (Windows)",
@@ -164,9 +164,9 @@
             "args": [],
             "cwd": "${workspaceFolder}",
             "env": {
-                "PATH": "${env:USERPROFILE}\\source\\vcpkg\\installed\\x64-windows\\debug\\bin;${env:USERPROFILE}\\source\\vcpkg\\installed\\x64-windows\\bin;${env:PATH}",
-                "QT_PLUGIN_PATH": "${env:USERPROFILE}\\source\\vcpkg\\installed\\x64-windows\\debug\\Qt6\\plugins;${env:USERPROFILE}\\source\\vcpkg\\installed\\x64-windows\\Qt6\\plugins",
-                "QT_QPA_PLATFORM_PLUGIN_PATH": "${env:USERPROFILE}\\source\\vcpkg\\installed\\x64-windows\\debug\\Qt6\\plugins\\platforms;${env:USERPROFILE}\\source\\vcpkg\\installed\\x64-windows\\Qt6\\plugins\\platforms",
+                "PATH": "${env:VCPKG_ROOT}\\installed\\x64-windows\\debug\\bin;${env:VCPKG_ROOT}\\installed\\x64-windows\\bin;${env:PATH}",
+                "QT_PLUGIN_PATH": "${env:VCPKG_ROOT}\\installed\\x64-windows\\debug\\Qt6\\plugins;${env:VCPKG_ROOT}\\installed\\x64-windows\\Qt6\\plugins",
+                "QT_QPA_PLATFORM_PLUGIN_PATH": "${env:VCPKG_ROOT}\\installed\\x64-windows\\debug\\Qt6\\plugins\\platforms;${env:VCPKG_ROOT}\\installed\\x64-windows\\Qt6\\plugins\\platforms",
                 "QT_DEBUG_PLUGINS": "1"
             },
             "preLaunchTask": "Build Debug (Windows)",
