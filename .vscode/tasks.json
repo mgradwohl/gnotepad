@@ -200,5 +200,17 @@
 			],
 			"problemMatcher": []
 		}
+		,
+		{
+			"label": "Publish (Windows)",
+			"type": "shell",
+			"command": "pwsh",
+			"args": [
+				"-File",
+				"tools/publish-win.ps1"
+			],
+			"dependsOn": "Build Optimized (Windows)",
+			"problemMatcher": []
+		}
 	]
 }
