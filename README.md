@@ -51,7 +51,6 @@ Adjust `-DCMAKE_PREFIX_PATH` to match your Qt6 installation (e.g., `/opt/Qt/6.xx
 ```powershell
 cmake -S . -B build/win-debug -G Ninja `
   -DCMAKE_CXX_COMPILER="C:/Program Files/LLVM/bin/clang++.exe" `
-  -DCMAKE_C_STANDARD=17 -DCMAKE_C_STANDARD_REQUIRED=ON `
   -DCMAKE_CXX_STANDARD=23 -DCMAKE_CXX_STANDARD_REQUIRED=ON -DCMAKE_CXX_EXTENSIONS=OFF `
   -DCMAKE_TOOLCHAIN_FILE="$env:USERPROFILE/source/vcpkg/scripts/buildsystems/vcpkg.cmake" `
   -DQt6_DIR="$env:VCPKG_ROOT/installed/x64-windows/share/Qt6" `
