@@ -17,7 +17,7 @@ void StyleConfigTests::testFusionStyleAvailable()
 {
     QStringList styles = QStyleFactory::keys();
     // Fusion should be available on all Qt installations
-    QVERIFY(styles.contains(QStringLiteral("fusion"), Qt::CaseInsensitive) || styles.contains(QStringLiteral("Fusion"), Qt::CaseSensitive));
+    QVERIFY(styles.contains(QStringLiteral("fusion"), Qt::CaseInsensitive));
 }
 
 void StyleConfigTests::testWindowsStyleAvailable()
@@ -25,8 +25,7 @@ void StyleConfigTests::testWindowsStyleAvailable()
     QStringList styles = QStyleFactory::keys();
     // Windows style should be available on most Qt installations
     // This test documents the expectation, but may not be true on all systems
-    bool hasWindowsStyle =
-        styles.contains(QStringLiteral("windows"), Qt::CaseInsensitive) || styles.contains(QStringLiteral("Windows"), Qt::CaseSensitive);
+    bool hasWindowsStyle = styles.contains(QStringLiteral("windows"), Qt::CaseInsensitive);
     // Just log result, don't fail the test
     if (!hasWindowsStyle)
     {
