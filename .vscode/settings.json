@@ -10,7 +10,7 @@
     },
     "cmake.copyCompileCommands": "${workspaceFolder}/compile_commands.json",
     "cmake.configureEnvironment": {
-        "VCPKG_ROOT": "${env:USERPROFILE}/source/vcpkg"
+        "VCPKG_ROOT": "${env:VCPKG_ROOT}"
     },
     "C_Cpp.intelliSenseEngine": "disabled",
     "C_Cpp.default.compilerPath": "clang++",

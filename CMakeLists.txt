@@ -44,10 +44,10 @@ function(gnote_apply_default_warnings target_name)
 endfunction()
 
 find_program(CLANG_TIDY_EXE NAMES clang-tidy
-    HINTS "C:/Program Files/LLVM/bin"
+    HINTS "$ENV{LLVM_ROOT}/bin" "$ENV{ProgramFiles}/LLVM/bin" "C:/Program Files/LLVM/bin"
 )
 find_program(CLANG_FORMAT_EXE NAMES clang-format
-    HINTS "C:/Program Files/LLVM/bin"
+    HINTS "$ENV{LLVM_ROOT}/bin" "$ENV{ProgramFiles}/LLVM/bin" "C:/Program Files/LLVM/bin"
 )
 
 if(GNOTE_ENABLE_CLANG_TIDY)
