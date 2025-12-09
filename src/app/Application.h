@@ -34,10 +34,11 @@ private:
     void parseCommandLine(const QStringList& arguments);
     void configureMetadata() const;
     void configureIcon();
+    void configureStyle();
 
     std::unique_ptr<ui::MainWindow> m_mainWindow;
     QIcon m_applicationIcon;
-    bool m_quitAfterInit {false};
+    bool m_quitAfterInit{false};
 };
 
 } // namespace GnotePad
