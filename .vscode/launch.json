@@ -149,7 +149,6 @@
             "env": {
                 "LD_LIBRARY_PATH": ""
             },
-            "preLaunchTask": "Build Debug (Linux)",
             "terminal": "integrated",
             "presentation": {
                 "group": "test-linux",
@@ -169,7 +168,6 @@
                 "QT_QPA_PLATFORM_PLUGIN_PATH": "${env:VCPKG_ROOT}\\installed\\x64-windows\\debug\\Qt6\\plugins\\platforms;${env:VCPKG_ROOT}\\installed\\x64-windows\\Qt6\\plugins\\platforms",
                 "QT_DEBUG_PLUGINS": "1"
             },
-            "preLaunchTask": "Build Debug (Windows)",
             "terminal": "integrated",
             "presentation": {
                 "group": "test-windows",
