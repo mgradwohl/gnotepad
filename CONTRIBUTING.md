@@ -351,12 +351,10 @@ GnotePad has comprehensive test coverage across multiple test suites. All functi
 
 - **Running tests:** Use `ctest --test-dir build/debug` to run all tests, or run specific test suites with `ctest -R <suite_name>`
 
-- **Test requirements:** When adding features or fixing bugs:
-  1. Add tests for new functionality
-  2. Add tests for edge cases and error conditions
-  3. Ensure tests are independent and repeatable
-  4. Use test hooks (available with `GNOTE_TEST_HOOKS` define)
-  5. Follow the patterns in existing tests
+- **clang-format:** All C++ sources follow the repository `.clang-format` (LLVM base, Allman braces). Run the `run-clang-format` target or the VS Code task before submitting.
+- **clang-tidy / scan-build:** clang-tidy runs on the Debug configuration; scan-build hooks live in `tools/run-scan-build.sh` and the **Scan-Build (Debug)** task. Fix or explain any new warnings.
+- **Automated checks:** Before committing, run `./tools/check-format.sh` and `./tools/check-include-order.sh` to verify formatting and include order.
+- For detailed information on static analysis tooling and CI checks, see [`docs/STATIC_ANALYSIS.md`](docs/STATIC_ANALYSIS.md).
 
 - **Testing guidelines:** See `TESTING.md` for comprehensive guidelines, examples, and best practices
 

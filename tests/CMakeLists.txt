@@ -447,116 +447,134 @@ endforeach()
 
 add_test(NAME gnotepad_style_all COMMAND $<TARGET_FILE:GnotePadStyle>)
 
-# Performance tests
-add_executable(GnotePadPerformance
-	performance/performance.cpp
-	performance/PerformanceTests.h
+# Tooling configuration tests
+add_executable(GnotePadTooling
+	tooling/tooling.cpp
+	tooling/ToolingConfigTests.h
+	tooling/ToolingConfigTests.cpp
 )
 
 set_source_files_properties(
-	performance/performance.cpp
-	performance/PerformanceTests.h
+	tooling/tooling.cpp
+	tooling/ToolingConfigTests.h
+	tooling/ToolingConfigTests.cpp
 	PROPERTIES SKIP_CLANG_TIDY TRUE
 )
 
-target_compile_features(GnotePadPerformance PRIVATE cxx_std_23)
+target_compile_features(GnotePadTooling PRIVATE cxx_std_23)
 
 if(COMMAND gnote_apply_default_warnings)
-	gnote_apply_default_warnings(GnotePadPerformance)
+	gnote_apply_default_warnings(GnotePadTooling)
 endif()
 
-target_include_directories(GnotePadPerformance PRIVATE
+target_include_directories(GnotePadTooling PRIVATE
 	${CMAKE_SOURCE_DIR}/src
 )
 
-target_sources(GnotePadPerformance PRIVATE
-	${CMAKE_SOURCE_DIR}/src/ui/MainWindow.cpp
-	${CMAKE_SOURCE_DIR}/src/ui/MainWindow.FileIO.cpp
-	${CMAKE_SOURCE_DIR}/src/ui/MainWindow.Settings.cpp
-	${CMAKE_SOURCE_DIR}/src/ui/MainWindow.Search.cpp
-	${CMAKE_SOURCE_DIR}/src/ui/PrintSupport.cpp
-	${CMAKE_SOURCE_DIR}/src/ui/TextEditor.cpp
-	${GNOTE_RESOURCES}
-)
+set_target_properties(GnotePadTooling PROPERTIES AUTOMOC ON)
 
-set_target_properties(GnotePadPerformance PROPERTIES AUTOMOC ON)
-
-target_link_libraries(GnotePadPerformance PRIVATE
+target_link_libraries(GnotePadTooling PRIVATE
 	Qt6::Core
-	Qt6::Gui
-	Qt6::Widgets
 	Qt6::Test
-	Qt6::PrintSupport
-	Qt6::Svg
-	Qt6::SvgWidgets
-	spdlog::spdlog_header_only
 )
-
-target_compile_definitions(GnotePadPerformance PRIVATE GNOTE_TEST_HOOKS)
 
 if(WIN32)
-	# Stage Qt runtime and plugins beside the test binary so offscreen platform plugin is found.
-	get_filename_component(QT6_PREFIX "${Qt6_DIR}/../.." ABSOLUTE)
-	set(QT6_DEBUG_BIN "${QT6_PREFIX}/debug/bin")
-	set(QT6_RELEASE_BIN "${QT6_PREFIX}/bin")
-	set(QT6_DEBUG_PLUGINS "${QT6_PREFIX}/debug/Qt6/plugins")
-	set(QT6_RELEASE_PLUGINS "${QT6_PREFIX}/Qt6/plugins")
-
-	file(GENERATE OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/qt.tests.debug.conf" CONTENT "[Paths]\nPlugins=plugins\n")
-	file(GENERATE OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/qt.tests.release.conf" CONTENT "[Paths]\nPlugins=plugins\n")
-
-	add_custom_command(TARGET GnotePadPerformance POST_BUILD
-		COMMAND ${CMAKE_COMMAND} -E make_directory "$<TARGET_FILE_DIR:GnotePadPerformance>/plugins"
+	add_custom_command(TARGET GnotePadTooling POST_BUILD
+		COMMAND ${CMAKE_COMMAND} -E make_directory "$<TARGET_FILE_DIR:GnotePadTooling>/plugins"
 		COMMAND ${CMAKE_COMMAND} -E copy_directory
 			$<$<CONFIG:Debug>:${QT6_DEBUG_BIN}>
 			$<$<NOT:$<CONFIG:Debug>>:${QT6_RELEASE_BIN}>
-			"$<TARGET_FILE_DIR:GnotePadPerformance>"
+			"$<TARGET_FILE_DIR:GnotePadTooling>"
 		COMMAND ${CMAKE_COMMAND} -E copy_directory
 			$<$<CONFIG:Debug>:${QT6_DEBUG_PLUGINS}>
 			$<$<NOT:$<CONFIG:Debug>>:${QT6_RELEASE_PLUGINS}>
-			"$<TARGET_FILE_DIR:GnotePadPerformance>/plugins"
+			"$<TARGET_FILE_DIR:GnotePadTooling>/plugins"
 		COMMAND ${CMAKE_COMMAND} -E copy_if_different
 			$<$<CONFIG:Debug>:${CMAKE_CURRENT_BINARY_DIR}/qt.tests.debug.conf>
 			$<$<NOT:$<CONFIG:Debug>>:${CMAKE_CURRENT_BINARY_DIR}/qt.tests.release.conf>
-			"$<TARGET_FILE_DIR:GnotePadPerformance>/qt.conf"
-		COMMENT "Copying Qt runtime and plugins beside GnotePadPerformance.exe"
+			"$<TARGET_FILE_DIR:GnotePadTooling>/qt.conf"
+		COMMENT "Copying Qt runtime and plugins beside GnotePadTooling.exe"
 	)
 endif()
 
-add_custom_command(TARGET GnotePadPerformance POST_BUILD
-	COMMAND ${CMAKE_COMMAND} -E make_directory
-		$<TARGET_FILE_DIR:GnotePadPerformance>/testfiles/performance
+set(GNOTE_TOOLING_TEST_FUNCTIONS
+	testClangTidyConfigExists
+	testClangTidyConfigIsValid
+	testClangFormatConfigExists
+	testClangFormatConfigIsValid
+	testIncludeCleanerExclusionsPresent
 )
 
-set(GNOTE_PERFORMANCE_TEST_FUNCTIONS
-	testLoadLargeFile100KB
-	testLoadLargeFile500KB
-	testLoadLargeFile1MB
-	testScrollPerformanceLargeFile
-	testEditPerformanceLargeFile
-	testSaveLargeFile
-	testEncodingConversionUtf8ToUtf16LE
-	testEncodingConversionUtf8ToUtf16BE
-	testEncodingRoundTripPerformance
-	testMemoryUsageDuringEncoding
-	testFindPerformanceLargeFile
-	testReplacePerformanceLargeFile
-	testUndoRedoStackPerformance
-	testZoomOperationsPerformance
-	testDocumentModificationPerformance
-	testMassiveInsertOperations
-	testMassiveDeleteOperations
-	testContinuousEditing
-)
-
-foreach(test_name IN LISTS GNOTE_PERFORMANCE_TEST_FUNCTIONS)
+foreach(test_name IN LISTS GNOTE_TOOLING_TEST_FUNCTIONS)
 	add_test(
-		NAME gnotepad_perf_${test_name}
-		COMMAND $<TARGET_FILE:GnotePadPerformance> ${test_name}
+		NAME gnotepad_${test_name}
+		COMMAND $<TARGET_FILE:GnotePadTooling> ${test_name}
 	)
-	# Performance tests are labeled separately so they can be run independently
-	set_tests_properties(gnotepad_perf_${test_name} PROPERTIES LABELS "Performance")
 endforeach()
 
-add_test(NAME gnotepad_performance_all COMMAND $<TARGET_FILE:GnotePadPerformance>)
-set_tests_properties(gnotepad_performance_all PROPERTIES LABELS "Performance")
+add_test(NAME gnotepad_tooling_all COMMAND $<TARGET_FILE:GnotePadTooling>)
+
+# Include order tests
+add_executable(GnotePadIncludeOrder
+	tooling/include_order.cpp
+	tooling/IncludeOrderTests.h
+	tooling/IncludeOrderTests.cpp
+)
+
+set_source_files_properties(
+	tooling/include_order.cpp
+	tooling/IncludeOrderTests.h
+	tooling/IncludeOrderTests.cpp
+	PROPERTIES SKIP_CLANG_TIDY TRUE
+)
+
+target_compile_features(GnotePadIncludeOrder PRIVATE cxx_std_23)
+
+if(COMMAND gnote_apply_default_warnings)
+	gnote_apply_default_warnings(GnotePadIncludeOrder)
+endif()
+
+target_include_directories(GnotePadIncludeOrder PRIVATE
+	${CMAKE_SOURCE_DIR}/src
+)
+
+set_target_properties(GnotePadIncludeOrder PROPERTIES AUTOMOC ON)
+
+target_link_libraries(GnotePadIncludeOrder PRIVATE
+	Qt6::Core
+	Qt6::Test
+)
+
+if(WIN32)
+	add_custom_command(TARGET GnotePadIncludeOrder POST_BUILD
+		COMMAND ${CMAKE_COMMAND} -E make_directory "$<TARGET_FILE_DIR:GnotePadIncludeOrder>/plugins"
+		COMMAND ${CMAKE_COMMAND} -E copy_directory
+			$<$<CONFIG:Debug>:${QT6_DEBUG_BIN}>
+			$<$<NOT:$<CONFIG:Debug>>:${QT6_RELEASE_BIN}>
+			"$<TARGET_FILE_DIR:GnotePadIncludeOrder>"
+		COMMAND ${CMAKE_COMMAND} -E copy_directory
+			$<$<CONFIG:Debug>:${QT6_DEBUG_PLUGINS}>
+			$<$<NOT:$<CONFIG:Debug>>:${QT6_RELEASE_PLUGINS}>
+			"$<TARGET_FILE_DIR:GnotePadIncludeOrder>/plugins"
+		COMMAND ${CMAKE_COMMAND} -E copy_if_different
+			$<$<CONFIG:Debug>:${CMAKE_CURRENT_BINARY_DIR}/qt.tests.debug.conf>
+			$<$<NOT:$<CONFIG:Debug>>:${CMAKE_CURRENT_BINARY_DIR}/qt.tests.release.conf>
+			"$<TARGET_FILE_DIR:GnotePadIncludeOrder>/qt.conf"
+		COMMENT "Copying Qt runtime and plugins beside GnotePadIncludeOrder.exe"
+	)
+endif()
+
+set(GNOTE_INCLUDE_ORDER_TEST_FUNCTIONS
+	testSampleSourceFileIncludeOrder
+	testMainWindowIncludeOrder
+	testTextEditorIncludeOrder
+)
+
+foreach(test_name IN LISTS GNOTE_INCLUDE_ORDER_TEST_FUNCTIONS)
+	add_test(
+		NAME gnotepad_${test_name}
+		COMMAND $<TARGET_FILE:GnotePadIncludeOrder> ${test_name}
+	)
+endforeach()
+
+add_test(NAME gnotepad_include_order_all COMMAND $<TARGET_FILE:GnotePadIncludeOrder>)
