@@ -2,7 +2,6 @@
 # Check include order in source files according to project guidelines
 # Exit with non-zero status if violations are found
 
-set -e
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
