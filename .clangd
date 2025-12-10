@@ -1,2 +1,48 @@
 CompileFlags:
-  Add: [-fno-modules, -Isrc]
+  # Adjust if your compile_commands.json is somewhere else
+  CompilationDatabase: build
+
+  Add:
+    # Language/std + modules
+    - -std=c++23
+    - -fno-modules
+
+    # Project includes so standalone files still work
+    - -Isrc
+
+    # Treat these as system headers (suppress their warnings)
+    - --system-header-prefix=_deps/
+    - --system-header-prefix=spdlog/
+    - --system-header-prefix=Qt
+    - --system-header-prefix=vcpkg
+
+    # Warnings while parsing
+    - -Wall
+    - -Wextra
+    - -Wpedantic
+    - -Wconversion
+    - -Wsign-conversion
+
+Diagnostics:
+  # Let clangd run clang-tidy using your .clang-tidy config.
+  # No Add/Remove here – .clang-tidy is the source of truth.
+  ClangTidy: {}
+  UnusedIncludes: Strict
+
+Index:
+  Background: Build
+  StandardLibrary: true
+
+InlayHints:
+  Enabled: true
+  ParameterNames: true
+  DeducedTypes: true
+
+Hover:
+  ShowAKA: true
+
+Completion:
+  AllScopes: true
+  ArgumentLists: FullPlaceholders
+  HeaderInsertion: IWYU
+  CodePatterns: All

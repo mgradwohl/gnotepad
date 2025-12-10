@@ -155,7 +155,7 @@ private slots:
 
     // NOLINTNEXTLINE(readability-redundant-access-specifiers)
 private:
-    enum class DateFormatPreference
+    enum class DateFormatPreference : std::uint8_t
     {
         Short,
         Long

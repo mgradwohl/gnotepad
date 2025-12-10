@@ -454,8 +454,12 @@ void MainWindow::handleChoosePrinter()
     dialog.setWindowTitle(tr("Choose Printer"));
     dialog.setMinimumWidth(350);
 
+    // Qt parents clean up child widgets; suppress ownership warning for intentional raw pointer.
+    // NOLINTNEXTLINE(cppcoreguidelines-owning-memory)
     auto* layout = new QFormLayout(&dialog);
 
+    // Qt parents clean up child widgets; suppress ownership warning for intentional raw pointer.
+    // NOLINTNEXTLINE(cppcoreguidelines-owning-memory)
     auto* printerCombo = new QComboBox(&dialog);
 
     // Add "Use System Default" option first
@@ -480,6 +484,8 @@ void MainWindow::handleChoosePrinter()
 
     layout->addRow(tr("Printer:"), printerCombo);
 
+    // Qt parents clean up child widgets; suppress ownership warning for intentional raw pointer.
+    // NOLINTNEXTLINE(cppcoreguidelines-owning-memory)
     auto* buttonBox = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, &dialog);
     connect(buttonBox, &QDialogButtonBox::accepted, &dialog, &QDialog::accept);
     connect(buttonBox, &QDialogButtonBox::rejected, &dialog, &QDialog::reject);
