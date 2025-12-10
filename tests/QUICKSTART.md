@@ -1,6 +1,6 @@
-# Quick Start Guide: Encoding Tests
+# Quick Start Guide: UI and Encoding Tests
 
-This guide helps you quickly get started with the enhanced encoding tests in GnotePad.
+This guide helps you quickly get started with the comprehensive test suite in GnotePad, including UI interaction tests and encoding tests.
 
 ## TL;DR
 
@@ -9,22 +9,66 @@ This guide helps you quickly get started with the enhanced encoding tests in Gno
 cd tests
 ./verify_test_setup.sh
 
-# Build and run tests (requires Qt6)
+# Build and run all tests (requires Qt6)
 cd ..
 cmake --build build/debug
+ctest --test-dir build/debug
+
+# Run UI tests only
+ctest --test-dir build/debug -R "Dialog|Menu|StatusBar|Zoom"
+
+# Run encoding tests only
 ctest --test-dir build/debug -R "Utf8Bom|Utf16|Multilingual|Unicode|RoundTrip"
 ```
 
 ## What's New?
 
-9 new encoding tests covering:
+### UI Tests (18 new tests)
+- ✅ Menu and action validation
+- ✅ Dialog invocation tracking
+- ✅ Status bar interactions
+- ✅ Zoom control flows
+- ✅ Keyboard shortcut validation
+- ✅ Action state management
+- ✅ Word wrap toggle
+- ✅ Recent files menu
+- ✅ Tooltip presence
+
+### Encoding Tests (9 tests)
 - ✅ BOM detection (UTF-8, UTF-16 LE, UTF-16 BE)
 - ✅ Multilingual content (14+ languages)
 - ✅ Unicode characters (symbols, emoji, math operators)
 - ✅ Round-trip encoding conversions
 - ✅ Large file handling (60KB+)
 
-## Test File Structure
+## Test Categories
+
+### UI Interaction Tests
+
+All UI tests in `tests/smoke/MainWindowSmokeTests`:
+
+| Test | What It Validates |
+|------|------------------|
+| `testStatusBarToggle` | Status bar show/hide |
+| `testStatusBarLabelsUpdate` | Status labels update on changes |
+| `testZoomLabelUpdates` | Zoom percentage display |
+| `testMenuActionsExist` | All main menus and actions present |
+| `testMenuShortcuts` | Keyboard shortcuts registered |
+| `testEditMenuActionsEnabled` | Context-sensitive action states |
+| `testFindDialogInvocation` | Find dialog opens correctly |
+| `testReplaceDialogInvocation` | Replace dialog opens correctly |
+| `testGoToLineDialog` | Go To Line dialog accessible |
+| `testTabSizeDialog` | Tab Size dialog accessible |
+| `testFontDialogInvocation` | Font selection dialog accessible |
+| `testWordWrapToggle` | Word wrap on/off functionality |
+| `testDateFormatPreference` | Date/time insertion |
+| `testAboutDialog` | About dialog accessible |
+| `testEncodingDialogFlow` | Encoding selection flow |
+| `testActionStateManagement` | Actions enable/disable correctly |
+| `testTooltipPresence` | UI elements have tooltips |
+| `testRecentFilesMenuActions` | Recent files menu functions |
+
+### Encoding Tests
 
 ```
 tests/testfiles/
@@ -73,10 +117,28 @@ cd tests/testfiles
 ./create_bom_files.sh          # Creates BOM test files
 ```
 
-### Run Specific Test
+### Run UI Tests
 
 ```bash
-# Run one test
+# Run all UI interaction tests
+ctest --test-dir build/debug -R "Dialog|Menu|StatusBar|Zoom|Action"
+
+# Run specific UI test
+build/debug/GnotePadSmoke testMenuActionsExist
+
+# Run dialog tests
+ctest --test-dir build/debug -R "Dialog"
+
+# Run menu tests
+ctest --test-dir build/debug -R "Menu"
+```
+
+### Run Encoding Tests
+
+### Run Encoding Tests
+
+```bash
+# Run one encoding test
 build/debug/GnotePadSmoke testUtf8BomDetection
 
 # Run all encoding tests
@@ -232,6 +294,8 @@ ls build/debug/testfiles/
 
 ## Documentation
 
+- **tests/UI_TEST_COVERAGE.md** - Complete UI test coverage requirements
+- **tests/UI_TEST_ANALYSIS.md** - Test coverage analysis and recommendations
 - **tests/testfiles/README.md** - Detailed test file documentation
 - **tests/ENHANCEMENT_SUMMARY.md** - Complete implementation summary
 - **tests/PDF_TESTING.md** - PDF printing test strategy
