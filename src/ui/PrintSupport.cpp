@@ -17,9 +17,11 @@
 #include <QtGui/qtextobject.h>
 #include <QtGui/qtextoption.h>
 #include <QtPrintSupport/qprinter.h>
+#include <QtPrintSupport/qprinterinfo.h>
 #include <QtPrintSupport/qprintpreviewdialog.h>
 #include <QtWidgets/qdialog.h>
 #include <QtWidgets/qwidget.h>
+#include <spdlog/spdlog.h>
 
 #include "ui/TextEditor.h"
 
@@ -224,7 +226,9 @@ void renderDocument(TextEditor* editor, QPrinter* printer, const QString& docume
                 // Document positions are in pixels (since we set paint device)
                 const QPointF blockPos = blockLayout->position();
                 if (blockPos.y() > yOffsetPx + contentHeightPx)
+                {
                     break;
+                }
 
                 const QTextLine firstLine = blockLayout->lineAt(0);
                 if (firstLine.isValid())
@@ -271,7 +275,9 @@ void renderDocument(TextEditor* editor, QPrinter* printer, const QString& docume
         if (pageIndex < totalPages - 1)
         {
             if (!printer->newPage())
+            {
                 break;
+            }
         }
     }
 }
@@ -282,13 +288,36 @@ void renderDocument(TextEditor* editor, QPrinter* printer, const QString& docume
 // Public API
 // ============================================================================
 
-bool showPrintPreview(QWidget* parent, TextEditor* editor, const QString& documentDisplayName, bool lineNumbersVisible)
+bool showPrintPreview(QWidget* parent, TextEditor* editor, const QString& documentDisplayName, bool lineNumbersVisible,
+                      const QString& defaultPrinterName)
 {
     if (!editor)
         return false;
 
-    QPrinter printer(QPrinter::HighResolution);
+    spdlog::info("showPrintPreview: defaultPrinterName = '{}'", defaultPrinterName.toStdString());
+
+    // Find QPrinterInfo for the requested printer (if specified)
+    // We must construct QPrinter with QPrinterInfo for Windows to honor the selection
+    QPrinterInfo chosenInfo;
+    if (!defaultPrinterName.isEmpty())
+    {
+        for (const QPrinterInfo& info : QPrinterInfo::availablePrinters())
+        {
+            if (info.printerName() == defaultPrinterName)
+            {
+                chosenInfo = info;
+                spdlog::info("showPrintPreview: Found QPrinterInfo for '{}'", defaultPrinterName.toStdString());
+                break;
+            }
+        }
+    }
+
+    // Construct QPrinter with QPrinterInfo if we have one, otherwise use default
+    QPrinter printer(chosenInfo.isNull() ? QPrinterInfo::defaultPrinter() : chosenInfo, QPrinter::HighResolution);
     printer.setOutputFormat(QPrinter::NativeFormat);
+
+    spdlog::info("showPrintPreview: QPrinter.printerName() = '{}'", printer.printerName().toStdString());
+
     configurePrinter(&printer, documentDisplayName);
 
     QPrintPreviewDialog previewDialog(&printer, parent);

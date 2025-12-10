@@ -2,15 +2,15 @@
 
 #include <algorithm>
 
+#include <QSignalBlocker>
 #include <QtCore/qcoreapplication.h>
 #include <QtCore/qdatetime.h>
 #include <QtCore/qfileinfo.h>
 #include <QtCore/qlocale.h>
-#include <QtCore/qstringconverter.h>
-#include <QSignalBlocker>
 #include <QtCore/qstring.h>
-#include <QtCore/qstringliteral.h>
+#include <QtCore/qstringconverter.h>
 #include <QtCore/qstringlist.h>
+#include <QtCore/qstringliteral.h>
 #include <QtCore/qurl.h>
 #include <QtGui/qaction.h>
 #include <QtGui/qactiongroup.h>
@@ -122,6 +122,7 @@ void MainWindow::buildMenus()
     m_saveAsAction = fileMenu->addAction(tr("Save &As…"), QKeySequence::SaveAs, this, &MainWindow::handleSaveFileAs);
     fileMenu->addAction(tr("E&ncoding…"), this, &MainWindow::handleChangeEncoding);
     fileMenu->addSeparator();
+    fileMenu->addAction(tr("Choose P&rinter…"), this, &MainWindow::handleChoosePrinter);
     m_printAction = fileMenu->addAction(tr("&Print"), QKeySequence::Print, this, &MainWindow::handlePrint);
     fileMenu->addSeparator();
     fileMenu->addAction(tr("E&xit"), QKeySequence::Quit, this, &QWidget::close);
@@ -219,11 +220,11 @@ void MainWindow::wireSignals()
     if (m_editor && m_editor->document())
     {
         connect(m_editor->document(), &QTextDocument::modificationChanged, this,
-            [this](bool)
-            {
-                updateWindowTitle();
-                updateActionStates();
-            });
+                [this](bool)
+                {
+                    updateWindowTitle();
+                    updateActionStates();
+                });
     }
 }
 
@@ -264,7 +265,7 @@ void MainWindow::handleSetTabSize()
     bool accepted = false;
     const int currentSize = m_editor->tabSizeSpaces();
     const int newSize = QInputDialog::getInt(this, tr("Tab Size"), tr("Spaces per tab:"), currentSize, MinTabSizeSpaces, MaxTabSizeSpaces,
-                            TabSizeStep, &accepted);
+                                             TabSizeStep, &accepted);
     if (!accepted || newSize == currentSize)
     {
         return;
@@ -349,13 +350,14 @@ void MainWindow::showAboutDialog()
     const QString version = QCoreApplication::applicationVersion();
     const QString org = QCoreApplication::organizationName();
     const QString maintainer = org.isEmpty() ? tr("the GnotePad contributors") : org;
-    const QString details = tr("<p><b>%1</b> %2</p>"
-                               "<p>Modern Qt 6 / C++23 refresh of the Windows Notepad experience for Linux, Windows, and macOS.</p>"
-                               "<p>Maintained by %3 and built with Qt %4.</p>"
-                               "<p>Source & documentation: <a href=\"https://github.com/mgradwohl/GnotePad\">github.com/mgradwohl/GnotePad</a></p>"
-                               "<p>Licensed under the MIT License. Not affiliated with the legacy gnotepad or gnotepad+ projects.</p>"
-                               "<p>Contributions, bug reports, and packaging help are welcome!</p>")
-                                .arg(appName, version, maintainer, QString::fromLatin1(qVersion()));
+    const QString details =
+        tr("<p><b>%1</b> %2</p>"
+           "<p>Modern Qt 6 / C++23 refresh of the Windows Notepad experience for Linux, Windows, and macOS.</p>"
+           "<p>Maintained by %3 and built with Qt %4.</p>"
+           "<p>Source & documentation: <a href=\"https://github.com/mgradwohl/GnotePad\">github.com/mgradwohl/GnotePad</a></p>"
+           "<p>Licensed under the MIT License. Not affiliated with the legacy gnotepad or gnotepad+ projects.</p>"
+           "<p>Contributions, bug reports, and packaging help are welcome!</p>")
+            .arg(appName, version, maintainer, QString::fromLatin1(qVersion()));
     const QIcon icon = brandIcon();
 
     QDialog dialog(this);
@@ -420,7 +422,7 @@ void MainWindow::handlePrint()
     }
 
     const QString displayName = m_currentFilePath.isEmpty() ? tr(UntitledDocumentTitle) : QFileInfo(m_currentFilePath).fileName();
-    PrintSupport::showPrintPreview(this, m_editor, displayName, m_editor->lineNumbersVisible());
+    PrintSupport::showPrintPreview(this, m_editor, displayName, m_editor->lineNumbersVisible(), m_defaultPrinterName);
 }
 
 void MainWindow::handleToggleStatusBar(bool checked)
@@ -617,12 +619,7 @@ QIcon MainWindow::brandIcon() const
     QIcon icon = windowIcon();
     if (icon.isNull())
     {
-        spdlog::info("brandIcon: windowIcon() failed.");
         icon = QIcon(QStringLiteral(":/gnotepad-icon.svg"));
-    }
-    else
-    {
-        spdlog::info("brandIcon: using windowIcon().");
     }
 
     if (icon.isNull())
