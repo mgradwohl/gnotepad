@@ -252,3 +252,135 @@ foreach(test_name IN LISTS GNOTE_STYLE_TEST_FUNCTIONS)
 endforeach()
 
 add_test(NAME gnotepad_style_all COMMAND $<TARGET_FILE:GnotePadStyle>)
+
+# Tooling configuration tests
+add_executable(GnotePadTooling
+	tooling/tooling.cpp
+	tooling/ToolingConfigTests.h
+	tooling/ToolingConfigTests.cpp
+)
+
+set_source_files_properties(
+	tooling/tooling.cpp
+	tooling/ToolingConfigTests.h
+	tooling/ToolingConfigTests.cpp
+	PROPERTIES SKIP_CLANG_TIDY TRUE
+)
+
+target_compile_features(GnotePadTooling PRIVATE cxx_std_23)
+
+if(COMMAND gnote_apply_default_warnings)
+	gnote_apply_default_warnings(GnotePadTooling)
+endif()
+
+target_include_directories(GnotePadTooling PRIVATE
+	${CMAKE_SOURCE_DIR}/src
+)
+
+set_target_properties(GnotePadTooling PROPERTIES AUTOMOC ON)
+
+target_link_libraries(GnotePadTooling PRIVATE
+	Qt6::Core
+	Qt6::Test
+)
+
+if(WIN32)
+	add_custom_command(TARGET GnotePadTooling POST_BUILD
+		COMMAND ${CMAKE_COMMAND} -E make_directory "$<TARGET_FILE_DIR:GnotePadTooling>/plugins"
+		COMMAND ${CMAKE_COMMAND} -E copy_directory
+			$<$<CONFIG:Debug>:${QT6_DEBUG_BIN}>
+			$<$<NOT:$<CONFIG:Debug>>:${QT6_RELEASE_BIN}>
+			"$<TARGET_FILE_DIR:GnotePadTooling>"
+		COMMAND ${CMAKE_COMMAND} -E copy_directory
+			$<$<CONFIG:Debug>:${QT6_DEBUG_PLUGINS}>
+			$<$<NOT:$<CONFIG:Debug>>:${QT6_RELEASE_PLUGINS}>
+			"$<TARGET_FILE_DIR:GnotePadTooling>/plugins"
+		COMMAND ${CMAKE_COMMAND} -E copy_if_different
+			$<$<CONFIG:Debug>:${CMAKE_CURRENT_BINARY_DIR}/qt.tests.debug.conf>
+			$<$<NOT:$<CONFIG:Debug>>:${CMAKE_CURRENT_BINARY_DIR}/qt.tests.release.conf>
+			"$<TARGET_FILE_DIR:GnotePadTooling>/qt.conf"
+		COMMENT "Copying Qt runtime and plugins beside GnotePadTooling.exe"
+	)
+endif()
+
+set(GNOTE_TOOLING_TEST_FUNCTIONS
+	testClangTidyConfigExists
+	testClangTidyConfigIsValid
+	testClangFormatConfigExists
+	testClangFormatConfigIsValid
+	testIncludeCleanerExclusionsPresent
+)
+
+foreach(test_name IN LISTS GNOTE_TOOLING_TEST_FUNCTIONS)
+	add_test(
+		NAME gnotepad_${test_name}
+		COMMAND $<TARGET_FILE:GnotePadTooling> ${test_name}
+	)
+endforeach()
+
+add_test(NAME gnotepad_tooling_all COMMAND $<TARGET_FILE:GnotePadTooling>)
+
+# Include order tests
+add_executable(GnotePadIncludeOrder
+	tooling/include_order.cpp
+	tooling/IncludeOrderTests.h
+	tooling/IncludeOrderTests.cpp
+)
+
+set_source_files_properties(
+	tooling/include_order.cpp
+	tooling/IncludeOrderTests.h
+	tooling/IncludeOrderTests.cpp
+	PROPERTIES SKIP_CLANG_TIDY TRUE
+)
+
+target_compile_features(GnotePadIncludeOrder PRIVATE cxx_std_23)
+
+if(COMMAND gnote_apply_default_warnings)
+	gnote_apply_default_warnings(GnotePadIncludeOrder)
+endif()
+
+target_include_directories(GnotePadIncludeOrder PRIVATE
+	${CMAKE_SOURCE_DIR}/src
+)
+
+set_target_properties(GnotePadIncludeOrder PROPERTIES AUTOMOC ON)
+
+target_link_libraries(GnotePadIncludeOrder PRIVATE
+	Qt6::Core
+	Qt6::Test
+)
+
+if(WIN32)
+	add_custom_command(TARGET GnotePadIncludeOrder POST_BUILD
+		COMMAND ${CMAKE_COMMAND} -E make_directory "$<TARGET_FILE_DIR:GnotePadIncludeOrder>/plugins"
+		COMMAND ${CMAKE_COMMAND} -E copy_directory
+			$<$<CONFIG:Debug>:${QT6_DEBUG_BIN}>
+			$<$<NOT:$<CONFIG:Debug>>:${QT6_RELEASE_BIN}>
+			"$<TARGET_FILE_DIR:GnotePadIncludeOrder>"
+		COMMAND ${CMAKE_COMMAND} -E copy_directory
+			$<$<CONFIG:Debug>:${QT6_DEBUG_PLUGINS}>
+			$<$<NOT:$<CONFIG:Debug>>:${QT6_RELEASE_PLUGINS}>
+			"$<TARGET_FILE_DIR:GnotePadIncludeOrder>/plugins"
+		COMMAND ${CMAKE_COMMAND} -E copy_if_different
+			$<$<CONFIG:Debug>:${CMAKE_CURRENT_BINARY_DIR}/qt.tests.debug.conf>
+			$<$<NOT:$<CONFIG:Debug>>:${CMAKE_CURRENT_BINARY_DIR}/qt.tests.release.conf>
+			"$<TARGET_FILE_DIR:GnotePadIncludeOrder>/qt.conf"
+		COMMENT "Copying Qt runtime and plugins beside GnotePadIncludeOrder.exe"
+	)
+endif()
+
+set(GNOTE_INCLUDE_ORDER_TEST_FUNCTIONS
+	testSampleSourceFileIncludeOrder
+	testMainWindowIncludeOrder
+	testTextEditorIncludeOrder
+)
+
+foreach(test_name IN LISTS GNOTE_INCLUDE_ORDER_TEST_FUNCTIONS)
+	add_test(
+		NAME gnotepad_${test_name}
+		COMMAND $<TARGET_FILE:GnotePadIncludeOrder> ${test_name}
+	)
+endforeach()
+
+add_test(NAME gnotepad_include_order_all COMMAND $<TARGET_FILE:GnotePadIncludeOrder>)
