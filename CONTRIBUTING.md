@@ -15,17 +15,23 @@ Thanks for helping improve GnotePad! This document highlights the day-to-day exp
 
 ## Include Guidelines
 
-We rely on clang-tidy's include-cleaner and `.clangd` to keep headers stable. Follow these rules whenever editing or adding headers/translation units:
+Keeping headers tidy shrinks rebuild times and keeps clang-tidy's include-cleaner happy. Follow these rules whenever you touch headers or add new modules:
 
-1. **Include what you use.** Every symbol that appears must pull in its own header; do not depend on transitive includes.
-2. **Use `#pragma once`.** All project headers already use it; mirror that style in any new files.
-3. **Apply the standard include order:**
-   - (Only in `.cpp` files) the corresponding header: `#include "ThisFile.h"`
-   - C++ standard library headers, alphabetical
-   - Third-party/SDK headers, alphabetical (Qt, spdlog, etc.)
-   - Project headers, alphabetical
-   Separate each group with a blank line and keep redundant includes out of the diff.
-4. **Blank templates for new files.** When creating a new `.h/.hpp/.cpp`, start with the above include skeleton so reviews stay small and rebuilds stay fast.
+1. **Include what you use.** If a symbol appears in a translation unit, include the header that provides it instead of relying on transitive includes.
+2. **Use `#pragma once`.** All project headers already opt in—match that style on any new files.
+3. **Honor the include order:**
+   1. This file's matching header first (`.cpp` files only): `#include "ThisFile.h"`
+   2. Project headers (`src/`, `include/`, `tests/`, etc.), alphabetical
+   3. Non-Qt third-party libraries (spdlog, fmt, boost, etc.), alphabetical
+   4. Qt headers, alphabetical
+   5. C++ standard library headers, alphabetical
+   6. Everything else (fallback)
+
+   Separate each group with a blank line and avoid redundant includes.
+   
+5. **New files inherit the same rules.** Start with the include skeleton above so diffs stay small.
+
+clang-tidy plus `.clangd`'s `-fno-modules` flag help surface violations locally. Running `cmake --build build/debug --target run-clang-tidy` (or the VS Code **Clang-Tidy (Debug)** task) will confirm that headers stay clean.
 
 ## Formatting & Static Analysis
 
