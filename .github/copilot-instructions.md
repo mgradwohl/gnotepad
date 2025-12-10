@@ -61,6 +61,8 @@ The project includes predefined tasks in `.vscode/tasks.json`:
    5. C++ standard library headers, alphabetical
    6. Everything else (fallback)
 
+Note that #include <qnamespace.h> is considered a Qt header.
+
 Separate each group with a blank line. Use `#pragma once` in all headers. Include what you use.
 
 **Example:**
