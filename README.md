@@ -96,6 +96,29 @@ Example usage:
 QT_QPA_PLATFORM=offscreen ./GnotePad --quit-after-init
 ```
 
+## Code Quality and Static Analysis
+
+GnotePad enforces code quality through automated tooling and CI checks:
+
+- **clang-format** - Automatic code formatting (LLVM style with Allman braces)
+- **clang-tidy** - Static analysis and best practices enforcement
+- **Automated tests** - Validate tooling configuration and include order
+- **GitHub Actions CI** - Continuous integration checks on all PRs
+
+**Before committing:**
+```bash
+# Format code
+cmake --build build/debug --target run-clang-format
+
+# Run static analysis
+cmake --build build/debug --target run-clang-tidy
+
+# Run all tests
+ctest --test-dir build/debug
+```
+
+For detailed information, see [`docs/STATIC_ANALYSIS.md`](docs/STATIC_ANALYSIS.md).
+
 ## Development Notes
 
 - Sources live in `src/` and are split by responsibility (`app/`, `ui/`).

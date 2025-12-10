@@ -37,6 +37,8 @@ clang-tidy plus `.clangd`'s `-fno-modules` flag help surface violations locally.
 
 - **clang-format:** All C++ sources follow the repository `.clang-format` (LLVM base, Allman braces). Run the `run-clang-format` target or the VS Code task before submitting.
 - **clang-tidy / scan-build:** clang-tidy runs on the Debug configuration; scan-build hooks live in `tools/run-scan-build.sh` and the **Scan-Build (Debug)** task. Fix or explain any new warnings.
+- **Automated checks:** Before committing, run `./tools/check-format.sh` and `./tools/check-include-order.sh` to verify formatting and include order.
+- For detailed information on static analysis tooling and CI checks, see [`docs/STATIC_ANALYSIS.md`](docs/STATIC_ANALYSIS.md).
 
 ## Tests
 
