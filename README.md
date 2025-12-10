@@ -40,7 +40,15 @@ cmake -S . -B build/debug -G Ninja \
   -DCMAKE_PREFIX_PATH=/usr/lib/x86_64-linux-gnu/cmake/Qt6 \
   -DCMAKE_BUILD_TYPE=Debug
 cmake --build build/debug
+
+# Run tests
 ctest --test-dir build/debug
+
+# Run performance tests specifically
+ctest --test-dir build/debug -L Performance
+
+# Run tests excluding performance tests (for CI)
+ctest --test-dir build/debug -LE Performance
 ```
 
 Adjust `-DCMAKE_PREFIX_PATH` to match your Qt6 installation (e.g., `/opt/Qt/6.xx/gcc_64/lib/cmake/Qt6`). Swap `Debug` for `Release` or `RelWithDebInfo` as needed.
@@ -101,7 +109,8 @@ QT_QPA_PLATFORM=offscreen ./GnotePad --quit-after-init
 - Sources live in `src/` and are split by responsibility (`app/`, `ui/`).
 - Qt resources (icons, translations, etc.) live under `resources/`.
 - Logging is provided by spdlog through CMake FetchContent integration.
-- Tests now use Qt Test (QTest) via CTest. The `GnotePadSmoke` suite spins up the real `MainWindow` to verify launch/minimize/maximize flows; future additions will cover file I/O, MRU, encoding round-trips, UI automation (find/replace, zoom, insert date), and large-file scrolling.
+- Tests now use Qt Test (QTest) via CTest. The `GnotePadSmoke` suite spins up the real `MainWindow` to verify launch/minimize/maximize flows, file I/O, MRU, encoding round-trips, UI automation (find/replace, zoom, insert date), and large-file scrolling.
+- Performance tests (`GnotePadPerformance`) measure load/save times, encoding conversion speed, UI responsiveness, and resource usage for large files (100KB to 1MB). Run with `ctest --test-dir build/debug -L Performance`. See `tests/performance/PERFORMANCE_TESTING.md` for details.
 
 ## Static Analysis & Tooling
 

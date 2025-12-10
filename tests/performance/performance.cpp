@@ -116,13 +116,18 @@ qint64 PerformanceTests::getCurrentMemoryUsage() const
     {
         if (line.compare(0, 6, "VmRSS:") == 0)
         {
-            // Extract the numeric value (in KB)
-            const char* p = line.c_str() + 6;
-            while (*p == ' ' || *p == '\t')
+            // Extract the numeric value (in KB) using QString for robust parsing
+            const QString qline = QString::fromStdString(line);
+            const QStringList parts = qline.split(QChar(' '), Qt::SkipEmptyParts);
+            if (parts.size() >= 2)
             {
-                ++p;
+                bool ok = false;
+                const qint64 kb = parts[1].toLongLong(&ok);
+                if (ok)
+                {
+                    return kb * 1024; // Convert KB to bytes
+                }
             }
-            return std::atoll(p) * 1024; // Convert KB to bytes
         }
     }
 #endif
@@ -139,36 +144,29 @@ double PerformanceTests::measureOperationTime(const std::function<void()>& opera
 
 void PerformanceTests::testLoadLargeFile100KB()
 {
-    const QString testFile = resolveTestFile(QStringLiteral("test_100kb.txt"));
-    if (testFile.isEmpty())
-    {
-        QTemporaryDir tempDir;
-        QVERIFY(tempDir.isValid());
-        const QString tempFile = tempDir.filePath(QStringLiteral("test_100kb.txt"));
-        generateTestFile(tempFile, 100 * 1024); // 100KB
+    QTemporaryDir tempDir;
+    QVERIFY(tempDir.isValid());
+    const QString tempFile = tempDir.filePath(QStringLiteral("test_100kb.txt"));
+    generateTestFile(tempFile, 100 * 1024); // 100KB
 
-        MainWindow window;
-        QElapsedTimer timer;
-        timer.start();
+    MainWindow window;
+    QElapsedTimer timer;
+    timer.start();
 
-        QVERIFY(window.testLoadDocument(tempFile));
+    QVERIFY(window.testLoadDocument(tempFile));
 
-        const qint64 loadTime = timer.elapsed();
-        qInfo() << "Load time for 100KB file:" << loadTime << "ms";
+    const qint64 loadTime = timer.elapsed();
+    qInfo() << "Load time for 100KB file:" << loadTime << "ms";
 
-        QVERIFY2(loadTime < PerformanceThresholds::LOAD_100KB_MS,
-                 qPrintable(QString("Load time %1ms exceeds threshold %2ms")
-                                .arg(loadTime)
-                                .arg(PerformanceThresholds::LOAD_100KB_MS)));
+    QVERIFY2(loadTime < PerformanceThresholds::LOAD_100KB_MS,
+             qPrintable(QString("Load time %1ms exceeds threshold %2ms")
+                            .arg(loadTime)
+                            .arg(PerformanceThresholds::LOAD_100KB_MS)));
 
-        auto* editor = window.editorForTest();
-        QVERIFY(editor);
-        QVERIFY(!editor->toPlainText().isEmpty());
-    }
-    else
-    {
-        QSKIP("Pre-generated test file not found, skipping cached test");
-    }
+    auto* editor = window.editorForTest();
+    QVERIFY(editor);
+    QVERIFY(!editor->toPlainText().isEmpty());
+    QVERIFY(editor->toPlainText().length() > 100000);
 }
 
 void PerformanceTests::testLoadLargeFile500KB()
@@ -509,7 +507,7 @@ void PerformanceTests::testFindPerformanceLargeFile()
     editor->moveCursor(QTextCursor::Start);
     for (int i = 0; i < 10; ++i)
     {
-        QMetaObject::invokeMethod(&window, "handleFindNext");
+        window.testFindNext();
         QApplication::processEvents();
     }
 
@@ -622,13 +620,13 @@ void PerformanceTests::testZoomOperationsPerformance()
     const int originalZoom = editor->zoomPercentage();
     for (int i = 0; i < 10; ++i)
     {
-        QMetaObject::invokeMethod(&window, "handleZoomIn");
+        editor->increaseZoom();
         QApplication::processEvents();
     }
 
     for (int i = 0; i < 10; ++i)
     {
-        QMetaObject::invokeMethod(&window, "handleZoomOut");
+        editor->decreaseZoom();
         QApplication::processEvents();
     }
 
