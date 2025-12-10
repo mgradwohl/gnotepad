@@ -37,6 +37,8 @@ private slots:
     void testLoadPrinterSettingsInvalid();
     void testSavePrinterSettingsEmpty();
     void testSavePrinterSettingsNonEmpty();
+    void testPrinterRoundTrip();
+    void testDefaultPrinterBehavior();
 
 private: // NOLINT(readability-redundant-access-specifiers)
     QString resolveTestFile(const QString& name) const;

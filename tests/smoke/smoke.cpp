@@ -699,6 +699,85 @@ void MainWindowSmokeTests::testSavePrinterSettingsNonEmpty()
     settings.sync();
 }
 
+void MainWindowSmokeTests::testPrinterRoundTrip()
+{
+    // Get list of available printers
+    const QList<QPrinterInfo> printers = QPrinterInfo::availablePrinters();
+
+    // Skip test if no printers are available
+    if (printers.isEmpty())
+    {
+        QSKIP("No printers available for testing");
+    }
+
+    // Use first available printer for testing
+    const QString testPrinterName = printers.first().printerName();
+    QVERIFY(!testPrinterName.isEmpty());
+
+    // Test save and load cycle
+    {
+        MainWindow window1;
+        window1.setDefaultPrinterNameForTest(testPrinterName);
+
+        QSettings settings;
+        window1.testSavePrinterSettings(settings);
+        settings.sync();
+
+        // Create new window and load settings
+        MainWindow window2;
+        window2.testLoadPrinterSettings(settings);
+
+        // Verify printer name was preserved
+        QCOMPARE(window2.defaultPrinterNameForTest(), testPrinterName);
+
+        // Clean up
+        settings.remove("printer/defaultPrinter");
+        settings.sync();
+    }
+
+    // Test round trip with empty printer (system default)
+    {
+        MainWindow window1;
+        window1.setDefaultPrinterNameForTest(QString{});
+
+        QSettings settings;
+        window1.testSavePrinterSettings(settings);
+        settings.sync();
+
+        // Create new window and load settings
+        MainWindow window2;
+        window2.testLoadPrinterSettings(settings);
+
+        // Verify empty printer name was preserved
+        QVERIFY(window2.defaultPrinterNameForTest().isEmpty());
+    }
+}
+
+void MainWindowSmokeTests::testDefaultPrinterBehavior()
+{
+    // Test that new window starts with empty printer name (system default)
+    MainWindow window;
+    QVERIFY(window.defaultPrinterNameForTest().isEmpty());
+
+    // Get available printers
+    const QList<QPrinterInfo> printers = QPrinterInfo::availablePrinters();
+
+    // Skip remaining test if no printers are available
+    if (printers.isEmpty())
+    {
+        QSKIP("No printers available for further testing");
+    }
+
+    // Test setting a specific printer
+    const QString testPrinterName = printers.first().printerName();
+    window.setDefaultPrinterNameForTest(testPrinterName);
+    QCOMPARE(window.defaultPrinterNameForTest(), testPrinterName);
+
+    // Test clearing printer preference (back to system default)
+    window.setDefaultPrinterNameForTest(QString{});
+    QVERIFY(window.defaultPrinterNameForTest().isEmpty());
+}
+
 int main(int argc, char** argv)
 {
     if (!qEnvironmentVariableIsSet("QT_QPA_PLATFORM"))

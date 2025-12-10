@@ -100,6 +100,8 @@ set(GNOTE_SMOKE_TEST_FUNCTIONS
 	testLoadPrinterSettingsInvalid
 	testSavePrinterSettingsEmpty
 	testSavePrinterSettingsNonEmpty
+	testPrinterRoundTrip
+	testDefaultPrinterBehavior
 )
 
 foreach(test_name IN LISTS GNOTE_SMOKE_TEST_FUNCTIONS)
