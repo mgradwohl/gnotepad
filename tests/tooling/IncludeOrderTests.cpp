@@ -25,9 +25,7 @@ IncludeOrderTests::IncludeCategory IncludeOrderTests::categorizeInclude(const QS
     QString includePath = match.captured(1);
 
     // 1. Matching header (only for .cpp files)
-    if (!expectedMatchingHeader.isEmpty() &&
-        (includePath == expectedMatchingHeader ||
-         includePath.endsWith("/" + expectedMatchingHeader)))
+    if (!expectedMatchingHeader.isEmpty() && (includePath == expectedMatchingHeader || includePath.endsWith("/" + expectedMatchingHeader)))
     {
         return MatchingHeader;
     }
