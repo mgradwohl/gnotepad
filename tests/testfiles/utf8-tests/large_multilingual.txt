@@ -1,0 +1,802 @@
+=== Large Multilingual Document ===
+
+English text with common words: the, and, or, but, if, then, else, while, for, with, without
+Español: con, sin, para, por, de, del, desde, hasta, cuando, donde, porque, aunque
+Français: avec, sans, pour, par, de, du, depuis, jusqu'à, quand, où, parce que, bien que
+Deutsch: mit, ohne, für, durch, von, vom, seit, bis, wenn, wo, weil, obwohl
+中文: 的, 了, 在, 是, 我, 有, 和, 人, 这, 中, 大, 来, 上, 国, 个
+日本語: の, に, は, を, た, が, で, て, と, し, れ, さ, ある, いる, も
+한국어: 의, 가, 이, 은, 들, 는, 좀, 잘, 되, 과, 도, 를, 으로, 자, 에
+
+English text with common words: the, and, or, but, if, then, else, while, for, with, without
+Español: con, sin, para, por, de, del, desde, hasta, cuando, donde, porque, aunque
+Français: avec, sans, pour, par, de, du, depuis, jusqu'à, quand, où, parce que, bien que
+Deutsch: mit, ohne, für, durch, von, vom, seit, bis, wenn, wo, weil, obwohl
+中文: 的, 了, 在, 是, 我, 有, 和, 人, 这, 中, 大, 来, 上, 国, 个
+日本語: の, に, は, を, た, が, で, て, と, し, れ, さ, ある, いる, も
+한국어: 의, 가, 이, 은, 들, 는, 좀, 잘, 되, 과, 도, 를, 으로, 자, 에
+
+English text with common words: the, and, or, but, if, then, else, while, for, with, without
+Español: con, sin, para, por, de, del, desde, hasta, cuando, donde, porque, aunque
+Français: avec, sans, pour, par, de, du, depuis, jusqu'à, quand, où, parce que, bien que
+Deutsch: mit, ohne, für, durch, von, vom, seit, bis, wenn, wo, weil, obwohl
+中文: 的, 了, 在, 是, 我, 有, 和, 人, 这, 中, 大, 来, 上, 国, 个
+日本語: の, に, は, を, た, が, で, て, と, し, れ, さ, ある, いる, も
+한국어: 의, 가, 이, 은, 들, 는, 좀, 잘, 되, 과, 도, 를, 으로, 자, 에
+
+English text with common words: the, and, or, but, if, then, else, while, for, with, without
+Español: con, sin, para, por, de, del, desde, hasta, cuando, donde, porque, aunque
+Français: avec, sans, pour, par, de, du, depuis, jusqu'à, quand, où, parce que, bien que
+Deutsch: mit, ohne, für, durch, von, vom, seit, bis, wenn, wo, weil, obwohl
+中文: 的, 了, 在, 是, 我, 有, 和, 人, 这, 中, 大, 来, 上, 国, 个
+日本語: の, に, は, を, た, が, で, て, と, し, れ, さ, ある, いる, も
+한국어: 의, 가, 이, 은, 들, 는, 좀, 잘, 되, 과, 도, 를, 으로, 자, 에
+
+English text with common words: the, and, or, but, if, then, else, while, for, with, without
+Español: con, sin, para, por, de, del, desde, hasta, cuando, donde, porque, aunque
+Français: avec, sans, pour, par, de, du, depuis, jusqu'à, quand, où, parce que, bien que
+Deutsch: mit, ohne, für, durch, von, vom, seit, bis, wenn, wo, weil, obwohl
+中文: 的, 了, 在, 是, 我, 有, 和, 人, 这, 中, 大, 来, 上, 国, 个
+日本語: の, に, は, を, た, が, で, て, と, し, れ, さ, ある, いる, も
+한국어: 의, 가, 이, 은, 들, 는, 좀, 잘, 되, 과, 도, 를, 으로, 자, 에
+
+English text with common words: the, and, or, but, if, then, else, while, for, with, without
+Español: con, sin, para, por, de, del, desde, hasta, cuando, donde, porque, aunque
+Français: avec, sans, pour, par, de, du, depuis, jusqu'à, quand, où, parce que, bien que
+Deutsch: mit, ohne, für, durch, von, vom, seit, bis, wenn, wo, weil, obwohl
+中文: 的, 了, 在, 是, 我, 有, 和, 人, 这, 中, 大, 来, 上, 国, 个
+日本語: の, に, は, を, た, が, で, て, と, し, れ, さ, ある, いる, も
+한국어: 의, 가, 이, 은, 들, 는, 좀, 잘, 되, 과, 도, 를, 으로, 자, 에
+
+English text with common words: the, and, or, but, if, then, else, while, for, with, without
+Español: con, sin, para, por, de, del, desde, hasta, cuando, donde, porque, aunque
+Français: avec, sans, pour, par, de, du, depuis, jusqu'à, quand, où, parce que, bien que
+Deutsch: mit, ohne, für, durch, von, vom, seit, bis, wenn, wo, weil, obwohl
+中文: 的, 了, 在, 是, 我, 有, 和, 人, 这, 中, 大, 来, 上, 国, 个
+日本語: の, に, は, を, た, が, で, て, と, し, れ, さ, ある, いる, も
+한국어: 의, 가, 이, 은, 들, 는, 좀, 잘, 되, 과, 도, 를, 으로, 자, 에
+
+English text with common words: the, and, or, but, if, then, else, while, for, with, without
+Español: con, sin, para, por, de, del, desde, hasta, cuando, donde, porque, aunque
+Français: avec, sans, pour, par, de, du, depuis, jusqu'à, quand, où, parce que, bien que
+Deutsch: mit, ohne, für, durch, von, vom, seit, bis, wenn, wo, weil, obwohl
+中文: 的, 了, 在, 是, 我, 有, 和, 人, 这, 中, 大, 来, 上, 国, 个
+日本語: の, に, は, を, た, が, で, て, と, し, れ, さ, ある, いる, も
+한국어: 의, 가, 이, 은, 들, 는, 좀, 잘, 되, 과, 도, 를, 으로, 자, 에
+
+English text with common words: the, and, or, but, if, then, else, while, for, with, without
+Español: con, sin, para, por, de, del, desde, hasta, cuando, donde, porque, aunque
+Français: avec, sans, pour, par, de, du, depuis, jusqu'à, quand, où, parce que, bien que
+Deutsch: mit, ohne, für, durch, von, vom, seit, bis, wenn, wo, weil, obwohl
+中文: 的, 了, 在, 是, 我, 有, 和, 人, 这, 中, 大, 来, 上, 国, 个
+日本語: の, に, は, を, た, が, で, て, と, し, れ, さ, ある, いる, も
+한국어: 의, 가, 이, 은, 들, 는, 좀, 잘, 되, 과, 도, 를, 으로, 자, 에
+
+English text with common words: the, and, or, but, if, then, else, while, for, with, without
+Español: con, sin, para, por, de, del, desde, hasta, cuando, donde, porque, aunque
+Français: avec, sans, pour, par, de, du, depuis, jusqu'à, quand, où, parce que, bien que
+Deutsch: mit, ohne, für, durch, von, vom, seit, bis, wenn, wo, weil, obwohl
+中文: 的, 了, 在, 是, 我, 有, 和, 人, 这, 中, 大, 来, 上, 国, 个
+日本語: の, に, は, を, た, が, で, て, と, し, れ, さ, ある, いる, も
+한국어: 의, 가, 이, 은, 들, 는, 좀, 잘, 되, 과, 도, 를, 으로, 자, 에
+
+English text with common words: the, and, or, but, if, then, else, while, for, with, without
+Español: con, sin, para, por, de, del, desde, hasta, cuando, donde, porque, aunque
+Français: avec, sans, pour, par, de, du, depuis, jusqu'à, quand, où, parce que, bien que
+Deutsch: mit, ohne, für, durch, von, vom, seit, bis, wenn, wo, weil, obwohl
+中文: 的, 了, 在, 是, 我, 有, 和, 人, 这, 中, 大, 来, 上, 国, 个
+日本語: の, に, は, を, た, が, で, て, と, し, れ, さ, ある, いる, も
+한국어: 의, 가, 이, 은, 들, 는, 좀, 잘, 되, 과, 도, 를, 으로, 자, 에
+
+English text with common words: the, and, or, but, if, then, else, while, for, with, without
+Español: con, sin, para, por, de, del, desde, hasta, cuando, donde, porque, aunque
+Français: avec, sans, pour, par, de, du, depuis, jusqu'à, quand, où, parce que, bien que
+Deutsch: mit, ohne, für, durch, von, vom, seit, bis, wenn, wo, weil, obwohl
+中文: 的, 了, 在, 是, 我, 有, 和, 人, 这, 中, 大, 来, 上, 国, 个
+日本語: の, に, は, を, た, が, で, て, と, し, れ, さ, ある, いる, も
+한국어: 의, 가, 이, 은, 들, 는, 좀, 잘, 되, 과, 도, 를, 으로, 자, 에
+
+English text with common words: the, and, or, but, if, then, else, while, for, with, without
+Español: con, sin, para, por, de, del, desde, hasta, cuando, donde, porque, aunque
+Français: avec, sans, pour, par, de, du, depuis, jusqu'à, quand, où, parce que, bien que
+Deutsch: mit, ohne, für, durch, von, vom, seit, bis, wenn, wo, weil, obwohl
+中文: 的, 了, 在, 是, 我, 有, 和, 人, 这, 中, 大, 来, 上, 国, 个
+日本語: の, に, は, を, た, が, で, て, と, し, れ, さ, ある, いる, も
+한국어: 의, 가, 이, 은, 들, 는, 좀, 잘, 되, 과, 도, 를, 으로, 자, 에
+
+English text with common words: the, and, or, but, if, then, else, while, for, with, without
+Español: con, sin, para, por, de, del, desde, hasta, cuando, donde, porque, aunque
+Français: avec, sans, pour, par, de, du, depuis, jusqu'à, quand, où, parce que, bien que
+Deutsch: mit, ohne, für, durch, von, vom, seit, bis, wenn, wo, weil, obwohl
+中文: 的, 了, 在, 是, 我, 有, 和, 人, 这, 中, 大, 来, 上, 国, 个
+日本語: の, に, は, を, た, が, で, て, と, し, れ, さ, ある, いる, も
+한국어: 의, 가, 이, 은, 들, 는, 좀, 잘, 되, 과, 도, 를, 으로, 자, 에
+
+English text with common words: the, and, or, but, if, then, else, while, for, with, without
+Español: con, sin, para, por, de, del, desde, hasta, cuando, donde, porque, aunque
+Français: avec, sans, pour, par, de, du, depuis, jusqu'à, quand, où, parce que, bien que
+Deutsch: mit, ohne, für, durch, von, vom, seit, bis, wenn, wo, weil, obwohl
+中文: 的, 了, 在, 是, 我, 有, 和, 人, 这, 中, 大, 来, 上, 国, 个
+日本語: の, に, は, を, た, が, で, て, と, し, れ, さ, ある, いる, も
+한국어: 의, 가, 이, 은, 들, 는, 좀, 잘, 되, 과, 도, 를, 으로, 자, 에
+
+English text with common words: the, and, or, but, if, then, else, while, for, with, without
+Español: con, sin, para, por, de, del, desde, hasta, cuando, donde, porque, aunque
+Français: avec, sans, pour, par, de, du, depuis, jusqu'à, quand, où, parce que, bien que
+Deutsch: mit, ohne, für, durch, von, vom, seit, bis, wenn, wo, weil, obwohl
+中文: 的, 了, 在, 是, 我, 有, 和, 人, 这, 中, 大, 来, 上, 国, 个
+日本語: の, に, は, を, た, が, で, て, と, し, れ, さ, ある, いる, も
+한국어: 의, 가, 이, 은, 들, 는, 좀, 잘, 되, 과, 도, 를, 으로, 자, 에
+
+English text with common words: the, and, or, but, if, then, else, while, for, with, without
+Español: con, sin, para, por, de, del, desde, hasta, cuando, donde, porque, aunque
+Français: avec, sans, pour, par, de, du, depuis, jusqu'à, quand, où, parce que, bien que
+Deutsch: mit, ohne, für, durch, von, vom, seit, bis, wenn, wo, weil, obwohl
+中文: 的, 了, 在, 是, 我, 有, 和, 人, 这, 中, 大, 来, 上, 国, 个
+日本語: の, に, は, を, た, が, で, て, と, し, れ, さ, ある, いる, も
+한국어: 의, 가, 이, 은, 들, 는, 좀, 잘, 되, 과, 도, 를, 으로, 자, 에
+
+English text with common words: the, and, or, but, if, then, else, while, for, with, without
+Español: con, sin, para, por, de, del, desde, hasta, cuando, donde, porque, aunque
+Français: avec, sans, pour, par, de, du, depuis, jusqu'à, quand, où, parce que, bien que
+Deutsch: mit, ohne, für, durch, von, vom, seit, bis, wenn, wo, weil, obwohl
+中文: 的, 了, 在, 是, 我, 有, 和, 人, 这, 中, 大, 来, 上, 国, 个
+日本語: の, に, は, を, た, が, で, て, と, し, れ, さ, ある, いる, も
+한국어: 의, 가, 이, 은, 들, 는, 좀, 잘, 되, 과, 도, 를, 으로, 자, 에
+
+English text with common words: the, and, or, but, if, then, else, while, for, with, without
+Español: con, sin, para, por, de, del, desde, hasta, cuando, donde, porque, aunque
+Français: avec, sans, pour, par, de, du, depuis, jusqu'à, quand, où, parce que, bien que
+Deutsch: mit, ohne, für, durch, von, vom, seit, bis, wenn, wo, weil, obwohl
+中文: 的, 了, 在, 是, 我, 有, 和, 人, 这, 中, 大, 来, 上, 国, 个
+日本語: の, に, は, を, た, が, で, て, と, し, れ, さ, ある, いる, も
+한국어: 의, 가, 이, 은, 들, 는, 좀, 잘, 되, 과, 도, 를, 으로, 자, 에
+
+English text with common words: the, and, or, but, if, then, else, while, for, with, without
+Español: con, sin, para, por, de, del, desde, hasta, cuando, donde, porque, aunque
+Français: avec, sans, pour, par, de, du, depuis, jusqu'à, quand, où, parce que, bien que
+Deutsch: mit, ohne, für, durch, von, vom, seit, bis, wenn, wo, weil, obwohl
+中文: 的, 了, 在, 是, 我, 有, 和, 人, 这, 中, 大, 来, 上, 国, 个
+日本語: の, に, は, を, た, が, で, て, と, し, れ, さ, ある, いる, も
+한국어: 의, 가, 이, 은, 들, 는, 좀, 잘, 되, 과, 도, 를, 으로, 자, 에
+
+English text with common words: the, and, or, but, if, then, else, while, for, with, without
+Español: con, sin, para, por, de, del, desde, hasta, cuando, donde, porque, aunque
+Français: avec, sans, pour, par, de, du, depuis, jusqu'à, quand, où, parce que, bien que
+Deutsch: mit, ohne, für, durch, von, vom, seit, bis, wenn, wo, weil, obwohl
+中文: 的, 了, 在, 是, 我, 有, 和, 人, 这, 中, 大, 来, 上, 国, 个
+日本語: の, に, は, を, た, が, で, て, と, し, れ, さ, ある, いる, も
+한국어: 의, 가, 이, 은, 들, 는, 좀, 잘, 되, 과, 도, 를, 으로, 자, 에
+
+English text with common words: the, and, or, but, if, then, else, while, for, with, without
+Español: con, sin, para, por, de, del, desde, hasta, cuando, donde, porque, aunque
+Français: avec, sans, pour, par, de, du, depuis, jusqu'à, quand, où, parce que, bien que
+Deutsch: mit, ohne, für, durch, von, vom, seit, bis, wenn, wo, weil, obwohl
+中文: 的, 了, 在, 是, 我, 有, 和, 人, 这, 中, 大, 来, 上, 国, 个
+日本語: の, に, は, を, た, が, で, て, と, し, れ, さ, ある, いる, も
+한국어: 의, 가, 이, 은, 들, 는, 좀, 잘, 되, 과, 도, 를, 으로, 자, 에
+
+English text with common words: the, and, or, but, if, then, else, while, for, with, without
+Español: con, sin, para, por, de, del, desde, hasta, cuando, donde, porque, aunque
+Français: avec, sans, pour, par, de, du, depuis, jusqu'à, quand, où, parce que, bien que
+Deutsch: mit, ohne, für, durch, von, vom, seit, bis, wenn, wo, weil, obwohl
+中文: 的, 了, 在, 是, 我, 有, 和, 人, 这, 中, 大, 来, 上, 国, 个
+日本語: の, に, は, を, た, が, で, て, と, し, れ, さ, ある, いる, も
+한국어: 의, 가, 이, 은, 들, 는, 좀, 잘, 되, 과, 도, 를, 으로, 자, 에
+
+English text with common words: the, and, or, but, if, then, else, while, for, with, without
+Español: con, sin, para, por, de, del, desde, hasta, cuando, donde, porque, aunque
+Français: avec, sans, pour, par, de, du, depuis, jusqu'à, quand, où, parce que, bien que
+Deutsch: mit, ohne, für, durch, von, vom, seit, bis, wenn, wo, weil, obwohl
+中文: 的, 了, 在, 是, 我, 有, 和, 人, 这, 中, 大, 来, 上, 国, 个
+日本語: の, に, は, を, た, が, で, て, と, し, れ, さ, ある, いる, も
+한국어: 의, 가, 이, 은, 들, 는, 좀, 잘, 되, 과, 도, 를, 으로, 자, 에
+
+English text with common words: the, and, or, but, if, then, else, while, for, with, without
+Español: con, sin, para, por, de, del, desde, hasta, cuando, donde, porque, aunque
+Français: avec, sans, pour, par, de, du, depuis, jusqu'à, quand, où, parce que, bien que
+Deutsch: mit, ohne, für, durch, von, vom, seit, bis, wenn, wo, weil, obwohl
+中文: 的, 了, 在, 是, 我, 有, 和, 人, 这, 中, 大, 来, 上, 国, 个
+日本語: の, に, は, を, た, が, で, て, と, し, れ, さ, ある, いる, も
+한국어: 의, 가, 이, 은, 들, 는, 좀, 잘, 되, 과, 도, 를, 으로, 자, 에
+
+English text with common words: the, and, or, but, if, then, else, while, for, with, without
+Español: con, sin, para, por, de, del, desde, hasta, cuando, donde, porque, aunque
+Français: avec, sans, pour, par, de, du, depuis, jusqu'à, quand, où, parce que, bien que
+Deutsch: mit, ohne, für, durch, von, vom, seit, bis, wenn, wo, weil, obwohl
+中文: 的, 了, 在, 是, 我, 有, 和, 人, 这, 中, 大, 来, 上, 国, 个
+日本語: の, に, は, を, た, が, で, て, と, し, れ, さ, ある, いる, も
+한국어: 의, 가, 이, 은, 들, 는, 좀, 잘, 되, 과, 도, 를, 으로, 자, 에
+
+English text with common words: the, and, or, but, if, then, else, while, for, with, without
+Español: con, sin, para, por, de, del, desde, hasta, cuando, donde, porque, aunque
+Français: avec, sans, pour, par, de, du, depuis, jusqu'à, quand, où, parce que, bien que
+Deutsch: mit, ohne, für, durch, von, vom, seit, bis, wenn, wo, weil, obwohl
+中文: 的, 了, 在, 是, 我, 有, 和, 人, 这, 中, 大, 来, 上, 国, 个
+日本語: の, に, は, を, た, が, で, て, と, し, れ, さ, ある, いる, も
+한국어: 의, 가, 이, 은, 들, 는, 좀, 잘, 되, 과, 도, 를, 으로, 자, 에
+
+English text with common words: the, and, or, but, if, then, else, while, for, with, without
+Español: con, sin, para, por, de, del, desde, hasta, cuando, donde, porque, aunque
+Français: avec, sans, pour, par, de, du, depuis, jusqu'à, quand, où, parce que, bien que
+Deutsch: mit, ohne, für, durch, von, vom, seit, bis, wenn, wo, weil, obwohl
+中文: 的, 了, 在, 是, 我, 有, 和, 人, 这, 中, 大, 来, 上, 国, 个
+日本語: の, に, は, を, た, が, で, て, と, し, れ, さ, ある, いる, も
+한국어: 의, 가, 이, 은, 들, 는, 좀, 잘, 되, 과, 도, 를, 으로, 자, 에
+
+English text with common words: the, and, or, but, if, then, else, while, for, with, without
+Español: con, sin, para, por, de, del, desde, hasta, cuando, donde, porque, aunque
+Français: avec, sans, pour, par, de, du, depuis, jusqu'à, quand, où, parce que, bien que
+Deutsch: mit, ohne, für, durch, von, vom, seit, bis, wenn, wo, weil, obwohl
+中文: 的, 了, 在, 是, 我, 有, 和, 人, 这, 中, 大, 来, 上, 国, 个
+日本語: の, に, は, を, た, が, で, て, と, し, れ, さ, ある, いる, も
+한국어: 의, 가, 이, 은, 들, 는, 좀, 잘, 되, 과, 도, 를, 으로, 자, 에
+
+English text with common words: the, and, or, but, if, then, else, while, for, with, without
+Español: con, sin, para, por, de, del, desde, hasta, cuando, donde, porque, aunque
+Français: avec, sans, pour, par, de, du, depuis, jusqu'à, quand, où, parce que, bien que
+Deutsch: mit, ohne, für, durch, von, vom, seit, bis, wenn, wo, weil, obwohl
+中文: 的, 了, 在, 是, 我, 有, 和, 人, 这, 中, 大, 来, 上, 国, 个
+日本語: の, に, は, を, た, が, で, て, と, し, れ, さ, ある, いる, も
+한국어: 의, 가, 이, 은, 들, 는, 좀, 잘, 되, 과, 도, 를, 으로, 자, 에
+
+English text with common words: the, and, or, but, if, then, else, while, for, with, without
+Español: con, sin, para, por, de, del, desde, hasta, cuando, donde, porque, aunque
+Français: avec, sans, pour, par, de, du, depuis, jusqu'à, quand, où, parce que, bien que
+Deutsch: mit, ohne, für, durch, von, vom, seit, bis, wenn, wo, weil, obwohl
+中文: 的, 了, 在, 是, 我, 有, 和, 人, 这, 中, 大, 来, 上, 国, 个
+日本語: の, に, は, を, た, が, で, て, と, し, れ, さ, ある, いる, も
+한국어: 의, 가, 이, 은, 들, 는, 좀, 잘, 되, 과, 도, 를, 으로, 자, 에
+
+English text with common words: the, and, or, but, if, then, else, while, for, with, without
+Español: con, sin, para, por, de, del, desde, hasta, cuando, donde, porque, aunque
+Français: avec, sans, pour, par, de, du, depuis, jusqu'à, quand, où, parce que, bien que
+Deutsch: mit, ohne, für, durch, von, vom, seit, bis, wenn, wo, weil, obwohl
+中文: 的, 了, 在, 是, 我, 有, 和, 人, 这, 中, 大, 来, 上, 国, 个
+日本語: の, に, は, を, た, が, で, て, と, し, れ, さ, ある, いる, も
+한국어: 의, 가, 이, 은, 들, 는, 좀, 잘, 되, 과, 도, 를, 으로, 자, 에
+
+English text with common words: the, and, or, but, if, then, else, while, for, with, without
+Español: con, sin, para, por, de, del, desde, hasta, cuando, donde, porque, aunque
+Français: avec, sans, pour, par, de, du, depuis, jusqu'à, quand, où, parce que, bien que
+Deutsch: mit, ohne, für, durch, von, vom, seit, bis, wenn, wo, weil, obwohl
+中文: 的, 了, 在, 是, 我, 有, 和, 人, 这, 中, 大, 来, 上, 国, 个
+日本語: の, に, は, を, た, が, で, て, と, し, れ, さ, ある, いる, も
+한국어: 의, 가, 이, 은, 들, 는, 좀, 잘, 되, 과, 도, 를, 으로, 자, 에
+
+English text with common words: the, and, or, but, if, then, else, while, for, with, without
+Español: con, sin, para, por, de, del, desde, hasta, cuando, donde, porque, aunque
+Français: avec, sans, pour, par, de, du, depuis, jusqu'à, quand, où, parce que, bien que
+Deutsch: mit, ohne, für, durch, von, vom, seit, bis, wenn, wo, weil, obwohl
+中文: 的, 了, 在, 是, 我, 有, 和, 人, 这, 中, 大, 来, 上, 国, 个
+日本語: の, に, は, を, た, が, で, て, と, し, れ, さ, ある, いる, も
+한국어: 의, 가, 이, 은, 들, 는, 좀, 잘, 되, 과, 도, 를, 으로, 자, 에
+
+English text with common words: the, and, or, but, if, then, else, while, for, with, without
+Español: con, sin, para, por, de, del, desde, hasta, cuando, donde, porque, aunque
+Français: avec, sans, pour, par, de, du, depuis, jusqu'à, quand, où, parce que, bien que
+Deutsch: mit, ohne, für, durch, von, vom, seit, bis, wenn, wo, weil, obwohl
+中文: 的, 了, 在, 是, 我, 有, 和, 人, 这, 中, 大, 来, 上, 国, 个
+日本語: の, に, は, を, た, が, で, て, と, し, れ, さ, ある, いる, も
+한국어: 의, 가, 이, 은, 들, 는, 좀, 잘, 되, 과, 도, 를, 으로, 자, 에
+
+English text with common words: the, and, or, but, if, then, else, while, for, with, without
+Español: con, sin, para, por, de, del, desde, hasta, cuando, donde, porque, aunque
+Français: avec, sans, pour, par, de, du, depuis, jusqu'à, quand, où, parce que, bien que
+Deutsch: mit, ohne, für, durch, von, vom, seit, bis, wenn, wo, weil, obwohl
+中文: 的, 了, 在, 是, 我, 有, 和, 人, 这, 中, 大, 来, 上, 国, 个
+日本語: の, に, は, を, た, が, で, て, と, し, れ, さ, ある, いる, も
+한국어: 의, 가, 이, 은, 들, 는, 좀, 잘, 되, 과, 도, 를, 으로, 자, 에
+
+English text with common words: the, and, or, but, if, then, else, while, for, with, without
+Español: con, sin, para, por, de, del, desde, hasta, cuando, donde, porque, aunque
+Français: avec, sans, pour, par, de, du, depuis, jusqu'à, quand, où, parce que, bien que
+Deutsch: mit, ohne, für, durch, von, vom, seit, bis, wenn, wo, weil, obwohl
+中文: 的, 了, 在, 是, 我, 有, 和, 人, 这, 中, 大, 来, 上, 国, 个
+日本語: の, に, は, を, た, が, で, て, と, し, れ, さ, ある, いる, も
+한국어: 의, 가, 이, 은, 들, 는, 좀, 잘, 되, 과, 도, 를, 으로, 자, 에
+
+English text with common words: the, and, or, but, if, then, else, while, for, with, without
+Español: con, sin, para, por, de, del, desde, hasta, cuando, donde, porque, aunque
+Français: avec, sans, pour, par, de, du, depuis, jusqu'à, quand, où, parce que, bien que
+Deutsch: mit, ohne, für, durch, von, vom, seit, bis, wenn, wo, weil, obwohl
+中文: 的, 了, 在, 是, 我, 有, 和, 人, 这, 中, 大, 来, 上, 国, 个
+日本語: の, に, は, を, た, が, で, て, と, し, れ, さ, ある, いる, も
+한국어: 의, 가, 이, 은, 들, 는, 좀, 잘, 되, 과, 도, 를, 으로, 자, 에
+
+English text with common words: the, and, or, but, if, then, else, while, for, with, without
+Español: con, sin, para, por, de, del, desde, hasta, cuando, donde, porque, aunque
+Français: avec, sans, pour, par, de, du, depuis, jusqu'à, quand, où, parce que, bien que
+Deutsch: mit, ohne, für, durch, von, vom, seit, bis, wenn, wo, weil, obwohl
+中文: 的, 了, 在, 是, 我, 有, 和, 人, 这, 中, 大, 来, 上, 国, 个
+日本語: の, に, は, を, た, が, で, て, と, し, れ, さ, ある, いる, も
+한국어: 의, 가, 이, 은, 들, 는, 좀, 잘, 되, 과, 도, 를, 으로, 자, 에
+
+English text with common words: the, and, or, but, if, then, else, while, for, with, without
+Español: con, sin, para, por, de, del, desde, hasta, cuando, donde, porque, aunque
+Français: avec, sans, pour, par, de, du, depuis, jusqu'à, quand, où, parce que, bien que
+Deutsch: mit, ohne, für, durch, von, vom, seit, bis, wenn, wo, weil, obwohl
+中文: 的, 了, 在, 是, 我, 有, 和, 人, 这, 中, 大, 来, 上, 国, 个
+日本語: の, に, は, を, た, が, で, て, と, し, れ, さ, ある, いる, も
+한국어: 의, 가, 이, 은, 들, 는, 좀, 잘, 되, 과, 도, 를, 으로, 자, 에
+
+English text with common words: the, and, or, but, if, then, else, while, for, with, without
+Español: con, sin, para, por, de, del, desde, hasta, cuando, donde, porque, aunque
+Français: avec, sans, pour, par, de, du, depuis, jusqu'à, quand, où, parce que, bien que
+Deutsch: mit, ohne, für, durch, von, vom, seit, bis, wenn, wo, weil, obwohl
+中文: 的, 了, 在, 是, 我, 有, 和, 人, 这, 中, 大, 来, 上, 国, 个
+日本語: の, に, は, を, た, が, で, て, と, し, れ, さ, ある, いる, も
+한국어: 의, 가, 이, 은, 들, 는, 좀, 잘, 되, 과, 도, 를, 으로, 자, 에
+
+English text with common words: the, and, or, but, if, then, else, while, for, with, without
+Español: con, sin, para, por, de, del, desde, hasta, cuando, donde, porque, aunque
+Français: avec, sans, pour, par, de, du, depuis, jusqu'à, quand, où, parce que, bien que
+Deutsch: mit, ohne, für, durch, von, vom, seit, bis, wenn, wo, weil, obwohl
+中文: 的, 了, 在, 是, 我, 有, 和, 人, 这, 中, 大, 来, 上, 国, 个
+日本語: の, に, は, を, た, が, で, て, と, し, れ, さ, ある, いる, も
+한국어: 의, 가, 이, 은, 들, 는, 좀, 잘, 되, 과, 도, 를, 으로, 자, 에
+
+English text with common words: the, and, or, but, if, then, else, while, for, with, without
+Español: con, sin, para, por, de, del, desde, hasta, cuando, donde, porque, aunque
+Français: avec, sans, pour, par, de, du, depuis, jusqu'à, quand, où, parce que, bien que
+Deutsch: mit, ohne, für, durch, von, vom, seit, bis, wenn, wo, weil, obwohl
+中文: 的, 了, 在, 是, 我, 有, 和, 人, 这, 中, 大, 来, 上, 国, 个
+日本語: の, に, は, を, た, が, で, て, と, し, れ, さ, ある, いる, も
+한국어: 의, 가, 이, 은, 들, 는, 좀, 잘, 되, 과, 도, 를, 으로, 자, 에
+
+English text with common words: the, and, or, but, if, then, else, while, for, with, without
+Español: con, sin, para, por, de, del, desde, hasta, cuando, donde, porque, aunque
+Français: avec, sans, pour, par, de, du, depuis, jusqu'à, quand, où, parce que, bien que
+Deutsch: mit, ohne, für, durch, von, vom, seit, bis, wenn, wo, weil, obwohl
+中文: 的, 了, 在, 是, 我, 有, 和, 人, 这, 中, 大, 来, 上, 国, 个
+日本語: の, に, は, を, た, が, で, て, と, し, れ, さ, ある, いる, も
+한국어: 의, 가, 이, 은, 들, 는, 좀, 잘, 되, 과, 도, 를, 으로, 자, 에
+
+English text with common words: the, and, or, but, if, then, else, while, for, with, without
+Español: con, sin, para, por, de, del, desde, hasta, cuando, donde, porque, aunque
+Français: avec, sans, pour, par, de, du, depuis, jusqu'à, quand, où, parce que, bien que
+Deutsch: mit, ohne, für, durch, von, vom, seit, bis, wenn, wo, weil, obwohl
+中文: 的, 了, 在, 是, 我, 有, 和, 人, 这, 中, 大, 来, 上, 国, 个
+日本語: の, に, は, を, た, が, で, て, と, し, れ, さ, ある, いる, も
+한국어: 의, 가, 이, 은, 들, 는, 좀, 잘, 되, 과, 도, 를, 으로, 자, 에
+
+English text with common words: the, and, or, but, if, then, else, while, for, with, without
+Español: con, sin, para, por, de, del, desde, hasta, cuando, donde, porque, aunque
+Français: avec, sans, pour, par, de, du, depuis, jusqu'à, quand, où, parce que, bien que
+Deutsch: mit, ohne, für, durch, von, vom, seit, bis, wenn, wo, weil, obwohl
+中文: 的, 了, 在, 是, 我, 有, 和, 人, 这, 中, 大, 来, 上, 国, 个
+日本語: の, に, は, を, た, が, で, て, と, し, れ, さ, ある, いる, も
+한국어: 의, 가, 이, 은, 들, 는, 좀, 잘, 되, 과, 도, 를, 으로, 자, 에
+
+English text with common words: the, and, or, but, if, then, else, while, for, with, without
+Español: con, sin, para, por, de, del, desde, hasta, cuando, donde, porque, aunque
+Français: avec, sans, pour, par, de, du, depuis, jusqu'à, quand, où, parce que, bien que
+Deutsch: mit, ohne, für, durch, von, vom, seit, bis, wenn, wo, weil, obwohl
+中文: 的, 了, 在, 是, 我, 有, 和, 人, 这, 中, 大, 来, 上, 国, 个
+日本語: の, に, は, を, た, が, で, て, と, し, れ, さ, ある, いる, も
+한국어: 의, 가, 이, 은, 들, 는, 좀, 잘, 되, 과, 도, 를, 으로, 자, 에
+
+English text with common words: the, and, or, but, if, then, else, while, for, with, without
+Español: con, sin, para, por, de, del, desde, hasta, cuando, donde, porque, aunque
+Français: avec, sans, pour, par, de, du, depuis, jusqu'à, quand, où, parce que, bien que
+Deutsch: mit, ohne, für, durch, von, vom, seit, bis, wenn, wo, weil, obwohl
+中文: 的, 了, 在, 是, 我, 有, 和, 人, 这, 中, 大, 来, 上, 国, 个
+日本語: の, に, は, を, た, が, で, て, と, し, れ, さ, ある, いる, も
+한국어: 의, 가, 이, 은, 들, 는, 좀, 잘, 되, 과, 도, 를, 으로, 자, 에
+
+English text with common words: the, and, or, but, if, then, else, while, for, with, without
+Español: con, sin, para, por, de, del, desde, hasta, cuando, donde, porque, aunque
+Français: avec, sans, pour, par, de, du, depuis, jusqu'à, quand, où, parce que, bien que
+Deutsch: mit, ohne, für, durch, von, vom, seit, bis, wenn, wo, weil, obwohl
+中文: 的, 了, 在, 是, 我, 有, 和, 人, 这, 中, 大, 来, 上, 国, 个
+日本語: の, に, は, を, た, が, で, て, と, し, れ, さ, ある, いる, も
+한국어: 의, 가, 이, 은, 들, 는, 좀, 잘, 되, 과, 도, 를, 으로, 자, 에
+
+English text with common words: the, and, or, but, if, then, else, while, for, with, without
+Español: con, sin, para, por, de, del, desde, hasta, cuando, donde, porque, aunque
+Français: avec, sans, pour, par, de, du, depuis, jusqu'à, quand, où, parce que, bien que
+Deutsch: mit, ohne, für, durch, von, vom, seit, bis, wenn, wo, weil, obwohl
+中文: 的, 了, 在, 是, 我, 有, 和, 人, 这, 中, 大, 来, 上, 国, 个
+日本語: の, に, は, を, た, が, で, て, と, し, れ, さ, ある, いる, も
+한국어: 의, 가, 이, 은, 들, 는, 좀, 잘, 되, 과, 도, 를, 으로, 자, 에
+
+English text with common words: the, and, or, but, if, then, else, while, for, with, without
+Español: con, sin, para, por, de, del, desde, hasta, cuando, donde, porque, aunque
+Français: avec, sans, pour, par, de, du, depuis, jusqu'à, quand, où, parce que, bien que
+Deutsch: mit, ohne, für, durch, von, vom, seit, bis, wenn, wo, weil, obwohl
+中文: 的, 了, 在, 是, 我, 有, 和, 人, 这, 中, 大, 来, 上, 国, 个
+日本語: の, に, は, を, た, が, で, て, と, し, れ, さ, ある, いる, も
+한국어: 의, 가, 이, 은, 들, 는, 좀, 잘, 되, 과, 도, 를, 으로, 자, 에
+
+English text with common words: the, and, or, but, if, then, else, while, for, with, without
+Español: con, sin, para, por, de, del, desde, hasta, cuando, donde, porque, aunque
+Français: avec, sans, pour, par, de, du, depuis, jusqu'à, quand, où, parce que, bien que
+Deutsch: mit, ohne, für, durch, von, vom, seit, bis, wenn, wo, weil, obwohl
+中文: 的, 了, 在, 是, 我, 有, 和, 人, 这, 中, 大, 来, 上, 国, 个
+日本語: の, に, は, を, た, が, で, て, と, し, れ, さ, ある, いる, も
+한국어: 의, 가, 이, 은, 들, 는, 좀, 잘, 되, 과, 도, 를, 으로, 자, 에
+
+English text with common words: the, and, or, but, if, then, else, while, for, with, without
+Español: con, sin, para, por, de, del, desde, hasta, cuando, donde, porque, aunque
+Français: avec, sans, pour, par, de, du, depuis, jusqu'à, quand, où, parce que, bien que
+Deutsch: mit, ohne, für, durch, von, vom, seit, bis, wenn, wo, weil, obwohl
+中文: 的, 了, 在, 是, 我, 有, 和, 人, 这, 中, 大, 来, 上, 国, 个
+日本語: の, に, は, を, た, が, で, て, と, し, れ, さ, ある, いる, も
+한국어: 의, 가, 이, 은, 들, 는, 좀, 잘, 되, 과, 도, 를, 으로, 자, 에
+
+English text with common words: the, and, or, but, if, then, else, while, for, with, without
+Español: con, sin, para, por, de, del, desde, hasta, cuando, donde, porque, aunque
+Français: avec, sans, pour, par, de, du, depuis, jusqu'à, quand, où, parce que, bien que
+Deutsch: mit, ohne, für, durch, von, vom, seit, bis, wenn, wo, weil, obwohl
+中文: 的, 了, 在, 是, 我, 有, 和, 人, 这, 中, 大, 来, 上, 国, 个
+日本語: の, に, は, を, た, が, で, て, と, し, れ, さ, ある, いる, も
+한국어: 의, 가, 이, 은, 들, 는, 좀, 잘, 되, 과, 도, 를, 으로, 자, 에
+
+English text with common words: the, and, or, but, if, then, else, while, for, with, without
+Español: con, sin, para, por, de, del, desde, hasta, cuando, donde, porque, aunque
+Français: avec, sans, pour, par, de, du, depuis, jusqu'à, quand, où, parce que, bien que
+Deutsch: mit, ohne, für, durch, von, vom, seit, bis, wenn, wo, weil, obwohl
+中文: 的, 了, 在, 是, 我, 有, 和, 人, 这, 中, 大, 来, 上, 国, 个
+日本語: の, に, は, を, た, が, で, て, と, し, れ, さ, ある, いる, も
+한국어: 의, 가, 이, 은, 들, 는, 좀, 잘, 되, 과, 도, 를, 으로, 자, 에
+
+English text with common words: the, and, or, but, if, then, else, while, for, with, without
+Español: con, sin, para, por, de, del, desde, hasta, cuando, donde, porque, aunque
+Français: avec, sans, pour, par, de, du, depuis, jusqu'à, quand, où, parce que, bien que
+Deutsch: mit, ohne, für, durch, von, vom, seit, bis, wenn, wo, weil, obwohl
+中文: 的, 了, 在, 是, 我, 有, 和, 人, 这, 中, 大, 来, 上, 国, 个
+日本語: の, に, は, を, た, が, で, て, と, し, れ, さ, ある, いる, も
+한국어: 의, 가, 이, 은, 들, 는, 좀, 잘, 되, 과, 도, 를, 으로, 자, 에
+
+English text with common words: the, and, or, but, if, then, else, while, for, with, without
+Español: con, sin, para, por, de, del, desde, hasta, cuando, donde, porque, aunque
+Français: avec, sans, pour, par, de, du, depuis, jusqu'à, quand, où, parce que, bien que
+Deutsch: mit, ohne, für, durch, von, vom, seit, bis, wenn, wo, weil, obwohl
+中文: 的, 了, 在, 是, 我, 有, 和, 人, 这, 中, 大, 来, 上, 国, 个
+日本語: の, に, は, を, た, が, で, て, と, し, れ, さ, ある, いる, も
+한국어: 의, 가, 이, 은, 들, 는, 좀, 잘, 되, 과, 도, 를, 으로, 자, 에
+
+English text with common words: the, and, or, but, if, then, else, while, for, with, without
+Español: con, sin, para, por, de, del, desde, hasta, cuando, donde, porque, aunque
+Français: avec, sans, pour, par, de, du, depuis, jusqu'à, quand, où, parce que, bien que
+Deutsch: mit, ohne, für, durch, von, vom, seit, bis, wenn, wo, weil, obwohl
+中文: 的, 了, 在, 是, 我, 有, 和, 人, 这, 中, 大, 来, 上, 国, 个
+日本語: の, に, は, を, た, が, で, て, と, し, れ, さ, ある, いる, も
+한국어: 의, 가, 이, 은, 들, 는, 좀, 잘, 되, 과, 도, 를, 으로, 자, 에
+
+English text with common words: the, and, or, but, if, then, else, while, for, with, without
+Español: con, sin, para, por, de, del, desde, hasta, cuando, donde, porque, aunque
+Français: avec, sans, pour, par, de, du, depuis, jusqu'à, quand, où, parce que, bien que
+Deutsch: mit, ohne, für, durch, von, vom, seit, bis, wenn, wo, weil, obwohl
+中文: 的, 了, 在, 是, 我, 有, 和, 人, 这, 中, 大, 来, 上, 国, 个
+日本語: の, に, は, を, た, が, で, て, と, し, れ, さ, ある, いる, も
+한국어: 의, 가, 이, 은, 들, 는, 좀, 잘, 되, 과, 도, 를, 으로, 자, 에
+
+English text with common words: the, and, or, but, if, then, else, while, for, with, without
+Español: con, sin, para, por, de, del, desde, hasta, cuando, donde, porque, aunque
+Français: avec, sans, pour, par, de, du, depuis, jusqu'à, quand, où, parce que, bien que
+Deutsch: mit, ohne, für, durch, von, vom, seit, bis, wenn, wo, weil, obwohl
+中文: 的, 了, 在, 是, 我, 有, 和, 人, 这, 中, 大, 来, 上, 国, 个
+日本語: の, に, は, を, た, が, で, て, と, し, れ, さ, ある, いる, も
+한국어: 의, 가, 이, 은, 들, 는, 좀, 잘, 되, 과, 도, 를, 으로, 자, 에
+
+English text with common words: the, and, or, but, if, then, else, while, for, with, without
+Español: con, sin, para, por, de, del, desde, hasta, cuando, donde, porque, aunque
+Français: avec, sans, pour, par, de, du, depuis, jusqu'à, quand, où, parce que, bien que
+Deutsch: mit, ohne, für, durch, von, vom, seit, bis, wenn, wo, weil, obwohl
+中文: 的, 了, 在, 是, 我, 有, 和, 人, 这, 中, 大, 来, 上, 国, 个
+日本語: の, に, は, を, た, が, で, て, と, し, れ, さ, ある, いる, も
+한국어: 의, 가, 이, 은, 들, 는, 좀, 잘, 되, 과, 도, 를, 으로, 자, 에
+
+English text with common words: the, and, or, but, if, then, else, while, for, with, without
+Español: con, sin, para, por, de, del, desde, hasta, cuando, donde, porque, aunque
+Français: avec, sans, pour, par, de, du, depuis, jusqu'à, quand, où, parce que, bien que
+Deutsch: mit, ohne, für, durch, von, vom, seit, bis, wenn, wo, weil, obwohl
+中文: 的, 了, 在, 是, 我, 有, 和, 人, 这, 中, 大, 来, 上, 国, 个
+日本語: の, に, は, を, た, が, で, て, と, し, れ, さ, ある, いる, も
+한국어: 의, 가, 이, 은, 들, 는, 좀, 잘, 되, 과, 도, 를, 으로, 자, 에
+
+English text with common words: the, and, or, but, if, then, else, while, for, with, without
+Español: con, sin, para, por, de, del, desde, hasta, cuando, donde, porque, aunque
+Français: avec, sans, pour, par, de, du, depuis, jusqu'à, quand, où, parce que, bien que
+Deutsch: mit, ohne, für, durch, von, vom, seit, bis, wenn, wo, weil, obwohl
+中文: 的, 了, 在, 是, 我, 有, 和, 人, 这, 中, 大, 来, 上, 国, 个
+日本語: の, に, は, を, た, が, で, て, と, し, れ, さ, ある, いる, も
+한국어: 의, 가, 이, 은, 들, 는, 좀, 잘, 되, 과, 도, 를, 으로, 자, 에
+
+English text with common words: the, and, or, but, if, then, else, while, for, with, without
+Español: con, sin, para, por, de, del, desde, hasta, cuando, donde, porque, aunque
+Français: avec, sans, pour, par, de, du, depuis, jusqu'à, quand, où, parce que, bien que
+Deutsch: mit, ohne, für, durch, von, vom, seit, bis, wenn, wo, weil, obwohl
+中文: 的, 了, 在, 是, 我, 有, 和, 人, 这, 中, 大, 来, 上, 国, 个
+日本語: の, に, は, を, た, が, で, て, と, し, れ, さ, ある, いる, も
+한국어: 의, 가, 이, 은, 들, 는, 좀, 잘, 되, 과, 도, 를, 으로, 자, 에
+
+English text with common words: the, and, or, but, if, then, else, while, for, with, without
+Español: con, sin, para, por, de, del, desde, hasta, cuando, donde, porque, aunque
+Français: avec, sans, pour, par, de, du, depuis, jusqu'à, quand, où, parce que, bien que
+Deutsch: mit, ohne, für, durch, von, vom, seit, bis, wenn, wo, weil, obwohl
+中文: 的, 了, 在, 是, 我, 有, 和, 人, 这, 中, 大, 来, 上, 国, 个
+日本語: の, に, は, を, た, が, で, て, と, し, れ, さ, ある, いる, も
+한국어: 의, 가, 이, 은, 들, 는, 좀, 잘, 되, 과, 도, 를, 으로, 자, 에
+
+English text with common words: the, and, or, but, if, then, else, while, for, with, without
+Español: con, sin, para, por, de, del, desde, hasta, cuando, donde, porque, aunque
+Français: avec, sans, pour, par, de, du, depuis, jusqu'à, quand, où, parce que, bien que
+Deutsch: mit, ohne, für, durch, von, vom, seit, bis, wenn, wo, weil, obwohl
+中文: 的, 了, 在, 是, 我, 有, 和, 人, 这, 中, 大, 来, 上, 国, 个
+日本語: の, に, は, を, た, が, で, て, と, し, れ, さ, ある, いる, も
+한국어: 의, 가, 이, 은, 들, 는, 좀, 잘, 되, 과, 도, 를, 으로, 자, 에
+
+English text with common words: the, and, or, but, if, then, else, while, for, with, without
+Español: con, sin, para, por, de, del, desde, hasta, cuando, donde, porque, aunque
+Français: avec, sans, pour, par, de, du, depuis, jusqu'à, quand, où, parce que, bien que
+Deutsch: mit, ohne, für, durch, von, vom, seit, bis, wenn, wo, weil, obwohl
+中文: 的, 了, 在, 是, 我, 有, 和, 人, 这, 中, 大, 来, 上, 国, 个
+日本語: の, に, は, を, た, が, で, て, と, し, れ, さ, ある, いる, も
+한국어: 의, 가, 이, 은, 들, 는, 좀, 잘, 되, 과, 도, 를, 으로, 자, 에
+
+English text with common words: the, and, or, but, if, then, else, while, for, with, without
+Español: con, sin, para, por, de, del, desde, hasta, cuando, donde, porque, aunque
+Français: avec, sans, pour, par, de, du, depuis, jusqu'à, quand, où, parce que, bien que
+Deutsch: mit, ohne, für, durch, von, vom, seit, bis, wenn, wo, weil, obwohl
+中文: 的, 了, 在, 是, 我, 有, 和, 人, 这, 中, 大, 来, 上, 国, 个
+日本語: の, に, は, を, た, が, で, て, と, し, れ, さ, ある, いる, も
+한국어: 의, 가, 이, 은, 들, 는, 좀, 잘, 되, 과, 도, 를, 으로, 자, 에
+
+English text with common words: the, and, or, but, if, then, else, while, for, with, without
+Español: con, sin, para, por, de, del, desde, hasta, cuando, donde, porque, aunque
+Français: avec, sans, pour, par, de, du, depuis, jusqu'à, quand, où, parce que, bien que
+Deutsch: mit, ohne, für, durch, von, vom, seit, bis, wenn, wo, weil, obwohl
+中文: 的, 了, 在, 是, 我, 有, 和, 人, 这, 中, 大, 来, 上, 国, 个
+日本語: の, に, は, を, た, が, で, て, と, し, れ, さ, ある, いる, も
+한국어: 의, 가, 이, 은, 들, 는, 좀, 잘, 되, 과, 도, 를, 으로, 자, 에
+
+English text with common words: the, and, or, but, if, then, else, while, for, with, without
+Español: con, sin, para, por, de, del, desde, hasta, cuando, donde, porque, aunque
+Français: avec, sans, pour, par, de, du, depuis, jusqu'à, quand, où, parce que, bien que
+Deutsch: mit, ohne, für, durch, von, vom, seit, bis, wenn, wo, weil, obwohl
+中文: 的, 了, 在, 是, 我, 有, 和, 人, 这, 中, 大, 来, 上, 国, 个
+日本語: の, に, は, を, た, が, で, て, と, し, れ, さ, ある, いる, も
+한국어: 의, 가, 이, 은, 들, 는, 좀, 잘, 되, 과, 도, 를, 으로, 자, 에
+
+English text with common words: the, and, or, but, if, then, else, while, for, with, without
+Español: con, sin, para, por, de, del, desde, hasta, cuando, donde, porque, aunque
+Français: avec, sans, pour, par, de, du, depuis, jusqu'à, quand, où, parce que, bien que
+Deutsch: mit, ohne, für, durch, von, vom, seit, bis, wenn, wo, weil, obwohl
+中文: 的, 了, 在, 是, 我, 有, 和, 人, 这, 中, 大, 来, 上, 国, 个
+日本語: の, に, は, を, た, が, で, て, と, し, れ, さ, ある, いる, も
+한국어: 의, 가, 이, 은, 들, 는, 좀, 잘, 되, 과, 도, 를, 으로, 자, 에
+
+English text with common words: the, and, or, but, if, then, else, while, for, with, without
+Español: con, sin, para, por, de, del, desde, hasta, cuando, donde, porque, aunque
+Français: avec, sans, pour, par, de, du, depuis, jusqu'à, quand, où, parce que, bien que
+Deutsch: mit, ohne, für, durch, von, vom, seit, bis, wenn, wo, weil, obwohl
+中文: 的, 了, 在, 是, 我, 有, 和, 人, 这, 中, 大, 来, 上, 国, 个
+日本語: の, に, は, を, た, が, で, て, と, し, れ, さ, ある, いる, も
+한국어: 의, 가, 이, 은, 들, 는, 좀, 잘, 되, 과, 도, 를, 으로, 자, 에
+
+English text with common words: the, and, or, but, if, then, else, while, for, with, without
+Español: con, sin, para, por, de, del, desde, hasta, cuando, donde, porque, aunque
+Français: avec, sans, pour, par, de, du, depuis, jusqu'à, quand, où, parce que, bien que
+Deutsch: mit, ohne, für, durch, von, vom, seit, bis, wenn, wo, weil, obwohl
+中文: 的, 了, 在, 是, 我, 有, 和, 人, 这, 中, 大, 来, 上, 国, 个
+日本語: の, に, は, を, た, が, で, て, と, し, れ, さ, ある, いる, も
+한국어: 의, 가, 이, 은, 들, 는, 좀, 잘, 되, 과, 도, 를, 으로, 자, 에
+
+English text with common words: the, and, or, but, if, then, else, while, for, with, without
+Español: con, sin, para, por, de, del, desde, hasta, cuando, donde, porque, aunque
+Français: avec, sans, pour, par, de, du, depuis, jusqu'à, quand, où, parce que, bien que
+Deutsch: mit, ohne, für, durch, von, vom, seit, bis, wenn, wo, weil, obwohl
+中文: 的, 了, 在, 是, 我, 有, 和, 人, 这, 中, 大, 来, 上, 国, 个
+日本語: の, に, は, を, た, が, で, て, と, し, れ, さ, ある, いる, も
+한국어: 의, 가, 이, 은, 들, 는, 좀, 잘, 되, 과, 도, 를, 으로, 자, 에
+
+English text with common words: the, and, or, but, if, then, else, while, for, with, without
+Español: con, sin, para, por, de, del, desde, hasta, cuando, donde, porque, aunque
+Français: avec, sans, pour, par, de, du, depuis, jusqu'à, quand, où, parce que, bien que
+Deutsch: mit, ohne, für, durch, von, vom, seit, bis, wenn, wo, weil, obwohl
+中文: 的, 了, 在, 是, 我, 有, 和, 人, 这, 中, 大, 来, 上, 国, 个
+日本語: の, に, は, を, た, が, で, て, と, し, れ, さ, ある, いる, も
+한국어: 의, 가, 이, 은, 들, 는, 좀, 잘, 되, 과, 도, 를, 으로, 자, 에
+
+English text with common words: the, and, or, but, if, then, else, while, for, with, without
+Español: con, sin, para, por, de, del, desde, hasta, cuando, donde, porque, aunque
+Français: avec, sans, pour, par, de, du, depuis, jusqu'à, quand, où, parce que, bien que
+Deutsch: mit, ohne, für, durch, von, vom, seit, bis, wenn, wo, weil, obwohl
+中文: 的, 了, 在, 是, 我, 有, 和, 人, 这, 中, 大, 来, 上, 国, 个
+日本語: の, に, は, を, た, が, で, て, と, し, れ, さ, ある, いる, も
+한국어: 의, 가, 이, 은, 들, 는, 좀, 잘, 되, 과, 도, 를, 으로, 자, 에
+
+English text with common words: the, and, or, but, if, then, else, while, for, with, without
+Español: con, sin, para, por, de, del, desde, hasta, cuando, donde, porque, aunque
+Français: avec, sans, pour, par, de, du, depuis, jusqu'à, quand, où, parce que, bien que
+Deutsch: mit, ohne, für, durch, von, vom, seit, bis, wenn, wo, weil, obwohl
+中文: 的, 了, 在, 是, 我, 有, 和, 人, 这, 中, 大, 来, 上, 国, 个
+日本語: の, に, は, を, た, が, で, て, と, し, れ, さ, ある, いる, も
+한국어: 의, 가, 이, 은, 들, 는, 좀, 잘, 되, 과, 도, 를, 으로, 자, 에
+
+English text with common words: the, and, or, but, if, then, else, while, for, with, without
+Español: con, sin, para, por, de, del, desde, hasta, cuando, donde, porque, aunque
+Français: avec, sans, pour, par, de, du, depuis, jusqu'à, quand, où, parce que, bien que
+Deutsch: mit, ohne, für, durch, von, vom, seit, bis, wenn, wo, weil, obwohl
+中文: 的, 了, 在, 是, 我, 有, 和, 人, 这, 中, 大, 来, 上, 国, 个
+日本語: の, に, は, を, た, が, で, て, と, し, れ, さ, ある, いる, も
+한국어: 의, 가, 이, 은, 들, 는, 좀, 잘, 되, 과, 도, 를, 으로, 자, 에
+
+English text with common words: the, and, or, but, if, then, else, while, for, with, without
+Español: con, sin, para, por, de, del, desde, hasta, cuando, donde, porque, aunque
+Français: avec, sans, pour, par, de, du, depuis, jusqu'à, quand, où, parce que, bien que
+Deutsch: mit, ohne, für, durch, von, vom, seit, bis, wenn, wo, weil, obwohl
+中文: 的, 了, 在, 是, 我, 有, 和, 人, 这, 中, 大, 来, 上, 国, 个
+日本語: の, に, は, を, た, が, で, て, と, し, れ, さ, ある, いる, も
+한국어: 의, 가, 이, 은, 들, 는, 좀, 잘, 되, 과, 도, 를, 으로, 자, 에
+
+English text with common words: the, and, or, but, if, then, else, while, for, with, without
+Español: con, sin, para, por, de, del, desde, hasta, cuando, donde, porque, aunque
+Français: avec, sans, pour, par, de, du, depuis, jusqu'à, quand, où, parce que, bien que
+Deutsch: mit, ohne, für, durch, von, vom, seit, bis, wenn, wo, weil, obwohl
+中文: 的, 了, 在, 是, 我, 有, 和, 人, 这, 中, 大, 来, 上, 国, 个
+日本語: の, に, は, を, た, が, で, て, と, し, れ, さ, ある, いる, も
+한국어: 의, 가, 이, 은, 들, 는, 좀, 잘, 되, 과, 도, 를, 으로, 자, 에
+
+English text with common words: the, and, or, but, if, then, else, while, for, with, without
+Español: con, sin, para, por, de, del, desde, hasta, cuando, donde, porque, aunque
+Français: avec, sans, pour, par, de, du, depuis, jusqu'à, quand, où, parce que, bien que
+Deutsch: mit, ohne, für, durch, von, vom, seit, bis, wenn, wo, weil, obwohl
+中文: 的, 了, 在, 是, 我, 有, 和, 人, 这, 中, 大, 来, 上, 国, 个
+日本語: の, に, は, を, た, が, で, て, と, し, れ, さ, ある, いる, も
+한국어: 의, 가, 이, 은, 들, 는, 좀, 잘, 되, 과, 도, 를, 으로, 자, 에
+
+English text with common words: the, and, or, but, if, then, else, while, for, with, without
+Español: con, sin, para, por, de, del, desde, hasta, cuando, donde, porque, aunque
+Français: avec, sans, pour, par, de, du, depuis, jusqu'à, quand, où, parce que, bien que
+Deutsch: mit, ohne, für, durch, von, vom, seit, bis, wenn, wo, weil, obwohl
+中文: 的, 了, 在, 是, 我, 有, 和, 人, 这, 中, 大, 来, 上, 国, 个
+日本語: の, に, は, を, た, が, で, て, と, し, れ, さ, ある, いる, も
+한국어: 의, 가, 이, 은, 들, 는, 좀, 잘, 되, 과, 도, 를, 으로, 자, 에
+
+English text with common words: the, and, or, but, if, then, else, while, for, with, without
+Español: con, sin, para, por, de, del, desde, hasta, cuando, donde, porque, aunque
+Français: avec, sans, pour, par, de, du, depuis, jusqu'à, quand, où, parce que, bien que
+Deutsch: mit, ohne, für, durch, von, vom, seit, bis, wenn, wo, weil, obwohl
+中文: 的, 了, 在, 是, 我, 有, 和, 人, 这, 中, 大, 来, 上, 国, 个
+日本語: の, に, は, を, た, が, で, て, と, し, れ, さ, ある, いる, も
+한국어: 의, 가, 이, 은, 들, 는, 좀, 잘, 되, 과, 도, 를, 으로, 자, 에
+
+English text with common words: the, and, or, but, if, then, else, while, for, with, without
+Español: con, sin, para, por, de, del, desde, hasta, cuando, donde, porque, aunque
+Français: avec, sans, pour, par, de, du, depuis, jusqu'à, quand, où, parce que, bien que
+Deutsch: mit, ohne, für, durch, von, vom, seit, bis, wenn, wo, weil, obwohl
+中文: 的, 了, 在, 是, 我, 有, 和, 人, 这, 中, 大, 来, 上, 国, 个
+日本語: の, に, は, を, た, が, で, て, と, し, れ, さ, ある, いる, も
+한국어: 의, 가, 이, 은, 들, 는, 좀, 잘, 되, 과, 도, 를, 으로, 자, 에
+
+English text with common words: the, and, or, but, if, then, else, while, for, with, without
+Español: con, sin, para, por, de, del, desde, hasta, cuando, donde, porque, aunque
+Français: avec, sans, pour, par, de, du, depuis, jusqu'à, quand, où, parce que, bien que
+Deutsch: mit, ohne, für, durch, von, vom, seit, bis, wenn, wo, weil, obwohl
+中文: 的, 了, 在, 是, 我, 有, 和, 人, 这, 中, 大, 来, 上, 国, 个
+日本語: の, に, は, を, た, が, で, て, と, し, れ, さ, ある, いる, も
+한국어: 의, 가, 이, 은, 들, 는, 좀, 잘, 되, 과, 도, 를, 으로, 자, 에
+
+English text with common words: the, and, or, but, if, then, else, while, for, with, without
+Español: con, sin, para, por, de, del, desde, hasta, cuando, donde, porque, aunque
+Français: avec, sans, pour, par, de, du, depuis, jusqu'à, quand, où, parce que, bien que
+Deutsch: mit, ohne, für, durch, von, vom, seit, bis, wenn, wo, weil, obwohl
+中文: 的, 了, 在, 是, 我, 有, 和, 人, 这, 中, 大, 来, 上, 国, 个
+日本語: の, に, は, を, た, が, で, て, と, し, れ, さ, ある, いる, も
+한국어: 의, 가, 이, 은, 들, 는, 좀, 잘, 되, 과, 도, 를, 으로, 자, 에
+
+English text with common words: the, and, or, but, if, then, else, while, for, with, without
+Español: con, sin, para, por, de, del, desde, hasta, cuando, donde, porque, aunque
+Français: avec, sans, pour, par, de, du, depuis, jusqu'à, quand, où, parce que, bien que
+Deutsch: mit, ohne, für, durch, von, vom, seit, bis, wenn, wo, weil, obwohl
+中文: 的, 了, 在, 是, 我, 有, 和, 人, 这, 中, 大, 来, 上, 国, 个
+日本語: の, に, は, を, た, が, で, て, と, し, れ, さ, ある, いる, も
+한국어: 의, 가, 이, 은, 들, 는, 좀, 잘, 되, 과, 도, 를, 으로, 자, 에
+
+English text with common words: the, and, or, but, if, then, else, while, for, with, without
+Español: con, sin, para, por, de, del, desde, hasta, cuando, donde, porque, aunque
+Français: avec, sans, pour, par, de, du, depuis, jusqu'à, quand, où, parce que, bien que
+Deutsch: mit, ohne, für, durch, von, vom, seit, bis, wenn, wo, weil, obwohl
+中文: 的, 了, 在, 是, 我, 有, 和, 人, 这, 中, 大, 来, 上, 国, 个
+日本語: の, に, は, を, た, が, で, て, と, し, れ, さ, ある, いる, も
+한국어: 의, 가, 이, 은, 들, 는, 좀, 잘, 되, 과, 도, 를, 으로, 자, 에
+
+English text with common words: the, and, or, but, if, then, else, while, for, with, without
+Español: con, sin, para, por, de, del, desde, hasta, cuando, donde, porque, aunque
+Français: avec, sans, pour, par, de, du, depuis, jusqu'à, quand, où, parce que, bien que
+Deutsch: mit, ohne, für, durch, von, vom, seit, bis, wenn, wo, weil, obwohl
+中文: 的, 了, 在, 是, 我, 有, 和, 人, 这, 中, 大, 来, 上, 国, 个
+日本語: の, に, は, を, た, が, で, て, と, し, れ, さ, ある, いる, も
+한국어: 의, 가, 이, 은, 들, 는, 좀, 잘, 되, 과, 도, 를, 으로, 자, 에
+
+English text with common words: the, and, or, but, if, then, else, while, for, with, without
+Español: con, sin, para, por, de, del, desde, hasta, cuando, donde, porque, aunque
+Français: avec, sans, pour, par, de, du, depuis, jusqu'à, quand, où, parce que, bien que
+Deutsch: mit, ohne, für, durch, von, vom, seit, bis, wenn, wo, weil, obwohl
+中文: 的, 了, 在, 是, 我, 有, 和, 人, 这, 中, 大, 来, 上, 国, 个
+日本語: の, に, は, を, た, が, で, て, と, し, れ, さ, ある, いる, も
+한국어: 의, 가, 이, 은, 들, 는, 좀, 잘, 되, 과, 도, 를, 으로, 자, 에
+
+English text with common words: the, and, or, but, if, then, else, while, for, with, without
+Español: con, sin, para, por, de, del, desde, hasta, cuando, donde, porque, aunque
+Français: avec, sans, pour, par, de, du, depuis, jusqu'à, quand, où, parce que, bien que
+Deutsch: mit, ohne, für, durch, von, vom, seit, bis, wenn, wo, weil, obwohl
+中文: 的, 了, 在, 是, 我, 有, 和, 人, 这, 中, 大, 来, 上, 国, 个
+日本語: の, に, は, を, た, が, で, て, と, し, れ, さ, ある, いる, も
+한국어: 의, 가, 이, 은, 들, 는, 좀, 잘, 되, 과, 도, 를, 으로, 자, 에
+
+English text with common words: the, and, or, but, if, then, else, while, for, with, without
+Español: con, sin, para, por, de, del, desde, hasta, cuando, donde, porque, aunque
+Français: avec, sans, pour, par, de, du, depuis, jusqu'à, quand, où, parce que, bien que
+Deutsch: mit, ohne, für, durch, von, vom, seit, bis, wenn, wo, weil, obwohl
+中文: 的, 了, 在, 是, 我, 有, 和, 人, 这, 中, 大, 来, 上, 国, 个
+日本語: の, に, は, を, た, が, で, て, と, し, れ, さ, ある, いる, も
+한국어: 의, 가, 이, 은, 들, 는, 좀, 잘, 되, 과, 도, 를, 으로, 자, 에
+
+English text with common words: the, and, or, but, if, then, else, while, for, with, without
+Español: con, sin, para, por, de, del, desde, hasta, cuando, donde, porque, aunque
+Français: avec, sans, pour, par, de, du, depuis, jusqu'à, quand, où, parce que, bien que
+Deutsch: mit, ohne, für, durch, von, vom, seit, bis, wenn, wo, weil, obwohl
+中文: 的, 了, 在, 是, 我, 有, 和, 人, 这, 中, 大, 来, 上, 国, 个
+日本語: の, に, は, を, た, が, で, て, と, し, れ, さ, ある, いる, も
+한국어: 의, 가, 이, 은, 들, 는, 좀, 잘, 되, 과, 도, 를, 으로, 자, 에
+
+English text with common words: the, and, or, but, if, then, else, while, for, with, without
+Español: con, sin, para, por, de, del, desde, hasta, cuando, donde, porque, aunque
+Français: avec, sans, pour, par, de, du, depuis, jusqu'à, quand, où, parce que, bien que
+Deutsch: mit, ohne, für, durch, von, vom, seit, bis, wenn, wo, weil, obwohl
+中文: 的, 了, 在, 是, 我, 有, 和, 人, 这, 中, 大, 来, 上, 国, 个
+日本語: の, に, は, を, た, が, で, て, と, し, れ, さ, ある, いる, も
+한국어: 의, 가, 이, 은, 들, 는, 좀, 잘, 되, 과, 도, 를, 으로, 자, 에
+
+English text with common words: the, and, or, but, if, then, else, while, for, with, without
+Español: con, sin, para, por, de, del, desde, hasta, cuando, donde, porque, aunque
+Français: avec, sans, pour, par, de, du, depuis, jusqu'à, quand, où, parce que, bien que
+Deutsch: mit, ohne, für, durch, von, vom, seit, bis, wenn, wo, weil, obwohl
+中文: 的, 了, 在, 是, 我, 有, 和, 人, 这, 中, 大, 来, 上, 国, 个
+日本語: の, に, は, を, た, が, で, て, と, し, れ, さ, ある, いる, も
+한국어: 의, 가, 이, 은, 들, 는, 좀, 잘, 되, 과, 도, 를, 으로, 자, 에
+
+English text with common words: the, and, or, but, if, then, else, while, for, with, without
+Español: con, sin, para, por, de, del, desde, hasta, cuando, donde, porque, aunque
+Français: avec, sans, pour, par, de, du, depuis, jusqu'à, quand, où, parce que, bien que
+Deutsch: mit, ohne, für, durch, von, vom, seit, bis, wenn, wo, weil, obwohl
+中文: 的, 了, 在, 是, 我, 有, 和, 人, 这, 中, 大, 来, 上, 国, 个
+日本語: の, に, は, を, た, が, で, て, と, し, れ, さ, ある, いる, も
+한국어: 의, 가, 이, 은, 들, 는, 좀, 잘, 되, 과, 도, 를, 으로, 자, 에
+
+English text with common words: the, and, or, but, if, then, else, while, for, with, without
+Español: con, sin, para, por, de, del, desde, hasta, cuando, donde, porque, aunque
+Français: avec, sans, pour, par, de, du, depuis, jusqu'à, quand, où, parce que, bien que
+Deutsch: mit, ohne, für, durch, von, vom, seit, bis, wenn, wo, weil, obwohl
+中文: 的, 了, 在, 是, 我, 有, 和, 人, 这, 中, 大, 来, 上, 国, 个
+日本語: の, に, は, を, た, が, で, て, と, し, れ, さ, ある, いる, も
+한국어: 의, 가, 이, 은, 들, 는, 좀, 잘, 되, 과, 도, 를, 으로, 자, 에
+
+English text with common words: the, and, or, but, if, then, else, while, for, with, without
+Español: con, sin, para, por, de, del, desde, hasta, cuando, donde, porque, aunque
+Français: avec, sans, pour, par, de, du, depuis, jusqu'à, quand, où, parce que, bien que
+Deutsch: mit, ohne, für, durch, von, vom, seit, bis, wenn, wo, weil, obwohl
+中文: 的, 了, 在, 是, 我, 有, 和, 人, 这, 中, 大, 来, 上, 国, 个
+日本語: の, に, は, を, た, が, で, て, と, し, れ, さ, ある, いる, も
+한국어: 의, 가, 이, 은, 들, 는, 좀, 잘, 되, 과, 도, 를, 으로, 자, 에
+
+English text with common words: the, and, or, but, if, then, else, while, for, with, without
+Español: con, sin, para, por, de, del, desde, hasta, cuando, donde, porque, aunque
+Français: avec, sans, pour, par, de, du, depuis, jusqu'à, quand, où, parce que, bien que
+Deutsch: mit, ohne, für, durch, von, vom, seit, bis, wenn, wo, weil, obwohl
+中文: 的, 了, 在, 是, 我, 有, 和, 人, 这, 中, 大, 来, 上, 国, 个
+日本語: の, に, は, を, た, が, で, て, と, し, れ, さ, ある, いる, も
+한국어: 의, 가, 이, 은, 들, 는, 좀, 잘, 되, 과, 도, 를, 으로, 자, 에
+
+English text with common words: the, and, or, but, if, then, else, while, for, with, without
+Español: con, sin, para, por, de, del, desde, hasta, cuando, donde, porque, aunque
+Français: avec, sans, pour, par, de, du, depuis, jusqu'à, quand, où, parce que, bien que
+Deutsch: mit, ohne, für, durch, von, vom, seit, bis, wenn, wo, weil, obwohl
+中文: 的, 了, 在, 是, 我, 有, 和, 人, 这, 中, 大, 来, 上, 国, 个
+日本語: の, に, は, を, た, が, で, て, と, し, れ, さ, ある, いる, も
+한국어: 의, 가, 이, 은, 들, 는, 좀, 잘, 되, 과, 도, 를, 으로, 자, 에
+

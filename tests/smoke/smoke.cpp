@@ -776,6 +776,340 @@ void MainWindowSmokeTests::testDefaultPrinterBehavior()
     QVERIFY(window.defaultPrinterNameForTest().isEmpty());
 }
 
+void MainWindowSmokeTests::testUtf8BomDetection()
+{
+    const QString bomPath = resolveTestFile(QStringLiteral("encoding-tests/utf8_with_bom.txt"));
+    const QString noBomPath = resolveTestFile(QStringLiteral("encoding-tests/utf8_no_bom.txt"));
+    QVERIFY2(!bomPath.isEmpty(), "utf8_with_bom.txt not found in testfiles/encoding-tests directory");
+    QVERIFY2(!noBomPath.isEmpty(), "utf8_no_bom.txt not found in testfiles/encoding-tests directory");
+
+    MainWindow window;
+    
+    // Test file with BOM
+    QVERIFY(window.testLoadDocument(bomPath));
+    QCOMPARE(window.currentEncodingForTest(), QStringConverter::Utf8);
+    QVERIFY(window.currentBomForTest());
+    
+    auto* editor = window.editorForTest();
+    QVERIFY(editor);
+    const QString contentWithBom = editor->toPlainText();
+    QVERIFY(contentWithBom.contains(QStringLiteral("UTF-8 BOM marker")));
+    
+    // Test file without BOM
+    QVERIFY(window.testLoadDocument(noBomPath));
+    QCOMPARE(window.currentEncodingForTest(), QStringConverter::Utf8);
+    QVERIFY(!window.currentBomForTest());
+    
+    const QString contentNoBom = editor->toPlainText();
+    QVERIFY(contentNoBom.contains(QStringLiteral("NO BOM marker")));
+}
+
+void MainWindowSmokeTests::testUtf16LEBomDetection()
+{
+    const QString utf16lePath = resolveTestFile(QStringLiteral("encoding-tests/utf16le_with_bom.txt"));
+    QVERIFY2(!utf16lePath.isEmpty(), "utf16le_with_bom.txt not found in testfiles/encoding-tests directory");
+
+    MainWindow window;
+    QVERIFY(window.testLoadDocument(utf16lePath));
+    
+    QCOMPARE(window.currentEncodingForTest(), QStringConverter::Utf16LE);
+    QVERIFY(window.currentBomForTest());
+    
+    auto* editor = window.editorForTest();
+    QVERIFY(editor);
+    const QString content = editor->toPlainText();
+    QVERIFY(content.contains(QStringLiteral("UTF-16 LE")));
+}
+
+void MainWindowSmokeTests::testUtf16BEBomDetection()
+{
+    const QString utf16bePath = resolveTestFile(QStringLiteral("encoding-tests/utf16be_with_bom.txt"));
+    QVERIFY2(!utf16bePath.isEmpty(), "utf16be_with_bom.txt not found in testfiles/encoding-tests directory");
+
+    MainWindow window;
+    QVERIFY(window.testLoadDocument(utf16bePath));
+    
+    QCOMPARE(window.currentEncodingForTest(), QStringConverter::Utf16BE);
+    QVERIFY(window.currentBomForTest());
+    
+    auto* editor = window.editorForTest();
+    QVERIFY(editor);
+    const QString content = editor->toPlainText();
+    QVERIFY(content.contains(QStringLiteral("UTF-16 BE")));
+}
+
+void MainWindowSmokeTests::testMultilingualContent()
+{
+    const QString multiPath = resolveTestFile(QStringLiteral("utf8-tests/multilingual.txt"));
+    QVERIFY2(!multiPath.isEmpty(), "multilingual.txt not found in testfiles/utf8-tests directory");
+
+    MainWindow window;
+    QVERIFY(window.testLoadDocument(multiPath));
+    
+    auto* editor = window.editorForTest();
+    QVERIFY(editor);
+    const QString content = editor->toPlainText();
+    
+    // Verify various languages are present
+    QVERIFY(content.contains(QStringLiteral("English")));
+    QVERIFY(content.contains(QStringLiteral("Spanish")));
+    QVERIFY(content.contains(QStringLiteral("French")));
+    QVERIFY(content.contains(QStringLiteral("German")));
+    QVERIFY(content.contains(QStringLiteral("Russian")));
+    QVERIFY(content.contains(QStringLiteral("Chinese")));
+    QVERIFY(content.contains(QStringLiteral("Japanese")));
+    QVERIFY(content.contains(QStringLiteral("Korean")));
+    
+    // Verify specific Unicode characters
+    QVERIFY(content.contains(QStringLiteral("Быстрая"))); // Russian
+    QVERIFY(content.contains(QStringLiteral("敏捷的"))); // Chinese
+    QVERIFY(content.contains(QStringLiteral("素早い"))); // Japanese
+    QVERIFY(content.contains(QStringLiteral("빠른"))); // Korean
+}
+
+void MainWindowSmokeTests::testUnicodeCharacters()
+{
+    const QString unicodePath = resolveTestFile(QStringLiteral("utf8-tests/unicode_chars.txt"));
+    QVERIFY2(!unicodePath.isEmpty(), "unicode_chars.txt not found in testfiles/utf8-tests directory");
+
+    MainWindow window;
+    QVERIFY(window.testLoadDocument(unicodePath));
+    
+    auto* editor = window.editorForTest();
+    QVERIFY(editor);
+    const QString content = editor->toPlainText();
+    
+    // Verify various Unicode categories are present
+    QVERIFY(content.contains(QStringLiteral("Mathematical Symbols")));
+    QVERIFY(content.contains(QStringLiteral("∀∃∄∅"))); // Math symbols
+    QVERIFY(content.contains(QStringLiteral("Currency Symbols")));
+    QVERIFY(content.contains(QStringLiteral("€₹₽"))); // Currency
+    QVERIFY(content.contains(QStringLiteral("←↑→↓"))); // Arrows
+    QVERIFY(content.contains(QStringLiteral("ΑΒΓ"))); // Greek
+    QVERIFY(content.contains(QStringLiteral("😀😃"))); // Emoji
+}
+
+void MainWindowSmokeTests::testEncodingRoundTripUtf8ToBom()
+{
+    const QString sourcePath = resolveTestFile(QStringLiteral("utf8-tests/multilingual.txt"));
+    QVERIFY2(!sourcePath.isEmpty(), "multilingual.txt not found");
+
+    MainWindow window;
+    QVERIFY(window.testLoadDocument(sourcePath));
+    
+    auto* editor = window.editorForTest();
+    QVERIFY(editor);
+    const QString originalContent = editor->toPlainText();
+    
+    QTemporaryDir tempDir;
+    QVERIFY(tempDir.isValid());
+    
+    // Test UTF-8 without BOM -> UTF-8 with BOM -> reload
+    const QString utf8BomPath = tempDir.filePath(QStringLiteral("utf8_added_bom.txt"));
+    QVERIFY(window.testSaveDocumentWithEncoding(utf8BomPath, QStringConverter::Utf8, true));
+    
+    // Verify BOM was written
+    QFile bomFile(utf8BomPath);
+    QVERIFY(bomFile.open(QIODevice::ReadOnly));
+    const QByteArray bomBytes = bomFile.read(3);
+    QCOMPARE(bomBytes, QByteArray::fromHex("efbbbf"));
+    bomFile.close();
+    
+    // Reload and verify content
+    editor->clear();
+    QVERIFY(window.testLoadDocument(utf8BomPath));
+    QCOMPARE(editor->toPlainText(), originalContent);
+    QCOMPARE(window.currentEncodingForTest(), QStringConverter::Utf8);
+    QVERIFY(window.currentBomForTest());
+    
+    // Test UTF-8 with BOM -> UTF-8 without BOM -> reload
+    const QString utf8NoBomPath = tempDir.filePath(QStringLiteral("utf8_removed_bom.txt"));
+    QVERIFY(window.testSaveDocumentWithEncoding(utf8NoBomPath, QStringConverter::Utf8, false));
+    
+    // Verify no BOM
+    QFile noBomFile(utf8NoBomPath);
+    QVERIFY(noBomFile.open(QIODevice::ReadOnly));
+    const QByteArray noBomBytes = noBomFile.read(3);
+    QVERIFY(!noBomBytes.startsWith(QByteArray::fromHex("efbbbf")));
+    noBomFile.close();
+    
+    // Reload and verify content
+    editor->clear();
+    QVERIFY(window.testLoadDocument(utf8NoBomPath));
+    QCOMPARE(editor->toPlainText(), originalContent);
+    QCOMPARE(window.currentEncodingForTest(), QStringConverter::Utf8);
+    QVERIFY(!window.currentBomForTest());
+}
+
+void MainWindowSmokeTests::testEncodingRoundTripUtf16Variants()
+{
+    const QString mixedPath = resolveTestFile(QStringLiteral("encoding-tests/mixed_content.txt"));
+    QVERIFY2(!mixedPath.isEmpty(), "mixed_content.txt not found");
+
+    MainWindow window;
+    QVERIFY(window.testLoadDocument(mixedPath));
+    
+    auto* editor = window.editorForTest();
+    QVERIFY(editor);
+    const QString originalContent = editor->toPlainText();
+    
+    QTemporaryDir tempDir;
+    QVERIFY(tempDir.isValid());
+    
+    // UTF-8 -> UTF-16 LE -> reload
+    const QString utf16lePath = tempDir.filePath(QStringLiteral("utf16le_roundtrip.txt"));
+    QVERIFY(window.testSaveDocumentWithEncoding(utf16lePath, QStringConverter::Utf16LE, true));
+    
+    // Verify UTF-16 LE BOM
+    QFile leFile(utf16lePath);
+    QVERIFY(leFile.open(QIODevice::ReadOnly));
+    const QByteArray leBom = leFile.read(2);
+    QCOMPARE(leBom, QByteArray::fromHex("fffe"));
+    leFile.close();
+    
+    editor->clear();
+    QVERIFY(window.testLoadDocument(utf16lePath));
+    QCOMPARE(editor->toPlainText(), originalContent);
+    QCOMPARE(window.currentEncodingForTest(), QStringConverter::Utf16LE);
+    QVERIFY(window.currentBomForTest());
+    
+    // UTF-16 LE -> UTF-16 BE -> reload
+    const QString utf16bePath = tempDir.filePath(QStringLiteral("utf16be_roundtrip.txt"));
+    QVERIFY(window.testSaveDocumentWithEncoding(utf16bePath, QStringConverter::Utf16BE, true));
+    
+    // Verify UTF-16 BE BOM
+    QFile beFile(utf16bePath);
+    QVERIFY(beFile.open(QIODevice::ReadOnly));
+    const QByteArray beBom = beFile.read(2);
+    QCOMPARE(beBom, QByteArray::fromHex("feff"));
+    beFile.close();
+    
+    editor->clear();
+    QVERIFY(window.testLoadDocument(utf16bePath));
+    QCOMPARE(editor->toPlainText(), originalContent);
+    QCOMPARE(window.currentEncodingForTest(), QStringConverter::Utf16BE);
+    QVERIFY(window.currentBomForTest());
+    
+    // UTF-16 BE -> UTF-8 -> reload
+    const QString utf8Path = tempDir.filePath(QStringLiteral("utf8_from_utf16.txt"));
+    QVERIFY(window.testSaveDocumentWithEncoding(utf8Path, QStringConverter::Utf8, false));
+    
+    editor->clear();
+    QVERIFY(window.testLoadDocument(utf8Path));
+    QCOMPARE(editor->toPlainText(), originalContent);
+    QCOMPARE(window.currentEncodingForTest(), QStringConverter::Utf8);
+    QVERIFY(!window.currentBomForTest());
+}
+
+void MainWindowSmokeTests::testLargeFileEncodingRoundTrip()
+{
+    const QString largePath = resolveTestFile(QStringLiteral("utf8-tests/large_multilingual.txt"));
+    QVERIFY2(!largePath.isEmpty(), "large_multilingual.txt not found");
+
+    MainWindow window;
+    QVERIFY(window.testLoadDocument(largePath));
+    
+    auto* editor = window.editorForTest();
+    QVERIFY(editor);
+    const QString originalContent = editor->toPlainText();
+    const qsizetype originalLength = originalContent.length();
+    QVERIFY(originalLength > 10000); // Ensure it's actually large
+    
+    QTemporaryDir tempDir;
+    QVERIFY(tempDir.isValid());
+    
+    // Test round-trip through different encodings
+    struct EncodingTest
+    {
+        QString fileName;
+        QStringConverter::Encoding encoding;
+        bool bom;
+    };
+    
+    const std::array<EncodingTest, 4> tests{
+        EncodingTest{QStringLiteral("large_utf8_bom.txt"), QStringConverter::Utf8, true},
+        EncodingTest{QStringLiteral("large_utf8_nobom.txt"), QStringConverter::Utf8, false},
+        EncodingTest{QStringLiteral("large_utf16le.txt"), QStringConverter::Utf16LE, true},
+        EncodingTest{QStringLiteral("large_utf16be.txt"), QStringConverter::Utf16BE, true},
+    };
+    
+    for (const auto& test : tests)
+    {
+        const QString path = tempDir.filePath(test.fileName);
+        
+        // Save with specified encoding
+        editor->setPlainText(originalContent);
+        QVERIFY(window.testSaveDocumentWithEncoding(path, test.encoding, test.bom));
+        
+        // Reload and verify
+        editor->clear();
+        QVERIFY(window.testLoadDocument(path));
+        QCOMPARE(editor->toPlainText(), originalContent);
+        QCOMPARE(editor->toPlainText().length(), originalLength);
+        QCOMPARE(window.currentEncodingForTest(), test.encoding);
+        QCOMPARE(window.currentBomForTest(), test.bom);
+    }
+}
+
+void MainWindowSmokeTests::testMixedContentPreservation()
+{
+    const QString mixedPath = resolveTestFile(QStringLiteral("encoding-tests/mixed_content.txt"));
+    QVERIFY2(!mixedPath.isEmpty(), "mixed_content.txt not found");
+
+    MainWindow window;
+    QVERIFY(window.testLoadDocument(mixedPath));
+    
+    auto* editor = window.editorForTest();
+    QVERIFY(editor);
+    const QString originalContent = editor->toPlainText();
+    
+    // Verify all languages are present in original
+    QVERIFY(originalContent.contains(QStringLiteral("English")));
+    QVERIFY(originalContent.contains(QStringLiteral("Español")));
+    QVERIFY(originalContent.contains(QStringLiteral("Français")));
+    QVERIFY(originalContent.contains(QStringLiteral("Deutsch")));
+    QVERIFY(originalContent.contains(QStringLiteral("中文测试")));
+    QVERIFY(originalContent.contains(QStringLiteral("日本語テスト")));
+    QVERIFY(originalContent.contains(QStringLiteral("한국어 테스트")));
+    QVERIFY(originalContent.contains(QStringLiteral("Русский")));
+    QVERIFY(originalContent.contains(QStringLiteral("العربية")));
+    
+    QTemporaryDir tempDir;
+    QVERIFY(tempDir.isValid());
+    
+    // Test chain: UTF-8 -> UTF-16 LE -> UTF-16 BE -> UTF-8 with BOM
+    const QString utf16lePath = tempDir.filePath(QStringLiteral("mixed_utf16le.txt"));
+    QVERIFY(window.testSaveDocumentWithEncoding(utf16lePath, QStringConverter::Utf16LE, true));
+    
+    editor->clear();
+    QVERIFY(window.testLoadDocument(utf16lePath));
+    QString utf16leContent = editor->toPlainText();
+    QCOMPARE(utf16leContent, originalContent);
+    
+    const QString utf16bePath = tempDir.filePath(QStringLiteral("mixed_utf16be.txt"));
+    QVERIFY(window.testSaveDocumentWithEncoding(utf16bePath, QStringConverter::Utf16BE, true));
+    
+    editor->clear();
+    QVERIFY(window.testLoadDocument(utf16bePath));
+    QString utf16beContent = editor->toPlainText();
+    QCOMPARE(utf16beContent, originalContent);
+    
+    const QString utf8BomPath = tempDir.filePath(QStringLiteral("mixed_utf8_bom.txt"));
+    QVERIFY(window.testSaveDocumentWithEncoding(utf8BomPath, QStringConverter::Utf8, true));
+    
+    editor->clear();
+    QVERIFY(window.testLoadDocument(utf8BomPath));
+    QString finalContent = editor->toPlainText();
+    QCOMPARE(finalContent, originalContent);
+    
+    // Verify all languages survived the encoding chain
+    QVERIFY(finalContent.contains(QStringLiteral("中文测试")));
+    QVERIFY(finalContent.contains(QStringLiteral("日本語テスト")));
+    QVERIFY(finalContent.contains(QStringLiteral("한국어 테스트")));
+    QVERIFY(finalContent.contains(QStringLiteral("Русский")));
+    QVERIFY(finalContent.contains(QStringLiteral("العربية")));
+}
+
 int main(int argc, char** argv)
 {
     if (!qEnvironmentVariableIsSet("QT_QPA_PLATFORM"))

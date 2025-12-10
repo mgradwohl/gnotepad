@@ -1,0 +1,20 @@
+Zero-width characters:
+- Zero width space: A​B (between A and B)
+- Zero width non-joiner: A‌B
+- Zero width joiner: A‍B
+- Byte order mark: ﻿(at start)
+
+Direction marks:
+- Left-to-right mark: A‎B
+- Right-to-left mark: A‏B
+
+Special spaces:
+- Non-breaking space: A B
+- Em space: A B
+- En space: A B
+- Thin space: A B
+
+Combining characters:
+- e + combining acute: é
+- n + combining tilde: ñ
+- a + combining ring: å

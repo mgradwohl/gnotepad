@@ -102,6 +102,15 @@ set(GNOTE_SMOKE_TEST_FUNCTIONS
 	testSavePrinterSettingsNonEmpty
 	testPrinterRoundTrip
 	testDefaultPrinterBehavior
+	testUtf8BomDetection
+	testUtf16LEBomDetection
+	testUtf16BEBomDetection
+	testMultilingualContent
+	testUnicodeCharacters
+	testEncodingRoundTripUtf8ToBom
+	testEncodingRoundTripUtf16Variants
+	testLargeFileEncodingRoundTrip
+	testMixedContentPreservation
 )
 
 foreach(test_name IN LISTS GNOTE_SMOKE_TEST_FUNCTIONS)
