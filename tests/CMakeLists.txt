@@ -111,6 +111,24 @@ set(GNOTE_SMOKE_TEST_FUNCTIONS
 	testEncodingRoundTripUtf16Variants
 	testLargeFileEncodingRoundTrip
 	testMixedContentPreservation
+	testStatusBarToggle
+	testStatusBarLabelsUpdate
+	testZoomLabelUpdates
+	testMenuActionsExist
+	testMenuShortcuts
+	testEditMenuActionsEnabled
+	testFindDialogInvocation
+	testReplaceDialogInvocation
+	testGoToLineDialog
+	testTabSizeDialog
+	testFontDialogInvocation
+	testWordWrapToggle
+	testDateFormatPreference
+	testAboutDialog
+	testEncodingDialogFlow
+	testActionStateManagement
+	testTooltipPresence
+	testRecentFilesMenuActions
 )
 
 foreach(test_name IN LISTS GNOTE_SMOKE_TEST_FUNCTIONS)
