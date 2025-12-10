@@ -300,11 +300,11 @@ Flathub is the primary distribution channel for Flatpak applications.
    ```
 
 3. **Submit to Flathub:**
-   - Fork the Flathub repository
+   - Fork the [Flathub repository](https://github.com/flathub/flathub) if you haven't already
    - Create branch: `git checkout -b gnotepad-v0.8.1`
-   - Copy updated manifest
-   - Commit and push
-   - Open merge request with:
+   - Copy updated manifest to your fork
+   - Commit and push to your fork
+   - Open merge request from your fork to the main Flathub repository with:
      - Release notes
      - Checksums from `SHA256SUMS.txt`
      - Screenshots from `docs/screenshots/`

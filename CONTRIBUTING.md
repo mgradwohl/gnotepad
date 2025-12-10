@@ -75,10 +75,11 @@ Windows development uses PowerShell + vcpkg with clang++/lld and Qt6:
   pwsh -NoProfile -ExecutionPolicy Bypass -File .\Devshell-Updated.ps1
   ```
   
-  For Windows Terminal integration:
+  For Windows Terminal integration, add this as a profile command:
   ```powershell
   pwsh.exe -NoLogo -NoExit -ExecutionPolicy Bypass -File "D:\source\gnotepad\Devshell-Updated.ps1"
   ```
+  (Replace path with your actual repository location)
 
 ### macOS Setup
 
