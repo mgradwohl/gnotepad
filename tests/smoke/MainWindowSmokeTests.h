@@ -33,7 +33,11 @@ private slots:
     void testRecentFilesMenu();
     void testDestructivePrompts();
     void testShortcutCommands();
+    void testLoadPrinterSettingsValid();
+    void testLoadPrinterSettingsInvalid();
+    void testSavePrinterSettingsEmpty();
+    void testSavePrinterSettingsNonEmpty();
 
-private: //NOLINT(readability-redundant-access-specifiers)
+private: // NOLINT(readability-redundant-access-specifiers)
     QString resolveTestFile(const QString& name) const;
 };

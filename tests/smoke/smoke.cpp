@@ -1,27 +1,28 @@
 #include <QtWidgets/QApplication>
 
 #include <QtCore/QByteArray>
-#include <QtCore/QProcessEnvironment>
 #include <QtCore/QDir>
 #include <QtCore/QFile>
 #include <QtCore/QFileInfo>
 #include <QtCore/QPoint>
+#include <QtCore/QProcessEnvironment>
 #include <QtCore/QSettings>
 #include <QtCore/QSize>
 #include <QtCore/QStandardPaths>
-#include <QtCore/QTemporaryDir>
 #include <QtCore/QStringList>
+#include <QtCore/QTemporaryDir>
 #include <QtTest/QTest>
 
+#include <QStringConverter>
 #include <QtGui/QAction>
 #include <QtGui/QFont>
 #include <QtGui/QTextCursor>
 #include <QtGui/QTextOption>
+#include <QtPrintSupport/QPrinterInfo>
 #include <QtWidgets/QMenu>
 #include <QtWidgets/QMessageBox>
-#include <QtWidgets/QStatusBar>
 #include <QtWidgets/QScrollBar>
-#include <QStringConverter>
+#include <QtWidgets/QStatusBar>
 
 #include "ui/MainWindow.h"
 #include "ui/TextEditor.h"
@@ -30,9 +31,9 @@
 
 using namespace GnotePad::ui;
 
-MainWindowSmokeTests::MainWindowSmokeTests(QObject* parent)
-    : QObject(parent)
-{}
+MainWindowSmokeTests::MainWindowSmokeTests(QObject* parent) : QObject(parent)
+{
+}
 
 void MainWindowSmokeTests::initTestCase()
 {
@@ -81,7 +82,7 @@ void MainWindowSmokeTests::testDefaultsWithoutSettings()
         const QString iniPath = settings.fileName();
         settings.clear();
         settings.sync();
-        if(!iniPath.isEmpty())
+        if (!iniPath.isEmpty())
         {
             QFile::remove(iniPath);
             QFile::remove(iniPath + QStringLiteral(".lock"));
@@ -122,7 +123,8 @@ void MainWindowSmokeTests::testDefaultsWithoutSettings()
 
 void MainWindowSmokeTests::testHandlesCorruptSettings()
 {
-    const QString iniPath = [&]() {
+    const QString iniPath = [&]()
+    {
         QSettings settings;
         const QString fileName = settings.fileName();
         settings.clear();
@@ -136,7 +138,7 @@ void MainWindowSmokeTests::testHandlesCorruptSettings()
         settings.setValue("editor/fontPointSize", 512.0);
 
         QStringList recents;
-        for(int i = 0; i < 20; ++i)
+        for (int i = 0; i < 20; ++i)
         {
             recents.append(QStringLiteral("/tmp/corrupt_file_%1.txt").arg(i));
         }
@@ -172,7 +174,7 @@ void MainWindowSmokeTests::testHandlesCorruptSettings()
         QSettings settings;
         settings.clear();
         settings.sync();
-        if(!iniPath.isEmpty())
+        if (!iniPath.isEmpty())
         {
             QFile::remove(iniPath);
             QFile::remove(iniPath + QStringLiteral(".lock"));
@@ -315,7 +317,8 @@ void MainWindowSmokeTests::testEncodingRoundTripVariants()
     QTemporaryDir tempDir;
     QVERIFY(tempDir.isValid());
 
-    const auto verifyVariant = [&](const QString& fileName, QStringConverter::Encoding encoding, bool bom, const QByteArray& expectedBom) {
+    const auto verifyVariant = [&](const QString& fileName, QStringConverter::Encoding encoding, bool bom, const QByteArray& expectedBom)
+    {
         const QString path = tempDir.filePath(fileName);
         editor->setPlainText(baseline);
         editor->document()->setModified(true);
@@ -327,7 +330,7 @@ void MainWindowSmokeTests::testEncodingRoundTripVariants()
         const QByteArray prefix = savedFile.read(prefixLength);
         savedFile.close();
 
-        if(expectedBom.isEmpty())
+        if (expectedBom.isEmpty())
         {
             QVERIFY(!prefix.startsWith(QByteArray::fromHex("efbbbf")));
             QVERIFY(!prefix.startsWith(QByteArray::fromHex("fffe")));
@@ -448,9 +451,9 @@ void MainWindowSmokeTests::testRecentFilesMenu()
     const auto actions = menu->actions();
     QVERIFY(!actions.isEmpty());
     int indexedEntry = 0;
-    for(QAction* action : actions)
+    for (QAction* action : actions)
     {
-        if(!action || !action->data().isValid())
+        if (!action || !action->data().isValid())
         {
             continue;
         }
@@ -477,7 +480,8 @@ void MainWindowSmokeTests::testDestructivePrompts()
     QVERIFY(tempDir.isValid());
     const QString tempFile = tempDir.filePath(QStringLiteral("scratch.txt"));
 
-    auto resetTempFile = [&]() {
+    auto resetTempFile = [&]()
+    {
         QFile::remove(tempFile);
         QVERIFY(QFile::copy(samplePath, tempFile));
     };
@@ -488,7 +492,8 @@ void MainWindowSmokeTests::testDestructivePrompts()
     auto* editor = window.editorForTest();
     QVERIFY(editor);
 
-    const auto stageDocument = [&](const QString& marker) {
+    const auto stageDocument = [&](const QString& marker)
+    {
         QVERIFY(window.testLoadDocument(tempFile));
         editor->moveCursor(QTextCursor::End);
         editor->insertPlainText(marker);
@@ -496,9 +501,10 @@ void MainWindowSmokeTests::testDestructivePrompts()
         QVERIFY(editor->document()->isModified());
     };
 
-    const auto fileContents = [&]() -> QString {
+    const auto fileContents = [&]() -> QString
+    {
         QFile file(tempFile);
-        if(!file.open(QIODevice::ReadOnly))
+        if (!file.open(QIODevice::ReadOnly))
         {
             QTest::qFail("Unable to open temp file", __FILE__, __LINE__);
             return {};
@@ -554,9 +560,10 @@ void MainWindowSmokeTests::testShortcutCommands()
     editor->setFocus();
     QCoreApplication::processEvents();
 
-    const auto readFile = [&]() -> QString {
+    const auto readFile = [&]() -> QString
+    {
         QFile file(tempFile);
-        if(!file.open(QIODevice::ReadOnly))
+        if (!file.open(QIODevice::ReadOnly))
         {
             QTest::qFail("Unable to read shortcut save file", __FILE__, __LINE__);
             return {};
@@ -596,9 +603,105 @@ void MainWindowSmokeTests::testShortcutCommands()
     QTRY_VERIFY(editor->toPlainText().length() > beforeLength);
 }
 
+void MainWindowSmokeTests::testLoadPrinterSettingsValid()
+{
+    // Get list of available printers
+    const QList<QPrinterInfo> printers = QPrinterInfo::availablePrinters();
+
+    // Skip test if no printers are available
+    if (printers.isEmpty())
+    {
+        QSKIP("No printers available for testing");
+    }
+
+    // Use first available printer for testing
+    const QString testPrinterName = printers.first().printerName();
+    QVERIFY(!testPrinterName.isEmpty());
+
+    // Create settings with a valid saved printer
+    QSettings settings;
+    settings.setValue("printer/defaultPrinter", testPrinterName);
+    settings.sync();
+
+    // Load settings and verify the printer was loaded
+    MainWindow window;
+    window.testLoadPrinterSettings(settings);
+    QCOMPARE(window.defaultPrinterNameForTest(), testPrinterName);
+
+    // Clean up
+    settings.remove("printer/defaultPrinter");
+    settings.sync();
+}
+
+void MainWindowSmokeTests::testLoadPrinterSettingsInvalid()
+{
+    // Create settings with an invalid printer name
+    const QString invalidPrinter = QStringLiteral("__NonExistentPrinter__XYZ123");
+    QSettings settings;
+    settings.setValue("printer/defaultPrinter", invalidPrinter);
+    settings.sync();
+
+    // Load settings - should fall back to empty (system default)
+    MainWindow window;
+    window.testLoadPrinterSettings(settings);
+    QVERIFY(window.defaultPrinterNameForTest().isEmpty());
+
+    // Clean up
+    settings.remove("printer/defaultPrinter");
+    settings.sync();
+}
+
+void MainWindowSmokeTests::testSavePrinterSettingsEmpty()
+{
+    // Create window with empty printer name (system default)
+    MainWindow window;
+    window.setDefaultPrinterNameForTest(QString{});
+
+    // Save settings
+    QSettings settings;
+    window.testSavePrinterSettings(settings);
+    settings.sync();
+
+    // Verify the printer setting was removed (not set)
+    QVERIFY(!settings.contains("printer/defaultPrinter"));
+}
+
+void MainWindowSmokeTests::testSavePrinterSettingsNonEmpty()
+{
+    // Get list of available printers
+    const QList<QPrinterInfo> printers = QPrinterInfo::availablePrinters();
+
+    // Skip test if no printers are available
+    if (printers.isEmpty())
+    {
+        QSKIP("No printers available for testing");
+    }
+
+    // Use first available printer for testing
+    const QString testPrinterName = printers.first().printerName();
+    QVERIFY(!testPrinterName.isEmpty());
+
+    // Create window and set printer name
+    MainWindow window;
+    window.setDefaultPrinterNameForTest(testPrinterName);
+
+    // Save settings
+    QSettings settings;
+    window.testSavePrinterSettings(settings);
+    settings.sync();
+
+    // Verify the printer setting was saved correctly
+    QVERIFY(settings.contains("printer/defaultPrinter"));
+    QCOMPARE(settings.value("printer/defaultPrinter").toString(), testPrinterName);
+
+    // Clean up
+    settings.remove("printer/defaultPrinter");
+    settings.sync();
+}
+
 int main(int argc, char** argv)
 {
-    if(!qEnvironmentVariableIsSet("QT_QPA_PLATFORM"))
+    if (!qEnvironmentVariableIsSet("QT_QPA_PLATFORM"))
     {
         qputenv("QT_QPA_PLATFORM", QByteArray("offscreen"));
     }
@@ -616,13 +719,13 @@ int main(int argc, char** argv)
 QString MainWindowSmokeTests::resolveTestFile(const QString& name) const
 {
     QDir dir(QCoreApplication::applicationDirPath());
-    if(!dir.cd(QStringLiteral("testfiles")))
+    if (!dir.cd(QStringLiteral("testfiles")))
     {
         return {};
     }
 
     const QString fullPath = dir.absoluteFilePath(name);
-    if(QFileInfo::exists(fullPath))
+    if (QFileInfo::exists(fullPath))
     {
         return fullPath;
     }
