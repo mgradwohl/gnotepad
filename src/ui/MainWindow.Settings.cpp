@@ -3,15 +3,21 @@
 
 #include <algorithm>
 
+#include <QSignalBlocker>
 #include <QtCore/qdir.h>
 #include <QtCore/qfileinfo.h>
 #include <QtCore/qsettings.h>
-#include <QSignalBlocker>
 #include <QtCore/qstandardpaths.h>
 #include <QtCore/qstringlist.h>
 #include <QtGui/qfont.h>
 #include <QtGui/qtextoption.h>
+#include <QtPrintSupport/qprinterinfo.h>
 #include <QtWidgets/qaction.h>
+#include <QtWidgets/qcombobox.h>
+#include <QtWidgets/qdialog.h>
+#include <QtWidgets/qdialogbuttonbox.h>
+#include <QtWidgets/qformlayout.h>
+#include <QtWidgets/qlabel.h>
 #include <QtWidgets/qmenu.h>
 #include <QtWidgets/qstatusbar.h>
 #include <spdlog/spdlog.h>
@@ -73,6 +79,7 @@ void MainWindow::loadSettings()
     loadEditorFontSettings(settings, hasExistingPreferences);
     loadEditorViewSettings(settings);
     loadEditorBehaviorSettings(settings);
+    loadPrinterSettings(settings);
 }
 
 void MainWindow::saveSettings() const
@@ -84,6 +91,7 @@ void MainWindow::saveSettings() const
     saveRecentFilesSettings(settings);
     saveEditorFontSettings(settings);
     saveEditorBehaviorSettings(settings);
+    savePrinterSettings(settings);
     clearLegacySettings(settings);
 }
 
@@ -393,6 +401,101 @@ void MainWindow::updateDateFormatActionState()
     {
         const QSignalBlocker blocker(m_dateFormatLongAction);
         m_dateFormatLongAction->setChecked(m_dateFormatPreference == DateFormatPreference::Long);
+    }
+}
+
+void MainWindow::loadPrinterSettings(QSettings& settings)
+{
+    const QString savedPrinter = settings.value("printer/defaultPrinter").toString();
+
+    // Validate that the saved printer still exists
+    if (!savedPrinter.isEmpty())
+    {
+        const QList<QPrinterInfo> printers = QPrinterInfo::availablePrinters();
+        const bool printerExists = std::any_of(printers.begin(), printers.end(),
+                                               [&savedPrinter](const QPrinterInfo& info) { return info.printerName() == savedPrinter; });
+
+        if (printerExists)
+        {
+            m_defaultPrinterName = savedPrinter;
+            spdlog::info("Loaded printer preference: {}", savedPrinter.toStdString());
+            return;
+        }
+        spdlog::warn("Saved printer '{}' no longer available", savedPrinter.toStdString());
+    }
+
+    // No saved preference or printer gone - use system default (empty string)
+    m_defaultPrinterName.clear();
+}
+
+void MainWindow::savePrinterSettings(QSettings& settings) const
+{
+    if (m_defaultPrinterName.isEmpty())
+    {
+        settings.remove("printer/defaultPrinter");
+    }
+    else
+    {
+        settings.setValue("printer/defaultPrinter", m_defaultPrinterName);
+    }
+}
+
+void MainWindow::handleChoosePrinter()
+{
+    const QList<QPrinterInfo> printers = QPrinterInfo::availablePrinters();
+    if (printers.isEmpty())
+    {
+        QMessageBox::information(this, tr("No Printers"), tr("No printers are available on this system."));
+        return;
+    }
+
+    // Build dialog
+    QDialog dialog(this);
+    dialog.setWindowTitle(tr("Choose Printer"));
+    dialog.setMinimumWidth(350);
+
+    auto* layout = new QFormLayout(&dialog);
+
+    auto* printerCombo = new QComboBox(&dialog);
+
+    // Add "Use System Default" option first
+    const QPrinterInfo systemDefault = QPrinterInfo::defaultPrinter();
+    const QString systemDefaultLabel =
+        systemDefault.isNull() ? tr("(System Default)") : tr("(System Default: %1)").arg(systemDefault.printerName());
+    printerCombo->addItem(systemDefaultLabel, QString{});
+
+    // Add all available printers
+    int currentIndex = 0;
+    for (const QPrinterInfo& info : printers)
+    {
+        const QString name = info.printerName();
+        printerCombo->addItem(name, name);
+
+        if (!m_defaultPrinterName.isEmpty() && name == m_defaultPrinterName)
+        {
+            currentIndex = printerCombo->count() - 1;
+        }
+    }
+    printerCombo->setCurrentIndex(currentIndex);
+
+    layout->addRow(tr("Printer:"), printerCombo);
+
+    auto* buttonBox = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, &dialog);
+    connect(buttonBox, &QDialogButtonBox::accepted, &dialog, &QDialog::accept);
+    connect(buttonBox, &QDialogButtonBox::rejected, &dialog, &QDialog::reject);
+    layout->addRow(buttonBox);
+
+    if (dialog.exec() == QDialog::Accepted)
+    {
+        m_defaultPrinterName = printerCombo->currentData().toString();
+        if (m_defaultPrinterName.isEmpty())
+        {
+            spdlog::info("Printer preference cleared (using system default)");
+        }
+        else
+        {
+            spdlog::info("Printer preference set to: {}", m_defaultPrinterName.toStdString());
+        }
     }
 }
 
