@@ -7,7 +7,7 @@
 #include <QtCore/qfileinfo.h>
 #include <QtCore/qlocale.h>
 #include <QtCore/qstringconverter.h>
-#include <QtCore/qsignalblocker.h>
+#include <QSignalBlocker>
 #include <QtCore/qstring.h>
 #include <QtCore/qstringliteral.h>
 #include <QtCore/qstringlist.h>

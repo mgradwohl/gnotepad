@@ -6,7 +6,7 @@
 #include <QtCore/qdir.h>
 #include <QtCore/qfileinfo.h>
 #include <QtCore/qsettings.h>
-#include <QtCore/qsignalblocker.h>
+#include <QSignalBlocker>
 #include <QtCore/qstandardpaths.h>
 #include <QtCore/qstringlist.h>
 #include <QtGui/qfont.h>
