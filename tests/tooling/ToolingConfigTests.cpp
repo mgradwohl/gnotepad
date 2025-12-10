@@ -3,7 +3,6 @@
 #include <QtCore/QDir>
 #include <QtCore/QFile>
 #include <QtCore/QFileInfo>
-#include <QtCore/QProcess>
 #include <QtCore/QTextStream>
 #include <QtTest/QtTest>
 
