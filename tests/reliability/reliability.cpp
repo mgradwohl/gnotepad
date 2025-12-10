@@ -25,22 +25,16 @@ void ReliabilityTests::initTestCase()
 {
     QStandardPaths::setTestModeEnabled(true);
     
-    // Create a temporary directory for test files
-    QTemporaryDir tempDir;
-    QVERIFY(tempDir.isValid());
-    m_tempDir = tempDir.path();
-    tempDir.setAutoRemove(false); // We'll clean up in cleanupTestCase
+    // Create a persistent temporary directory for test files
+    QTemporaryDir* tempDir = new QTemporaryDir();
+    QVERIFY(tempDir->isValid());
+    m_tempDir = tempDir->path();
+    // Note: We intentionally leak this to keep the directory alive for all tests
+    // It will be cleaned up when the process exits
 }
 
 void ReliabilityTests::cleanupTestCase()
 {
-    // Clean up temporary directory
-    if (!m_tempDir.isEmpty())
-    {
-        QDir dir(m_tempDir);
-        dir.removeRecursively();
-    }
-    
     // Clear all test settings
     clearAllSettings();
 }
@@ -242,7 +236,9 @@ void ReliabilityTests::testSettingsPersistenceAcrossRestarts()
 {
     clearAllSettings();
     
-    const int customZoom = 130; // Must be multiple of 10 due to zoom snapping
+    // Zoom values are snapped to multiples of 10 by TextEditor::setZoomPercentage
+    // (see TextEditor.cpp kZoomStepPercent)
+    const int customZoom = 130;
     const int customTabSize = 8;
     
     // Simulate previous session by writing settings
@@ -707,7 +703,7 @@ bool ReliabilityTests::makeFileReadOnly(const QString& path)
     return chmod(path.toLocal8Bit().constData(), S_IRUSR) == 0;
 #else
     QFile file(path);
-    return file.setPermissions(QFile::ReadOwner | QFile::ReadUser);
+    return file.setPermissions(QFileDevice::ReadOwner | QFileDevice::ReadUser);
 #endif
 }
 
@@ -717,7 +713,7 @@ bool ReliabilityTests::makeFileWritable(const QString& path)
     return chmod(path.toLocal8Bit().constData(), S_IRUSR | S_IWUSR) == 0;
 #else
     QFile file(path);
-    return file.setPermissions(QFile::ReadOwner | QFile::WriteOwner | QFile::ReadUser | QFile::WriteUser);
+    return file.setPermissions(QFileDevice::ReadOwner | QFileDevice::WriteOwner | QFileDevice::ReadUser | QFileDevice::WriteUser);
 #endif
 }
 
