@@ -51,5 +51,4 @@ private:
     QString resolveTestFile(const QString& name) const;
     void generateTestFile(const QString& path, qint64 sizeInBytes);
     qint64 getCurrentMemoryUsage() const;
-    double measureOperationTime(const std::function<void()>& operation) const;
 };
