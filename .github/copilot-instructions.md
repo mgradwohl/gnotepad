@@ -54,13 +54,14 @@ The project includes predefined tasks in `.vscode/tasks.json`:
   - Run `cmake --build build/debug --target run-clang-tidy` regularly
 
 ### Include Order
-Follow this order in all `.cpp` files:
-1. Corresponding header (e.g., `#include "MainWindow.h"`)
-2. C++ standard library headers (alphabetical)
-3. Third-party headers: Qt, spdlog (alphabetical)
-4. Project headers (alphabetical)
+   1. This file's matching header first (`.cpp` files only): `#include "ThisFile.h"`
+   2. Project headers (`src/`, `include/`, `tests/`, etc.), alphabetical
+   3. Non-Qt third-party libraries (spdlog, fmt, boost, etc.), alphabetical
+   4. Qt headers, alphabetical
+   5. C++ standard library headers, alphabetical
+   6. Everything else (fallback)
 
-Separate each group with a blank line. Use `#pragma once` in all headers.
+Separate each group with a blank line. Use `#pragma once` in all headers. Include what you use.
 
 **Example:**
 ```cpp
