@@ -1,0 +1,118 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  format-check:
+    name: Code Formatting Check
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Add LLVM apt repo and install clang 21
+      run: |
+        set -euo pipefail
+        sudo apt-get update
+        # Add the official LLVM apt repository to get clang 21 packages
+        wget -qO - https://apt.llvm.org/llvm-snapshot.gpg.key | sudo apt-key add -
+        sudo bash -c 'echo "deb http://apt.llvm.org/focal/ llvm-toolchain-focal-21 main" > /etc/apt/sources.list.d/llvm-21.list'
+        sudo apt-get update
+        sudo apt-get install -y clang-21 clang-format-21 clang-tidy-21
+        echo "clang version: $(clang-21 --version | head -n1)"
+        echo "clang-format version: $(clang-format-21 --version)"
+
+    - name: Check code formatting
+      run: |
+        set -euo pipefail
+        # Find tracked C/C++ files under src/ and tests/
+        files=$(git ls-files '*.cpp' '*.h' | grep -E '^(src/|tests/)' || true)
+        if [ -z "$files" ]; then
+          echo "No C/C++ files to check"
+          exit 0
+        fi
+
+        echo "Files to check:"
+        echo "$files"
+
+        # Run clang-format in dry-run mode using repository style
+        echo "$files" | xargs -r clang-format-21 --dry-run --Werror --style=file
+
+  static-analysis:
+    name: Static Analysis (clang-tidy)
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Add LLVM apt repo and install tooling (clang 21 + tools)
+      run: |
+        set -euo pipefail
+        wget -qO - https://apt.llvm.org/llvm-snapshot.gpg.key | sudo apt-key add -
+        sudo bash -c 'echo "deb http://apt.llvm.org/focal/ llvm-toolchain-focal-21 main" > /etc/apt/sources.list.d/llvm-21.list'
+        sudo apt-get update
+        sudo apt-get install -y clang-21 clang-tidy-21 ninja-build cmake \
+          libxkbcommon-dev qt6-base-dev qt6-base-dev-tools qt6-tools-dev qt6-svg-dev
+        clang-21 --version || true
+        clang-tidy-21 --version || true
+
+    - name: Configure CMake
+      run: |
+        cmake -S . -B build -G Ninja \
+          -DCMAKE_CXX_COMPILER=clang++-21 \
+          -DCMAKE_CXX_STANDARD=23 \
+          -DCMAKE_CXX_FLAGS="-std=c++23" \
+          -DCMAKE_PREFIX_PATH=/usr/lib/x86_64-linux-gnu/cmake/Qt6 \
+          -DCMAKE_BUILD_TYPE=Debug \
+          -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
+
+    - name: Run clang-tidy (via CMake target)
+      run: |
+        cmake --build build --target run-clang-tidy
+
+  build-and-test:
+    name: Build and Test
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest]
+        build-type: [Debug, Release]
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Add LLVM apt repo and install dependencies (Linux)
+      if: runner.os == 'Linux'
+      run: |
+        set -euo pipefail
+        wget -qO - https://apt.llvm.org/llvm-snapshot.gpg.key | sudo apt-key add -
+        sudo bash -c 'echo "deb http://apt.llvm.org/focal/ llvm-toolchain-focal-21 main" > /etc/apt/sources.list.d/llvm-21.list'
+        sudo apt-get update
+        sudo apt-get install -y clang-21 clang-format-21 ninja-build cmake \
+          libxkbcommon-dev qt6-base-dev qt6-base-dev-tools qt6-tools-dev qt6-svg-dev
+        clang-21 --version || true
+        clang-format-21 --version || true
+
+    - name: Configure CMake
+      run: |
+        cmake -S . -B build -G Ninja \
+          -DCMAKE_CXX_COMPILER=clang++-21 \
+          -DCMAKE_CXX_STANDARD=23 \
+          -DCMAKE_CXX_FLAGS="-std=c++23" \
+          -DCMAKE_PREFIX_PATH=/usr/lib/x86_64-linux-gnu/cmake/Qt6 \
+          -DCMAKE_BUILD_TYPE=${{ matrix.build-type }}
+
+    - name: Build
+      run: cmake --build build
+
+    - name: Run tests
+      run: ctest --test-dir build --output-on-failure
