@@ -4,6 +4,7 @@
 
 #include <spdlog/spdlog.h>
 
+#include <qnamespace.h>
 #include <QtCore/qcoreapplication.h>
 #include <QtCore/qobject.h>
 #include <QtCore/qstring.h>
@@ -24,8 +25,6 @@
 
 #include <algorithm>
 #include <memory>
-
-#include <qnamespace.h>
 
 namespace GnotePad::ui::PrintSupport
 {
@@ -242,8 +241,8 @@ namespace GnotePad::ui::PrintSupport
 
             // Draw header (centered filename)
             {
-                const qreal textAreaLeftPx = pageRectPx.left();   // + gutterWidthPx;
-                const qreal textAreaWidthPx = pageRectPx.width(); // - gutterWidthPx;
+                const qreal textAreaLeftPx = pageRectPx.left();
+                const qreal textAreaWidthPx = pageRectPx.width();
                 QRectF headerRect(textAreaLeftPx, pageRectPx.top(), textAreaWidthPx, lineHeightPx);
 
                 painter.drawText(headerRect, Qt::AlignHCenter | Qt::AlignTop, documentName);
@@ -314,8 +313,8 @@ namespace GnotePad::ui::PrintSupport
 
             // Draw footer (page numbers)
             {
-                const qreal textAreaLeftPx = pageRectPx.left();   // + gutterWidthPx;
-                const qreal textAreaWidthPx = pageRectPx.width(); // - gutterWidthPx;
+                const qreal textAreaLeftPx = pageRectPx.left();
+                const qreal textAreaWidthPx = pageRectPx.width();
                 QRectF footerRect(textAreaLeftPx, pageRectPx.bottom() - lineHeightPx, textAreaWidthPx, lineHeightPx);
 
                 painter.drawText(
