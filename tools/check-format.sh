@@ -2,8 +2,6 @@
 # Check if all source files adhere to clang-format rules
 # Exit with non-zero status if formatting violations are found
 
-set -e
-
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
 
