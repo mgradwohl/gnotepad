@@ -25,6 +25,7 @@
 #include <QtWidgets/qwidget.h>
 
 #include <memory>
+#include <qnamespace.h>
 
 namespace GnotePad::ui::PrintSupport
 {
@@ -39,6 +40,30 @@ namespace GnotePad::ui::PrintSupport
         constexpr qreal HeaderFooterPaddingPt = 12.0; // Space between header/footer and content (points)
         constexpr qreal MonitorDPI = 96.0;            // Standard monitor DPI for scaling fallback
     } // namespace
+
+
+    void forcePrintColors(QTextDocument *doc)
+    {
+        QTextCursor cur(doc);
+        cur.select(QTextCursor::Document);
+
+        QTextCharFormat fmt;
+        fmt.setForeground(Qt::black);
+        fmt.clearBackground();       // let the page be white
+
+        cur.mergeCharFormat(fmt);
+
+        // Also force block backgrounds:
+        QTextBlock block = doc->begin();
+        while (block.isValid()) {
+            QTextCursor bc(block);
+            QTextBlockFormat bf = bc.blockFormat();
+            bf.clearBackground();
+            bc.setBlockFormat(bf);
+
+            block = block.next();
+        }
+    }
 
     // ============================================================================
     // Helper: Calculate gutter width for line numbers
@@ -106,8 +131,9 @@ namespace GnotePad::ui::PrintSupport
     {
         printer->setColorMode(QPrinter::GrayScale);
         printer->setFullPage(false); // Let Qt respect the margins we set
-        printer->setDocName(documentName);
+        // printer->setDocName(documentName);
         printer->setCreator(QCoreApplication::applicationName());
+        spdlog::info("configurePrinter: applicationName '{}'", QCoreApplication::applicationName().toStdString());
 
         // Set page layout with our default margins (in millimeters)
         QPageLayout layout(QPageSize(QPageSize::Letter),
@@ -187,6 +213,10 @@ namespace GnotePad::ui::PrintSupport
         // Step 4: Create document for pagination (in pixels)
         // ========================================================================
         auto doc = createPrintDocument(editor, printer, font, textWidthPx, contentHeightPx);
+
+        // make sure we're printing black text on white background
+        forcePrintColors(doc.get());
+
         const int totalPages = doc->pageCount();
 
         // ========================================================================
@@ -196,6 +226,8 @@ namespace GnotePad::ui::PrintSupport
         painter.setRenderHint(QPainter::TextAntialiasing);
         painter.setFont(font);
         painter.setPen(Qt::black);
+        painter.setBrush(Qt::NoBrush);
+        painter.setBackground(Qt::transparent);
 
         // ========================================================================
         // Step 6: Render each page (all coordinates in pixels)
@@ -209,6 +241,10 @@ namespace GnotePad::ui::PrintSupport
                 const qreal textAreaLeftPx = pageRectPx.left() + gutterWidthPx;
                 const qreal textAreaWidthPx = pageRectPx.width() - gutterWidthPx;
                 QRectF headerRect(textAreaLeftPx, pageRectPx.top(), textAreaWidthPx, lineHeightPx);
+
+                painter.setPen(Qt::black);
+                painter.setBrush(Qt::NoBrush);
+                painter.setBackground(Qt::white);
                 painter.drawText(headerRect, Qt::AlignHCenter | Qt::AlignTop, documentName);
             }
 
@@ -248,6 +284,9 @@ namespace GnotePad::ui::PrintSupport
                             const qreal drawYPx = contentTopPx + relativeYPx;
                             const qreal lnHeightPx = firstLine.height();
 
+                            // painter.setPen(Qt::black);
+                            // painter.setBrush(Qt::NoBrush);
+                            // painter.setBackground(Qt::white);
                             painter.drawText(QRectF(pageRectPx.left(), drawYPx, gutterWidthPx - gutterPaddingPx, lnHeightPx),
                                              Qt::AlignRight | Qt::AlignVCenter,
                                              QString::number(blockNumber));
@@ -265,6 +304,9 @@ namespace GnotePad::ui::PrintSupport
                 const QRectF contentClipPx(pageRectPx.left() + gutterWidthPx, contentTopPx, textWidthPx, contentHeightPx);
                 painter.setClipRect(contentClipPx);
                 painter.translate(pageRectPx.left() + gutterWidthPx, contentTopPx - yOffsetPx);
+                // painter.setPen(Qt::black);
+                // painter.setBrush(Qt::NoBrush);
+                // painter.setBackground(Qt::white);
                 doc->drawContents(&painter, QRectF(0.0, yOffsetPx, textWidthPx, contentHeightPx));
                 painter.restore();
             }
@@ -274,6 +316,10 @@ namespace GnotePad::ui::PrintSupport
                 const qreal textAreaLeftPx = pageRectPx.left() + gutterWidthPx;
                 const qreal textAreaWidthPx = pageRectPx.width() - gutterWidthPx;
                 QRectF footerRect(textAreaLeftPx, pageRectPx.bottom() - lineHeightPx, textAreaWidthPx, lineHeightPx);
+
+                // painter.setPen(Qt::black);
+                // painter.setBrush(Qt::NoBrush);
+                // painter.setBackground(Qt::white);
                 painter.drawText(
                     footerRect, Qt::AlignRight | Qt::AlignBottom, QObject::tr("Page %1 of %2").arg(pageIndex + 1).arg(totalPages));
             }
@@ -325,7 +371,11 @@ namespace GnotePad::ui::PrintSupport
         QPrinter printer(chosenInfo.isNull() ? QPrinterInfo::defaultPrinter() : chosenInfo, QPrinter::HighResolution);
         printer.setOutputFormat(QPrinter::NativeFormat);
 
-        spdlog::info("showPrintPreview: QPrinter.printerName() = '{}'", printer.printerName().toStdString());
+        const QString appName = QCoreApplication::applicationName();
+        const QString docName = QObject::tr("%1 - %2").arg(appName, documentDisplayName);
+        printer.setDocName(docName);
+
+        spdlog::info("showPrintPreview: QPrinter.printerName() = '{}', docName = '{}'", printer.printerName().toStdString(), docName.toStdString());
 
         configurePrinter(&printer, documentDisplayName);
 
@@ -340,5 +390,4 @@ namespace GnotePad::ui::PrintSupport
 
         return previewDialog.exec() == QDialog::Accepted;
     }
-
 } // namespace GnotePad::ui::PrintSupport
