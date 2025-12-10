@@ -296,7 +296,7 @@ set(GNOTE_MENUACTIONS_TEST_FUNCTIONS
 
 foreach(test_name IN LISTS GNOTE_MENUACTIONS_TEST_FUNCTIONS)
 	add_test(
-		NAME gnotepad_menu_${test_name}
+		NAME gnotepad_menuactions_${test_name}
 		COMMAND $<TARGET_FILE:GnotePadMenuActions> ${test_name}
 	)
 endforeach()
