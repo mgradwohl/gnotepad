@@ -248,4 +248,4 @@ If include-cleaner suggests removing headers that are actually needed:
 - [clang-format documentation](https://clang.llvm.org/docs/ClangFormat.html)
 - [clang-tidy documentation](https://clang.llvm.org/extra/clang-tidy/)
 - [GitHub Actions documentation](https://docs.github.com/en/actions)
-- Project coding standards: `.github/copilot-instructions.md`
+- Project coding standards: See this document and `CONTRIBUTING.md`

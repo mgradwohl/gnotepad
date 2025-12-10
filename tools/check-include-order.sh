@@ -121,7 +121,7 @@ done
 if [ $VIOLATIONS_FOUND -eq 1 ]; then
     echo ""
     echo "Include order violations found!"
-    echo "Please review the include order guidelines in .github/copilot-instructions.md"
+    echo "Please review the include order guidelines in docs/STATIC_ANALYSIS.md"
     exit 1
 else
     echo "All files follow include order guidelines."
