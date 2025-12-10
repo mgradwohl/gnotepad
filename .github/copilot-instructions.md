@@ -30,9 +30,31 @@ cmake -S . -B build/debug -G Ninja \
 cmake --build build/debug
 ```
 
+Configure and build (Windows):
+```powershell
+cmake -S . -B build/win-debug -G Ninja `
+  -DCMAKE_CXX_COMPILER="$env:LLVM_ROOT/clang++.exe" `
+  -DCMAKE_TOOLCHAIN_FILE="$env:VCPKG_ROOT/scripts/buildsystems/vcpkg.cmake" `
+  -DQt6_DIR="$env:VCPKG_ROOT/installed/x64-windows/share/Qt6" `
+  -DCMAKE_BUILD_TYPE=Debug
+cmake --build build/win-debug
+```
+
 Run tests:
 ```bash
 ctest --test-dir build/debug
+```
+
+### Command-Line Options
+
+GnotePad supports these command-line options:
+- `--help`, `-h` - Display help information and exit
+- `--version`, `-v` - Display version information and exit
+- `--quit-after-init`, `--headless-smoke` - Quit shortly after startup (useful for headless smoke tests and CI)
+
+Headless mode example:
+```bash
+QT_QPA_PLATFORM=offscreen ./GnotePad --quit-after-init
 ```
 
 ### VS Code Tasks
@@ -107,12 +129,21 @@ resources/
 └── icons/                # Application icons
 
 tests/
-└── GnotePadSmoke.cpp     # Smoke tests using Qt Test framework
+├── smoke/                # Smoke tests using Qt Test framework
+├── cmdline/              # Command-line parsing tests
+└── testfiles/            # Test data files with various encodings
 
 packaging/
 ├── linux/                # Linux packaging files (AppImage, Flatpak, DEB, RPM)
+├── releases/             # Release notes by version
 └── dist/                 # Build output directory
 ```
+
+**Key directories:**
+- `src/` - Application source code split by responsibility (app/, ui/)
+- `resources/` - Qt resources (icons, translations)
+- `tests/` - Qt Test framework tests and test data
+- `packaging/` - Packaging scripts and configurations
 
 ## Testing
 
@@ -216,8 +247,10 @@ private slots:
 
 ## Resources
 
-- **README.md:** Comprehensive build and run instructions
-- **CONTRIBUTING.md:** Workflow basics and contribution guidelines
+- **README.md:** Project overview, installation, and quick start
+- **CONTRIBUTING.md:** Development environment setup, build instructions, workflow, and contribution guidelines
+- **tests/README.md:** Comprehensive testing guide, test file documentation, and test coverage
+- **packaging/README.md:** Packaging and release guide for all platforms
 - **CMakeLists.txt:** Build configuration and options
 - **.clang-tidy:** Static analysis rules
 - **.clang-format:** Code formatting rules
