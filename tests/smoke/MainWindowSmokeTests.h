@@ -39,6 +39,15 @@ private slots:
     void testSavePrinterSettingsNonEmpty();
     void testPrinterRoundTrip();
     void testDefaultPrinterBehavior();
+    void testUtf8BomDetection();
+    void testUtf16LEBomDetection();
+    void testUtf16BEBomDetection();
+    void testMultilingualContent();
+    void testUnicodeCharacters();
+    void testEncodingRoundTripUtf8ToBom();
+    void testEncodingRoundTripUtf16Variants();
+    void testLargeFileEncodingRoundTrip();
+    void testMixedContentPreservation();
 
 private: // NOLINT(readability-redundant-access-specifiers)
     QString resolveTestFile(const QString& name) const;

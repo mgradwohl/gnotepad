@@ -1,0 +1,9 @@
+English: The quick brown fox
+Español: El zorro marrón rápido
+Français: Le renard brun rapide
+Deutsch: Der schnelle braune Fuchs
+中文测试：快速的棕色狐狸
+日本語テスト：速い茶色のキツネ
+한국어 테스트: 빠른 갈색 여우
+Русский: Быстрая коричневая лиса
+العربية: الثعلب البني السريع

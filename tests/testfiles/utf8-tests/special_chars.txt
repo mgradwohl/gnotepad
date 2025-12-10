@@ -1,0 +1,20 @@
+Zero-width characters:
+- Zero width space (U+200B): A​B (invisible character between A and B)
+- Zero width non-joiner (U+200C): A‌B
+- Zero width joiner (U+200D): A‍B
+- Byte order mark (U+FEFF): ﻿(at start)
+
+Direction marks:
+- Left-to-right mark: A‎B
+- Right-to-left mark: A‏B
+
+Special spaces:
+- Non-breaking space: A B
+- Em space: A B
+- En space: A B
+- Thin space: A B
+
+Combining characters:
+- e + combining acute: é
+- n + combining tilde: ñ
+- a + combining ring: å
