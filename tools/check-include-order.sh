@@ -34,7 +34,7 @@ categorize_include() {
         fi
         
         # 2. Project headers
-        if [[ "$include_path" =~ ^(src/|include/|tests/|.*/(ui|app)/) ]]; then
+        if [[ "$include_path" =~ ^(src/|include/|tests/|ui/|app/) ]]; then
             echo 2
             return
         fi
