@@ -21,7 +21,8 @@ jobs:
         sudo apt-get update
         # Add the official LLVM apt repository to get clang 21 packages
         wget -qO - https://apt.llvm.org/llvm-snapshot.gpg.key | sudo apt-key add -
-        sudo bash -c 'echo "deb http://apt.llvm.org/focal/ llvm-toolchain-focal-21 main" > /etc/apt/sources.list.d/llvm-21.list'
+        CODENAME=$(lsb_release -cs)
+        sudo bash -c "echo \"deb http://apt.llvm.org/${CODENAME}/ llvm-toolchain-${CODENAME}-21 main\" > /etc/apt/sources.list.d/llvm-21.list"
         sudo apt-get update
         sudo apt-get install -y clang-21 clang-format-21 clang-tidy-21
         echo "clang version: $(clang-21 --version | head -n1)"
@@ -55,7 +56,8 @@ jobs:
       run: |
         set -euo pipefail
         wget -qO - https://apt.llvm.org/llvm-snapshot.gpg.key | sudo apt-key add -
-        sudo bash -c 'echo "deb http://apt.llvm.org/focal/ llvm-toolchain-focal-21 main" > /etc/apt/sources.list.d/llvm-21.list'
+        CODENAME=$(lsb_release -cs)
+        sudo bash -c "echo \"deb http://apt.llvm.org/${CODENAME}/ llvm-toolchain-${CODENAME}-21 main\" > /etc/apt/sources.list.d/llvm-21.list"
         sudo apt-get update
         sudo apt-get install -y clang-21 clang-tidy-21 ninja-build cmake \
           libxkbcommon-dev qt6-base-dev qt6-base-dev-tools qt6-tools-dev qt6-svg-dev
@@ -95,7 +97,8 @@ jobs:
       run: |
         set -euo pipefail
         wget -qO - https://apt.llvm.org/llvm-snapshot.gpg.key | sudo apt-key add -
-        sudo bash -c 'echo "deb http://apt.llvm.org/focal/ llvm-toolchain-focal-21 main" > /etc/apt/sources.list.d/llvm-21.list'
+        CODENAME=$(lsb_release -cs)
+        sudo bash -c "echo \"deb http://apt.llvm.org/${CODENAME}/ llvm-toolchain-${CODENAME}-21 main\" > /etc/apt/sources.list.d/llvm-21.list"
         sudo apt-get update
         sudo apt-get install -y clang-21 clang-format-21 ninja-build cmake \
           libxkbcommon-dev qt6-base-dev qt6-base-dev-tools qt6-tools-dev qt6-svg-dev
