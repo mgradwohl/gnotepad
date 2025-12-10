@@ -40,7 +40,26 @@ clang-tidy plus `.clangd`'s `-fno-modules` flag help surface violations locally.
 
 ## Tests
 
-- Unit and smoke tests live under `tests/`. Extend the suite when you add new user-visible functionality or regressions.
+GnotePad has comprehensive test coverage across multiple test suites. All functional changes should include relevant tests.
+
+- **Test suites** live under `tests/` and include:
+  - `cmdline/` - Command-line argument parsing tests
+  - `smoke/` - High-level integration tests for core functionality
+  - `menuactions/` - Menu action behavior and state tests
+  - `encoding/` - Encoding edge case and conversion tests
+  - `style/` - Qt style configuration tests
+
+- **Running tests:** Use `ctest --test-dir build/debug` to run all tests, or run specific test suites with `ctest -R <suite_name>`
+
+- **Test requirements:** When adding features or fixing bugs:
+  1. Add tests for new functionality
+  2. Add tests for edge cases and error conditions
+  3. Ensure tests are independent and repeatable
+  4. Use test hooks (available with `GNOTE_TEST_HOOKS` define)
+  5. Follow the patterns in existing tests
+
+- **Testing guidelines:** See `TESTING.md` for comprehensive guidelines, examples, and best practices
+
 - GUI smoke tests (`GnotePadSmoke`) run via `ctest --test-dir build/debug`. Make sure they pass locally on the configurations you touch.
 
 Questions? Open a GitHub discussion or tag `@mgradwohl` in your PR.
