@@ -27,11 +27,9 @@ echo "Checking code formatting..."
 cd "$PROJECT_ROOT"
 
 # Find all .cpp and .h files in src and tests directories
-FILES=$(find src tests -type f \( -name "*.cpp" -o -name "*.h" \) ! -path "*/build/*" ! -path "*/.git/*")
-
 VIOLATIONS_FOUND=0
 
-for file in $FILES; do
+find src tests -type f \( -name "*.cpp" -o -name "*.h" \) ! -path "*/build/*" ! -path "*/.git/*" -print0 | while IFS= read -r -d '' file; do
     # Check if file would be modified by clang-format
     if ! "$CLANG_FORMAT" --dry-run -Werror "$file" &> /dev/null; then
         echo "Formatting violation: $file"
