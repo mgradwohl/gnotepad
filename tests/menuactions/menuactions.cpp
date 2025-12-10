@@ -231,12 +231,14 @@ void MenuActionsTests::testUndoRedoActions()
     editor->clear();
     QVERIFY(editor->toPlainText().isEmpty());
 
-    // Type some content
-    editor->setPlainText(QStringLiteral("First edit"));
+    // Use QTextCursor to insert text (creates undoable operations)
+    // setPlainText() replaces content without creating undo entries
+    QTextCursor cursor = editor->textCursor();
+    cursor.insertText(QStringLiteral("First edit"));
     QApplication::processEvents();
 
     // Make another edit
-    editor->setPlainText(QStringLiteral("Second edit"));
+    cursor.insertText(QStringLiteral(" Second edit"));
     QApplication::processEvents();
 
     // Verify undo/redo functionality exists
