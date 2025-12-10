@@ -28,7 +28,7 @@ categorize_include() {
         local include_path="${BASH_REMATCH[1]}"
         
         # 1. Matching header
-        if [[ -n "$matching_header" && "$include_path" == *"$matching_header" ]]; then
+        if [[ -n "$matching_header" && ( "$include_path" == "$matching_header" || "$include_path" == */"$matching_header" ) ]]; then
             echo 1
             return
         fi
