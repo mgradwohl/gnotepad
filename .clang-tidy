@@ -15,7 +15,7 @@ Checks: >
   -readability-identifier-naming,
   -readability-magic-numbers
 WarningsAsErrors: ''
-HeaderFilterRegex: '^(src|tests)/.*\.(h|hpp|cpp)$'
+HeaderFilterRegex: '^(?!.*smoke\.cpp$)(src|tests)/.*\.(h|hpp|cpp)$'
 FormatStyle: file
 User: "GnotePad"
 

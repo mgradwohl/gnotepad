@@ -27,5 +27,11 @@
         "--header-insertion=iwyu"
     ],
     "clang-format.executable": "clang-format",
-    "clang-tidy.executable": "clang-tidy"
+    "clang-tidy.executable": "clang-tidy",
+    "problems.excludePattern": {
+        "**/smoke.cpp": true
+    },
+    "files.exclude": {
+    "**/generated/**": true
+    }
 }

@@ -1,7 +1,7 @@
 #include "ui/PrintSupport.h"
 
 #include <algorithm>
-#include <cmath>
+// #include <cmath>
 #include <memory>
 
 #include <QtCore/qcoreapplication.h>
@@ -27,17 +27,17 @@
 
 namespace GnotePad::ui::PrintSupport
 {
-namespace
-{
-
-// ============================================================================
-// Constants
-// ============================================================================
-
-constexpr qreal DefaultMarginMm = 12.7;       // Margin in millimeters (~0.5 inch)
-constexpr qreal PointsPerInch = 72.0;         // Standard typographic points per inch
-constexpr qreal GutterPaddingPt = 6.0;        // Padding around line numbers (points)
-constexpr qreal HeaderFooterPaddingPt = 12.0; // Space between header/footer and content (points)
+    namespace
+    {
+    // ============================================================================
+    // Constants
+    // ============================================================================
+    constexpr qreal DefaultMarginMm = 12.7;       // Margin in millimeters (~0.5 inch)
+    constexpr qreal PointsPerInch = 72.0;         // Standard typographic points per inch
+    constexpr qreal GutterPaddingPt = 6.0;        // Padding around line numbers (points)
+    constexpr qreal HeaderFooterPaddingPt = 12.0; // Space between header/footer and content (points)
+    constexpr qreal MonitorDPI = 96.0;              // Standard monitor DPI for scaling fallback
+    } // namespace
 
 // ============================================================================
 // Helper: Calculate gutter width for line numbers
@@ -124,7 +124,9 @@ void configurePrinter(QPrinter* printer, const QString& documentName)
 void renderDocument(TextEditor* editor, QPrinter* printer, const QString& documentName, bool includeLineNumbers)
 {
     if (!printer || !editor)
+    {
         return;
+    }
 
     // ========================================================================
     // Step 1: Get page geometry in PIXELS
@@ -147,7 +149,7 @@ void renderDocument(TextEditor* editor, QPrinter* printer, const QString& docume
     // Ensure font has a point size (not pixel size)
     if (font.pointSizeF() <= 0 && font.pixelSize() > 0)
     {
-        font.setPointSizeF(font.pixelSize() * PointsPerInch / 96.0);
+        font.setPointSizeF(font.pixelSize() * PointsPerInch / MonitorDPI);
     }
 
     // Font metrics in device pixels (for the printer)
@@ -282,18 +284,17 @@ void renderDocument(TextEditor* editor, QPrinter* printer, const QString& docume
     }
 }
 
-} // anonymous namespace
-
 // ============================================================================
 // Public API
 // ============================================================================
 
-bool showPrintPreview(QWidget* parent, TextEditor* editor, const QString& documentDisplayName, bool lineNumbersVisible,
+bool showPrintPreview(QWidget* parent, GnotePad::ui::TextEditor* editor, const QString& documentDisplayName, bool lineNumbersVisible,
                       const QString& defaultPrinterName)
 {
     if (!editor)
+    {
         return false;
-
+    }
     spdlog::info("showPrintPreview: defaultPrinterName = '{}'", defaultPrinterName.toStdString());
 
     // Find QPrinterInfo for the requested printer (if specified)
