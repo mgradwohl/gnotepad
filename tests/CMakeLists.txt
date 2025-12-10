@@ -252,3 +252,123 @@ foreach(test_name IN LISTS GNOTE_STYLE_TEST_FUNCTIONS)
 endforeach()
 
 add_test(NAME gnotepad_style_all COMMAND $<TARGET_FILE:GnotePadStyle>)
+
+# Reliability tests
+add_executable(GnotePadReliability
+	reliability/reliability.cpp
+	reliability/ReliabilityTests.h
+)
+
+set_source_files_properties(
+	reliability/reliability.cpp
+	reliability/ReliabilityTests.h
+	PROPERTIES SKIP_CLANG_TIDY TRUE
+)
+
+target_compile_features(GnotePadReliability PRIVATE cxx_std_23)
+
+if(COMMAND gnote_apply_default_warnings)
+	gnote_apply_default_warnings(GnotePadReliability)
+endif()
+
+target_include_directories(GnotePadReliability PRIVATE
+	${CMAKE_SOURCE_DIR}/src
+)
+
+target_sources(GnotePadReliability PRIVATE
+	${CMAKE_SOURCE_DIR}/src/ui/MainWindow.cpp
+	${CMAKE_SOURCE_DIR}/src/ui/MainWindow.FileIO.cpp
+	${CMAKE_SOURCE_DIR}/src/ui/MainWindow.Settings.cpp
+	${CMAKE_SOURCE_DIR}/src/ui/MainWindow.Search.cpp
+	${CMAKE_SOURCE_DIR}/src/ui/PrintSupport.cpp
+	${CMAKE_SOURCE_DIR}/src/ui/TextEditor.cpp
+	${GNOTE_RESOURCES}
+)
+
+set_target_properties(GnotePadReliability PROPERTIES AUTOMOC ON)
+
+target_link_libraries(GnotePadReliability PRIVATE
+	Qt6::Core
+	Qt6::Gui
+	Qt6::Widgets
+	Qt6::Test
+	Qt6::PrintSupport
+	Qt6::Svg
+	Qt6::SvgWidgets
+	spdlog::spdlog_header_only
+)
+
+target_compile_definitions(GnotePadReliability PRIVATE GNOTE_TEST_HOOKS)
+
+if(WIN32)
+	# Stage Qt runtime and plugins beside the test binary so offscreen platform plugin is found.
+	get_filename_component(QT6_PREFIX "${Qt6_Dir}/../.." ABSOLUTE)
+	set(QT6_DEBUG_BIN "${QT6_PREFIX}/debug/bin")
+	set(QT6_RELEASE_BIN "${QT6_PREFIX}/bin")
+	set(QT6_DEBUG_PLUGINS "${QT6_PREFIX}/debug/Qt6/plugins")
+	set(QT6_RELEASE_PLUGINS "${QT6_PREFIX}/Qt6/plugins")
+
+	file(GENERATE OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/qt.tests.debug.conf" CONTENT "[Paths]\nPlugins=plugins\n")
+	file(GENERATE OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/qt.tests.release.conf" CONTENT "[Paths]\nPlugins=plugins\n")
+
+	add_custom_command(TARGET GnotePadReliability POST_BUILD
+		COMMAND ${CMAKE_COMMAND} -E make_directory "$<TARGET_FILE_DIR:GnotePadReliability>/plugins"
+		COMMAND ${CMAKE_COMMAND} -E copy_directory
+			$<$<CONFIG:Debug>:${QT6_DEBUG_BIN}>
+			$<$<NOT:$<CONFIG:Debug>>:${QT6_RELEASE_BIN}>
+			"$<TARGET_FILE_DIR:GnotePadReliability>"
+		COMMAND ${CMAKE_COMMAND} -E copy_directory
+			$<$<CONFIG:Debug>:${QT6_DEBUG_PLUGINS}>
+			$<$<NOT:$<CONFIG:Debug>>:${QT6_RELEASE_PLUGINS}>
+			"$<TARGET_FILE_DIR:GnotePadReliability>/plugins"
+		COMMAND ${CMAKE_COMMAND} -E copy_if_different
+			$<$<CONFIG:Debug>:${CMAKE_CURRENT_BINARY_DIR}/qt.tests.debug.conf>
+			$<$<NOT:$<CONFIG:Debug>>:${CMAKE_CURRENT_BINARY_DIR}/qt.tests.release.conf>
+			"$<TARGET_FILE_DIR:GnotePadReliability>/qt.conf"
+		COMMENT "Copying Qt runtime and plugins beside GnotePadReliability.exe"
+	)
+endif()
+
+add_custom_command(TARGET GnotePadReliability POST_BUILD
+	COMMAND ${CMAKE_COMMAND} -E copy_directory
+		${CMAKE_SOURCE_DIR}/tests/testfiles
+		$<TARGET_FILE_DIR:GnotePadReliability>/testfiles
+)
+
+set(GNOTE_RELIABILITY_TEST_FUNCTIONS
+	testMruPersistenceAcrossRestarts
+	testMruUpdateOnFileOpen
+	testMruCleanupNonExistentFiles
+	testMruMaximumSizeEnforcement
+	testMruDuplicateEntries
+	testMruFileOrdering
+	testSettingsPersistenceAcrossRestarts
+	testSettingsRecoveryFromMissingFile
+	testSettingsRecoveryFromCorruptData
+	testWindowGeometryPersistence
+	testEditorStatePersistence
+	testEncodingPreferencePersistence
+	testOpenFilePermissionDenied
+	testSaveFilePermissionDenied
+	testSaveToReadOnlyFile
+	testSaveToInvalidPath
+	testLoadNonExistentFile
+	testLoadBinaryFile
+	testSaveWithInsufficientSpace
+	testWindowPositionPersistence
+	testWindowStateStability
+	testRapidWindowStateChanges
+	testCloseWithUnsavedChanges
+	testMultipleWindowStateCycles
+	testMinimizeRestoreContent
+	testMaximizeRestoreContent
+)
+
+foreach(test_name IN LISTS GNOTE_RELIABILITY_TEST_FUNCTIONS)
+	add_test(
+		NAME gnotepad_${test_name}
+		COMMAND $<TARGET_FILE:GnotePadReliability> ${test_name}
+	)
+endforeach()
+
+add_test(NAME gnotepad_reliability_all COMMAND $<TARGET_FILE:GnotePadReliability>)
