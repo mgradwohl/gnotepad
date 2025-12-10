@@ -81,8 +81,8 @@ IncludeCategories:
   - Regex: '^<(spdlog|fmt|boost)/.*>'
     Priority: 3
 
-  # 4. Qt headers
-  - Regex: '^<Qt[^>]*>'
+  # 4. Qt headers (both <QtCore/...> and <qnamespace.h> styles)
+  - Regex: '^<(Qt[^>]*|q[a-z_]+\.h)>'
     Priority: 4
 
   # 5. C++ standard library

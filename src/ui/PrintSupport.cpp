@@ -4,7 +4,6 @@
 
 #include <spdlog/spdlog.h>
 
-#include <qnamespace.h>
 #include <QtCore/qcoreapplication.h>
 #include <QtCore/qobject.h>
 #include <QtCore/qstring.h>
@@ -22,6 +21,7 @@
 #include <QtPrintSupport/qprintpreviewdialog.h>
 #include <QtWidgets/qdialog.h>
 #include <QtWidgets/qwidget.h>
+#include <qnamespace.h>
 
 #include <algorithm>
 #include <memory>
