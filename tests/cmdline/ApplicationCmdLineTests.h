@@ -16,6 +16,9 @@ private slots:
     void testHeadlessSmokeParsing();
     void testNoFlagsParsing();
     void testQuitAfterInitBehavior();
+    void testHelpOption();
+    void testVersionOption();
+    void testInvalidOption();
 
 private:
     void setupParser(QCommandLineParser& parser);
