@@ -6,7 +6,7 @@ Thanks for helping improve GnotePad! This document provides comprehensive guidan
 
 ### Prerequisites
 
-- **CMake** 3.26+
+- **CMake** 3.26+ (we are using 4.2)
 - **Build System:** Ninja or Make (Ninja recommended)
 - **Compiler:** Clang 15+ (or Apple Clang 15+ on macOS)
 - **Qt:** 6.5+ development packages (Widgets, Gui, Core, PrintSupport, Svg, SvgWidgets, Test)
