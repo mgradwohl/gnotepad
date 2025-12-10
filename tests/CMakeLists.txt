@@ -447,29 +447,29 @@ endforeach()
 
 add_test(NAME gnotepad_style_all COMMAND $<TARGET_FILE:GnotePadStyle>)
 
-# Reliability tests
-add_executable(GnotePadReliability
-	reliability/reliability.cpp
-	reliability/ReliabilityTests.h
+# Performance tests
+add_executable(GnotePadPerformance
+	performance/performance.cpp
+	performance/PerformanceTests.h
 )
 
 set_source_files_properties(
-	reliability/reliability.cpp
-	reliability/ReliabilityTests.h
+	performance/performance.cpp
+	performance/PerformanceTests.h
 	PROPERTIES SKIP_CLANG_TIDY TRUE
 )
 
-target_compile_features(GnotePadReliability PRIVATE cxx_std_23)
+target_compile_features(GnotePadPerformance PRIVATE cxx_std_23)
 
 if(COMMAND gnote_apply_default_warnings)
-	gnote_apply_default_warnings(GnotePadReliability)
+	gnote_apply_default_warnings(GnotePadPerformance)
 endif()
 
-target_include_directories(GnotePadReliability PRIVATE
+target_include_directories(GnotePadPerformance PRIVATE
 	${CMAKE_SOURCE_DIR}/src
 )
 
-target_sources(GnotePadReliability PRIVATE
+target_sources(GnotePadPerformance PRIVATE
 	${CMAKE_SOURCE_DIR}/src/ui/MainWindow.cpp
 	${CMAKE_SOURCE_DIR}/src/ui/MainWindow.FileIO.cpp
 	${CMAKE_SOURCE_DIR}/src/ui/MainWindow.Settings.cpp
@@ -479,9 +479,9 @@ target_sources(GnotePadReliability PRIVATE
 	${GNOTE_RESOURCES}
 )
 
-set_target_properties(GnotePadReliability PROPERTIES AUTOMOC ON)
+set_target_properties(GnotePadPerformance PROPERTIES AUTOMOC ON)
 
-target_link_libraries(GnotePadReliability PRIVATE
+target_link_libraries(GnotePadPerformance PRIVATE
 	Qt6::Core
 	Qt6::Gui
 	Qt6::Widgets
@@ -492,11 +492,11 @@ target_link_libraries(GnotePadReliability PRIVATE
 	spdlog::spdlog_header_only
 )
 
-target_compile_definitions(GnotePadReliability PRIVATE GNOTE_TEST_HOOKS)
+target_compile_definitions(GnotePadPerformance PRIVATE GNOTE_TEST_HOOKS)
 
 if(WIN32)
 	# Stage Qt runtime and plugins beside the test binary so offscreen platform plugin is found.
-	get_filename_component(QT6_PREFIX "${Qt6_Dir}/../.." ABSOLUTE)
+	get_filename_component(QT6_PREFIX "${Qt6_DIR}/../.." ABSOLUTE)
 	set(QT6_DEBUG_BIN "${QT6_PREFIX}/debug/bin")
 	set(QT6_RELEASE_BIN "${QT6_PREFIX}/bin")
 	set(QT6_DEBUG_PLUGINS "${QT6_PREFIX}/debug/Qt6/plugins")
@@ -505,64 +505,58 @@ if(WIN32)
 	file(GENERATE OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/qt.tests.debug.conf" CONTENT "[Paths]\nPlugins=plugins\n")
 	file(GENERATE OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/qt.tests.release.conf" CONTENT "[Paths]\nPlugins=plugins\n")
 
-	add_custom_command(TARGET GnotePadReliability POST_BUILD
-		COMMAND ${CMAKE_COMMAND} -E make_directory "$<TARGET_FILE_DIR:GnotePadReliability>/plugins"
+	add_custom_command(TARGET GnotePadPerformance POST_BUILD
+		COMMAND ${CMAKE_COMMAND} -E make_directory "$<TARGET_FILE_DIR:GnotePadPerformance>/plugins"
 		COMMAND ${CMAKE_COMMAND} -E copy_directory
 			$<$<CONFIG:Debug>:${QT6_DEBUG_BIN}>
 			$<$<NOT:$<CONFIG:Debug>>:${QT6_RELEASE_BIN}>
-			"$<TARGET_FILE_DIR:GnotePadReliability>"
+			"$<TARGET_FILE_DIR:GnotePadPerformance>"
 		COMMAND ${CMAKE_COMMAND} -E copy_directory
 			$<$<CONFIG:Debug>:${QT6_DEBUG_PLUGINS}>
 			$<$<NOT:$<CONFIG:Debug>>:${QT6_RELEASE_PLUGINS}>
-			"$<TARGET_FILE_DIR:GnotePadReliability>/plugins"
+			"$<TARGET_FILE_DIR:GnotePadPerformance>/plugins"
 		COMMAND ${CMAKE_COMMAND} -E copy_if_different
 			$<$<CONFIG:Debug>:${CMAKE_CURRENT_BINARY_DIR}/qt.tests.debug.conf>
 			$<$<NOT:$<CONFIG:Debug>>:${CMAKE_CURRENT_BINARY_DIR}/qt.tests.release.conf>
-			"$<TARGET_FILE_DIR:GnotePadReliability>/qt.conf"
-		COMMENT "Copying Qt runtime and plugins beside GnotePadReliability.exe"
+			"$<TARGET_FILE_DIR:GnotePadPerformance>/qt.conf"
+		COMMENT "Copying Qt runtime and plugins beside GnotePadPerformance.exe"
 	)
 endif()
 
-add_custom_command(TARGET GnotePadReliability POST_BUILD
-	COMMAND ${CMAKE_COMMAND} -E copy_directory
-		${CMAKE_SOURCE_DIR}/tests/testfiles
-		$<TARGET_FILE_DIR:GnotePadReliability>/testfiles
+add_custom_command(TARGET GnotePadPerformance POST_BUILD
+	COMMAND ${CMAKE_COMMAND} -E make_directory
+		$<TARGET_FILE_DIR:GnotePadPerformance>/testfiles/performance
 )
 
-set(GNOTE_RELIABILITY_TEST_FUNCTIONS
-	testMruPersistenceAcrossRestarts
-	testMruUpdateOnFileOpen
-	testMruCleanupNonExistentFiles
-	testMruMaximumSizeEnforcement
-	testMruDuplicateEntries
-	testMruFileOrdering
-	testSettingsPersistenceAcrossRestarts
-	testSettingsRecoveryFromMissingFile
-	testSettingsRecoveryFromCorruptData
-	testWindowGeometryPersistence
-	testEditorStatePersistence
-	testEncodingPreferencePersistence
-	testOpenFilePermissionDenied
-	testSaveFilePermissionDenied
-	testSaveToReadOnlyFile
-	testSaveToInvalidPath
-	testLoadNonExistentFile
-	testLoadBinaryFile
-	testSaveWithInsufficientSpace
-	testWindowPositionPersistence
-	testWindowStateStability
-	testRapidWindowStateChanges
-	testCloseWithUnsavedChanges
-	testMultipleWindowStateCycles
-	testMinimizeRestoreContent
-	testMaximizeRestoreContent
+set(GNOTE_PERFORMANCE_TEST_FUNCTIONS
+	testLoadLargeFile100KB
+	testLoadLargeFile500KB
+	testLoadLargeFile1MB
+	testScrollPerformanceLargeFile
+	testEditPerformanceLargeFile
+	testSaveLargeFile
+	testEncodingConversionUtf8ToUtf16LE
+	testEncodingConversionUtf8ToUtf16BE
+	testEncodingRoundTripPerformance
+	testMemoryUsageDuringEncoding
+	testFindPerformanceLargeFile
+	testReplacePerformanceLargeFile
+	testUndoRedoStackPerformance
+	testZoomOperationsPerformance
+	testDocumentModificationPerformance
+	testMassiveInsertOperations
+	testMassiveDeleteOperations
+	testContinuousEditing
 )
 
-foreach(test_name IN LISTS GNOTE_RELIABILITY_TEST_FUNCTIONS)
+foreach(test_name IN LISTS GNOTE_PERFORMANCE_TEST_FUNCTIONS)
 	add_test(
-		NAME gnotepad_${test_name}
-		COMMAND $<TARGET_FILE:GnotePadReliability> ${test_name}
+		NAME gnotepad_perf_${test_name}
+		COMMAND $<TARGET_FILE:GnotePadPerformance> ${test_name}
 	)
+	# Performance tests are labeled separately so they can be run independently
+	set_tests_properties(gnotepad_perf_${test_name} PROPERTIES LABELS "Performance")
 endforeach()
 
-add_test(NAME gnotepad_reliability_all COMMAND $<TARGET_FILE:GnotePadReliability>)
+add_test(NAME gnotepad_performance_all COMMAND $<TARGET_FILE:GnotePadPerformance>)
+set_tests_properties(gnotepad_performance_all PROPERTIES LABELS "Performance")
