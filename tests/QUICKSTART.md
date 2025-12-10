@@ -135,8 +135,6 @@ ctest --test-dir build/debug -R "Menu"
 
 ### Run Encoding Tests
 
-### Run Encoding Tests
-
 ```bash
 # Run one encoding test
 build/debug/GnotePadSmoke testUtf8BomDetection
