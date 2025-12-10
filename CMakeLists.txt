@@ -136,6 +136,7 @@ if(CLANG_TIDY_EXE)
         COMMAND ${CLANG_TIDY_EXE}
             --config-file=${CMAKE_SOURCE_DIR}/.clang-tidy
             -p ${CMAKE_BINARY_DIR}
+            --extra-arg=-std=c++23
             ${GNOTE_SOURCES}
             ${GNOTE_HEADERS}
         WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
