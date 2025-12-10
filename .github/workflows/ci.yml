@@ -1,0 +1,85 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  format-check:
+    name: Code Formatting Check
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Install clang-format
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y clang-format-15
+        
+    - name: Check code formatting
+      run: |
+        find src tests -name "*.cpp" -o -name "*.h" | xargs clang-format-15 --dry-run --Werror
+        
+  static-analysis:
+    name: Static Analysis (clang-tidy)
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y clang-15 clang-tidy-15 ninja-build cmake \
+          libxkbcommon-dev qt6-base-dev qt6-base-dev-tools qt6-tools-dev qt6-svg-dev
+        
+    - name: Configure CMake
+      run: |
+        cmake -S . -B build -G Ninja \
+          -DCMAKE_CXX_COMPILER=clang++-15 \
+          -DCMAKE_PREFIX_PATH=/usr/lib/x86_64-linux-gnu/cmake/Qt6 \
+          -DCMAKE_BUILD_TYPE=Debug \
+          -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
+        
+    - name: Run clang-tidy
+      run: |
+        cmake --build build --target run-clang-tidy
+        
+  build-and-test:
+    name: Build and Test
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest]
+        build-type: [Debug, Release]
+        
+    runs-on: ${{ matrix.os }}
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Install dependencies (Linux)
+      if: runner.os == 'Linux'
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y clang-15 ninja-build cmake \
+          libxkbcommon-dev qt6-base-dev qt6-base-dev-tools qt6-tools-dev qt6-svg-dev
+        
+    - name: Configure CMake
+      run: |
+        cmake -S . -B build -G Ninja \
+          -DCMAKE_CXX_COMPILER=clang++-15 \
+          -DCMAKE_PREFIX_PATH=/usr/lib/x86_64-linux-gnu/cmake/Qt6 \
+          -DCMAKE_BUILD_TYPE=${{ matrix.build-type }}
+        
+    - name: Build
+      run: cmake --build build
+      
+    - name: Run tests
+      run: ctest --test-dir build --output-on-failure
