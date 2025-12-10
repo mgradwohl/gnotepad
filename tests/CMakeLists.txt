@@ -133,7 +133,7 @@ set(GNOTE_SMOKE_TEST_FUNCTIONS
 
 foreach(test_name IN LISTS GNOTE_SMOKE_TEST_FUNCTIONS)
 	add_test(
-		NAME gnotepad_${test_name}
+		NAME gnotepad_smoke_${test_name}
 		COMMAND $<TARGET_FILE:GnotePadSmoke> ${test_name}
 	)
 endforeach()
@@ -200,7 +200,7 @@ set(GNOTE_CMDLINE_TEST_FUNCTIONS
 
 foreach(test_name IN LISTS GNOTE_CMDLINE_TEST_FUNCTIONS)
 	add_test(
-		NAME gnotepad_${test_name}
+		NAME gnotepad_cmdline_${test_name}
 		COMMAND $<TARGET_FILE:GnotePadCmdLine> ${test_name}
 	)
 endforeach()
@@ -296,7 +296,7 @@ set(GNOTE_MENUACTIONS_TEST_FUNCTIONS
 
 foreach(test_name IN LISTS GNOTE_MENUACTIONS_TEST_FUNCTIONS)
 	add_test(
-		NAME gnotepad_${test_name}
+		NAME gnotepad_menu_${test_name}
 		COMMAND $<TARGET_FILE:GnotePadMenuActions> ${test_name}
 	)
 endforeach()
@@ -391,7 +391,7 @@ set(GNOTE_ENCODING_TEST_FUNCTIONS
 
 foreach(test_name IN LISTS GNOTE_ENCODING_TEST_FUNCTIONS)
 	add_test(
-		NAME gnotepad_${test_name}
+		NAME gnotepad_encoding_${test_name}
 		COMMAND $<TARGET_FILE:GnotePadEncoding> ${test_name}
 	)
 endforeach()
@@ -458,7 +458,7 @@ set(GNOTE_STYLE_TEST_FUNCTIONS
 
 foreach(test_name IN LISTS GNOTE_STYLE_TEST_FUNCTIONS)
 	add_test(
-		NAME gnotepad_${test_name}
+		NAME gnotepad_style_${test_name}
 		COMMAND $<TARGET_FILE:GnotePadStyle> ${test_name}
 	)
 endforeach()
@@ -525,7 +525,7 @@ set(GNOTE_TOOLING_TEST_FUNCTIONS
 
 foreach(test_name IN LISTS GNOTE_TOOLING_TEST_FUNCTIONS)
 	add_test(
-		NAME gnotepad_${test_name}
+		NAME gnotepad_tooling_${test_name}
 		COMMAND $<TARGET_FILE:GnotePadTooling> ${test_name}
 	)
 endforeach()
@@ -590,7 +590,7 @@ set(GNOTE_INCLUDE_ORDER_TEST_FUNCTIONS
 
 foreach(test_name IN LISTS GNOTE_INCLUDE_ORDER_TEST_FUNCTIONS)
 	add_test(
-		NAME gnotepad_${test_name}
+		NAME gnotepad_include_order_${test_name}
 		COMMAND $<TARGET_FILE:GnotePadIncludeOrder> ${test_name}
 	)
 endforeach()
