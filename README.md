@@ -101,7 +101,13 @@ QT_QPA_PLATFORM=offscreen ./GnotePad --quit-after-init
 - Sources live in `src/` and are split by responsibility (`app/`, `ui/`).
 - Qt resources (icons, translations, etc.) live under `resources/`.
 - Logging is provided by spdlog through CMake FetchContent integration.
-- Tests now use Qt Test (QTest) via CTest. The `GnotePadSmoke` suite spins up the real `MainWindow` to verify launch/minimize/maximize flows; future additions will cover file I/O, MRU, encoding round-trips, UI automation (find/replace, zoom, insert date), and large-file scrolling.
+- **Tests** use Qt Test (QTest) via CTest with comprehensive coverage:
+  - **UI Tests**: 30+ tests covering menus, dialogs, status bar, zoom, keyboard shortcuts, and action states
+  - **Encoding Tests**: 9 tests validating UTF-8/UTF-16 BOM detection and round-trip conversions
+  - **Integration Tests**: Window state, file I/O, search/replace, and settings persistence
+  - See `tests/UI_TEST_COVERAGE.md` for complete test requirements
+  - See `tests/QUICKSTART.md` for running tests
+  - All UI changes require corresponding test coverage (see `tests/CODE_REVIEW_CHECKLIST.md`)
 
 ## Static Analysis & Tooling
 
