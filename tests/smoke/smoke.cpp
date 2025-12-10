@@ -1323,7 +1323,7 @@ void MainWindowSmokeTests::testEditMenuActionsEnabled()
     editor->selectAll();
     QApplication::processEvents();
 
-    // Now actions should be enabled
+    // With selection, cut/copy actions should be enabled (if visible)
     const auto actions = window.findChildren<QAction*>();
     bool foundCopyAction = false;
     bool foundCutAction = false;
@@ -1334,12 +1334,20 @@ void MainWindowSmokeTests::testEditMenuActionsEnabled()
         if (text.contains(QStringLiteral("copy")))
         {
             foundCopyAction = true;
-            QVERIFY(action->isEnabled() || !action->isVisible());
+            // Action should be enabled if it's visible, or it may be hidden (e.g., in toolbar)
+            if (action->isVisible())
+            {
+                QVERIFY(action->isEnabled());
+            }
         }
         if (text.contains(QStringLiteral("cut")))
         {
             foundCutAction = true;
-            QVERIFY(action->isEnabled() || !action->isVisible());
+            // Action should be enabled if it's visible, or it may be hidden (e.g., in toolbar)
+            if (action->isVisible())
+            {
+                QVERIFY(action->isEnabled());
+            }
         }
     }
 
