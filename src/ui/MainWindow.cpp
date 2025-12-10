@@ -6,11 +6,11 @@
 #include <QtCore/qdatetime.h>
 #include <QtCore/qfileinfo.h>
 #include <QtCore/qlocale.h>
+#include <QtCore/qstringconverter.h>
 #include <QtCore/qsignalblocker.h>
 #include <QtCore/qstring.h>
 #include <QtCore/qstringliteral.h>
 #include <QtCore/qstringlist.h>
-#include <QtCore/qstringconverter.h>
 #include <QtCore/qurl.h>
 #include <QtGui/qaction.h>
 #include <QtGui/qactiongroup.h>
