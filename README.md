@@ -10,7 +10,6 @@ Active development tracks the backlog outlined below on `main`, folding in incre
 - Ninja or Make (Ninja recommended)
 - Clang 15+ (or Apple Clang 15+ on macOS)
 - Qt 6.5+ development packages (Widgets, Gui, Core, PrintSupport)
-- Python 3.x (optional; not required for building/running)
 
 On **Ubuntu/Debian** you can install requirements with:
 
@@ -31,7 +30,7 @@ On **Windows** (PowerShell + vcpkg, clang++/lld, Qt6 via vcpkg):
 - Keep **LLVM** and **CMake** current: `winget upgrade LLVM.LLVM` and `winget upgrade Kitware.CMake` (Ninja usually updates with CMake). New installs are the same commands with `install` instead of `upgrade`.
 - Keep **vcpkg** current: clone to `${env:USERPROFILE}\source\vcpkg` with `git clone https://github.com/microsoft/vcpkg ${env:USERPROFILE}\source\vcpkg` and bootstrap via `& ${env:USERPROFILE}\source\vcpkg\bootstrap-vcpkg.bat -disableMetrics`. Periodically `git pull` in that directory to stay up to date. The CMake toolchain path for this repo expects `VCPKG_ROOT` pointing at that folder.
 - PATH order should prefer your freshly installed tools ahead of older Visual Studio toolchains: `${env:LLVM_ROOT}\bin` (or `C:/Program Files/LLVM/bin`), `${env:CMAKE_ROOT}\bin` (or `C:/Program Files/CMake/bin`), then `${env:VCPKG_ROOT}`.
-- `Devshell-Updated.ps1` (in the repo root) prepends LLVM, CMake, vcpkg, and Qt6 to PATH and exports `LLVM_ROOT`, `CMAKE_ROOT`, `VCPKG_ROOT`, `Qt6_DIR`, and `QT6_PREFIX_PATH` for the current PowerShell session. Run it before configuring/building in a new shell: `pwsh -NoProfile -ExecutionPolicy Bypass -File .\Devshell-Updated.ps1`. or it can be as simple as `pwsh -noexit -File ".\Devshell-Updated.ps1`
+- `Devshell-Updated.ps1` (in the repo root) prepends LLVM, CMake, vcpkg, and Qt6 to PATH and exports `LLVM_ROOT`, `CMAKE_ROOT`, `VCPKG_ROOT`, `Qt6_DIR`, and `QT6_PREFIX_PATH` for the current PowerShell session. Run it before configuring/building in a new shell: `pwsh -NoProfile -ExecutionPolicy Bypass -File .\Devshell-Updated.ps1`. To wire this into a Windows Terminal profile and keep the tab open, use `pwsh.exe -NoLogo -NoExit -ExecutionPolicy Bypass -File "D:\source\gnotepad\Devshell-Updated.ps1"` (add `-NoProfile` only if you intentionally skip your prompt customizations).
 
 ## Configure & Build (Linux/macOS)
 

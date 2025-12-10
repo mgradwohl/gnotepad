@@ -116,7 +116,7 @@ private slots:
     void handleSaveFile();
     void handleSaveFileAs();
     void handleChangeEncoding();
-    void handlePrintToPdf();
+    void handlePrint();
     void handleToggleStatusBar(bool checked);
     void handleToggleLineNumbers(bool checked);
     void handleZoomIn();
@@ -133,6 +133,7 @@ private slots:
     void showAboutDialog();
     void handleSetTabSize();
     void handleChooseFont();
+    void handleChoosePrinter();
     void handleOpenRecentFile();
     void handleClearRecentFiles();
 
@@ -155,6 +156,7 @@ private:
     static constexpr int AboutDialogMinTextWidth = 500;
     static constexpr int FontDialogWidth = 640;
     static constexpr int FontDialogHeight = 480;
+    static constexpr auto UntitledDocumentTitle = "Untitled";
     static constexpr qreal InvalidFontPointSize = -1.0;
 
     void buildMenus();
@@ -196,6 +198,8 @@ private:
     void saveRecentFilesSettings(QSettings& settings) const;
     void saveEditorFontSettings(QSettings& settings) const;
     void saveEditorBehaviorSettings(QSettings& settings) const;
+    void loadPrinterSettings(QSettings& settings);
+    void savePrinterSettings(QSettings& settings) const;
     static void clearLegacySettings(QSettings& settings);
     void addRecentFile(const QString& path);
     void refreshRecentFilesMenu();
@@ -245,6 +249,7 @@ private:
     QStringList m_recentFiles;
     QString m_lastOpenDirectory;
     QString m_lastSaveDirectory;
+    QString m_defaultPrinterName;
     int m_tabSizeSpaces{DefaultTabSizeSpaces};
     int m_currentZoomPercent{DefaultZoomPercent};
     DateFormatPreference m_dateFormatPreference{DateFormatPreference::Short};
