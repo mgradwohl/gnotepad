@@ -563,11 +563,11 @@ void MainWindow::updateActionStates()
     }
     if (m_wordWrapAction)
     {
-        m_wordWrapAction->setEnabled(hasContent);
+        m_wordWrapAction->setEnabled(true);
     }
     if (m_statusBarToggle)
     {
-        m_statusBarToggle->setEnabled(hasContent);
+        m_statusBarToggle->setEnabled(true);
     }
 }
 
