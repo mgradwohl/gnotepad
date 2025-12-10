@@ -2,7 +2,6 @@
 
 #include <QObject>
 #include <QString>
-
 #include <functional>
 
 namespace GnotePad::ui

@@ -24,7 +24,7 @@ ReliabilityTests::ReliabilityTests(QObject* parent) : QObject(parent)
 void ReliabilityTests::initTestCase()
 {
     QStandardPaths::setTestModeEnabled(true);
-    
+
     // Create a persistent temporary directory for test files
     QTemporaryDir* tempDir = new QTemporaryDir();
     QVERIFY(tempDir->isValid());
@@ -46,12 +46,12 @@ void ReliabilityTests::cleanupTestCase()
 void ReliabilityTests::testMruPersistenceAcrossRestarts()
 {
     clearAllSettings();
-    
+
     // Create test files
     QString file1;
     QString file2;
     QString file3;
-    
+
     {
         QTemporaryFile temp1(m_tempDir + QStringLiteral("/testfile_1_XXXXXX.txt"));
         temp1.setAutoRemove(false);
@@ -59,14 +59,14 @@ void ReliabilityTests::testMruPersistenceAcrossRestarts()
         temp1.write("File 1 content");
         file1 = temp1.fileName();
         temp1.close();
-        
+
         QTemporaryFile temp2(m_tempDir + QStringLiteral("/testfile_2_XXXXXX.txt"));
         temp2.setAutoRemove(false);
         temp2.open();
         temp2.write("File 2 content");
         file2 = temp2.fileName();
         temp2.close();
-        
+
         QTemporaryFile temp3(m_tempDir + QStringLiteral("/testfile_3_XXXXXX.txt"));
         temp3.setAutoRemove(false);
         temp3.open();
@@ -74,18 +74,16 @@ void ReliabilityTests::testMruPersistenceAcrossRestarts()
         file3 = temp3.fileName();
         temp3.close();
     }
-    
+
     // Manually populate MRU list via QSettings (simulates previous session)
     {
         QSettings settings;
         QStringList files;
-        files << QFileInfo(file3).absoluteFilePath()
-              << QFileInfo(file2).absoluteFilePath()
-              << QFileInfo(file1).absoluteFilePath();
+        files << QFileInfo(file3).absoluteFilePath() << QFileInfo(file2).absoluteFilePath() << QFileInfo(file1).absoluteFilePath();
         settings.setValue("documents/recentFiles", files);
         settings.sync();
     }
-    
+
     // New window: verify MRU list loaded from settings
     {
         MainWindow window;
@@ -95,7 +93,7 @@ void ReliabilityTests::testMruPersistenceAcrossRestarts()
         QCOMPARE(recents.at(1), QFileInfo(file2).absoluteFilePath());
         QCOMPARE(recents.at(2), QFileInfo(file1).absoluteFilePath());
     }
-    
+
     // Clean up files
     QFile::remove(file1);
     QFile::remove(file2);
@@ -105,22 +103,22 @@ void ReliabilityTests::testMruPersistenceAcrossRestarts()
 void ReliabilityTests::testMruUpdateOnFileOpen()
 {
     clearAllSettings();
-    
+
     const QString file1 = createTempFile(QStringLiteral("Content 1"));
     const QString file2 = createTempFile(QStringLiteral("Content 2"));
     const QString file3 = createTempFile(QStringLiteral("Content 3"));
-    
+
     MainWindow window;
-    
+
     // Open files in order
     QVERIFY(window.testLoadDocument(file1));
     QVERIFY(window.testLoadDocument(file2));
     QVERIFY(window.testLoadDocument(file3));
-    
+
     auto recents = window.recentFilesForTest();
     QCOMPARE(recents.size(), 3);
     QCOMPARE(recents.at(0), QFileInfo(file3).absoluteFilePath());
-    
+
     // Reopen file1 - should move to top
     QVERIFY(window.testLoadDocument(file1));
     recents = window.recentFilesForTest();
@@ -133,10 +131,10 @@ void ReliabilityTests::testMruUpdateOnFileOpen()
 void ReliabilityTests::testMruCleanupNonExistentFiles()
 {
     clearAllSettings();
-    
+
     const QString existingFile = createTempFile(QStringLiteral("Exists"));
     const QString nonExistentFile = m_tempDir + QStringLiteral("/nonexistent.txt");
-    
+
     // Manually inject MRU list with non-existent file
     {
         QSettings settings;
@@ -145,11 +143,11 @@ void ReliabilityTests::testMruCleanupNonExistentFiles()
         settings.setValue("documents/recentFiles", files);
         settings.sync();
     }
-    
+
     // Create window - should filter out non-existent file
     MainWindow window;
     const auto recents = window.recentFilesForTest();
-    
+
     // Note: Current implementation may not filter automatically on load
     // This test validates current behavior
     QVERIFY(recents.contains(existingFile));
@@ -158,9 +156,9 @@ void ReliabilityTests::testMruCleanupNonExistentFiles()
 void ReliabilityTests::testMruMaximumSizeEnforcement()
 {
     clearAllSettings();
-    
+
     MainWindow window;
-    
+
     // Create and open 12 files (more than the max of 10)
     QStringList files;
     for (int i = 0; i < 12; ++i)
@@ -169,11 +167,11 @@ void ReliabilityTests::testMruMaximumSizeEnforcement()
         files.append(file);
         QVERIFY(window.testLoadDocument(file));
     }
-    
+
     // Verify MRU list is capped at 10
     const auto recents = window.recentFilesForTest();
     QVERIFY(recents.size() <= 10);
-    
+
     // Most recent files should be retained
     QCOMPARE(recents.at(0), QFileInfo(files.last()).absoluteFilePath());
 }
@@ -181,23 +179,23 @@ void ReliabilityTests::testMruMaximumSizeEnforcement()
 void ReliabilityTests::testMruDuplicateEntries()
 {
     clearAllSettings();
-    
+
     const QString file1 = createTempFile(QStringLiteral("File 1"));
     const QString file2 = createTempFile(QStringLiteral("File 2"));
-    
+
     MainWindow window;
-    
+
     // Open same file multiple times
     QVERIFY(window.testLoadDocument(file1));
     QVERIFY(window.testLoadDocument(file2));
     QVERIFY(window.testLoadDocument(file1)); // Duplicate
     QVERIFY(window.testLoadDocument(file1)); // Another duplicate
-    
+
     const auto recents = window.recentFilesForTest();
-    
+
     // Should not have duplicates
     QCOMPARE(recents.size(), 2);
-    
+
     // file1 should be at top
     QCOMPARE(recents.at(0), QFileInfo(file1).absoluteFilePath());
     QCOMPARE(recents.at(1), QFileInfo(file2).absoluteFilePath());
@@ -206,9 +204,9 @@ void ReliabilityTests::testMruDuplicateEntries()
 void ReliabilityTests::testMruFileOrdering()
 {
     clearAllSettings();
-    
+
     MainWindow window;
-    
+
     QStringList files;
     for (int i = 0; i < 5; ++i)
     {
@@ -216,10 +214,10 @@ void ReliabilityTests::testMruFileOrdering()
         files.append(file);
         QVERIFY(window.testLoadDocument(file));
     }
-    
+
     const auto recents = window.recentFilesForTest();
     QCOMPARE(recents.size(), 5);
-    
+
     // Verify reverse chronological order (most recent first)
     for (int i = 0; i < 5; ++i)
     {
@@ -235,12 +233,12 @@ void ReliabilityTests::testMruFileOrdering()
 void ReliabilityTests::testSettingsPersistenceAcrossRestarts()
 {
     clearAllSettings();
-    
+
     // Zoom values are snapped to multiples of 10 by TextEditor::setZoomPercentage
     // (see TextEditor.cpp kZoomStepPercent)
     const int customZoom = 130;
     const int customTabSize = 8;
-    
+
     // Simulate previous session by writing settings
     {
         QSettings settings;
@@ -249,16 +247,16 @@ void ReliabilityTests::testSettingsPersistenceAcrossRestarts()
         settings.setValue("editor/lineNumbersVisible", false);
         settings.sync();
     }
-    
+
     // New window: verify preferences loaded from settings
     {
         MainWindow window;
         window.show();
         QTRY_VERIFY(window.isVisible());
-        
+
         auto* editor = window.editorForTest();
         QVERIFY(editor);
-        
+
         QCOMPARE(editor->zoomPercentage(), customZoom);
         QCOMPARE(editor->tabSizeSpaces(), customTabSize);
         QVERIFY(!editor->lineNumbersVisible());
@@ -268,7 +266,7 @@ void ReliabilityTests::testSettingsPersistenceAcrossRestarts()
 void ReliabilityTests::testSettingsRecoveryFromMissingFile()
 {
     clearAllSettings();
-    
+
     // Ensure settings file doesn't exist
     {
         QSettings settings;
@@ -276,15 +274,15 @@ void ReliabilityTests::testSettingsRecoveryFromMissingFile()
         QFile::remove(filePath);
         QFile::remove(filePath + QStringLiteral(".lock"));
     }
-    
+
     // Window should start with defaults
     MainWindow window;
     window.show();
     QTRY_VERIFY(window.isVisible());
-    
+
     auto* editor = window.editorForTest();
     QVERIFY(editor);
-    
+
     // Verify default values
     QCOMPARE(editor->zoomPercentage(), 100);
     QCOMPARE(editor->tabSizeSpaces(), 4);
@@ -294,7 +292,7 @@ void ReliabilityTests::testSettingsRecoveryFromMissingFile()
 void ReliabilityTests::testSettingsRecoveryFromCorruptData()
 {
     clearAllSettings();
-    
+
     // Write corrupt settings
     {
         QSettings settings;
@@ -304,15 +302,15 @@ void ReliabilityTests::testSettingsRecoveryFromCorruptData()
         settings.setValue("window/height", QByteArray());
         settings.sync();
     }
-    
+
     // Window should recover gracefully
     MainWindow window;
     window.show();
     QTRY_VERIFY(window.isVisible());
-    
+
     auto* editor = window.editorForTest();
     QVERIFY(editor);
-    
+
     // Should fall back to reasonable defaults
     QVERIFY(editor->zoomPercentage() > 0);
     QVERIFY(editor->zoomPercentage() <= 500);
@@ -325,9 +323,9 @@ void ReliabilityTests::testSettingsRecoveryFromCorruptData()
 void ReliabilityTests::testWindowGeometryPersistence()
 {
     clearAllSettings();
-    
+
     const QRect customGeometry(100, 150, 850, 650);
-    
+
     // Simulate previous session by writing geometry settings
     {
         QSettings settings;
@@ -338,13 +336,13 @@ void ReliabilityTests::testWindowGeometryPersistence()
         settings.setValue("window/maximized", false);
         settings.sync();
     }
-    
+
     // New window: verify geometry loaded from settings
     {
         MainWindow window;
         window.show();
         QTRY_VERIFY(window.isVisible());
-        
+
         const QRect geometry = window.geometry();
         // Allow small deviation due to window manager decorations
         QVERIFY(qAbs(geometry.x() - customGeometry.x()) <= 5);
@@ -357,7 +355,7 @@ void ReliabilityTests::testWindowGeometryPersistence()
 void ReliabilityTests::testEditorStatePersistence()
 {
     clearAllSettings();
-    
+
     // Simulate previous session by writing editor state
     {
         QSettings settings;
@@ -366,16 +364,16 @@ void ReliabilityTests::testEditorStatePersistence()
         settings.setValue("editor/zoomPercent", 150);
         settings.sync();
     }
-    
+
     // New window: verify state loaded from settings
     {
         MainWindow window;
         window.show();
         QTRY_VERIFY(window.isVisible());
-        
+
         auto* editor = window.editorForTest();
         QVERIFY(editor);
-        
+
         QVERIFY(!editor->lineNumbersVisible());
         QCOMPARE(editor->wordWrapMode(), QTextOption::WordWrap);
         QCOMPARE(editor->zoomPercentage(), 150);
@@ -385,22 +383,22 @@ void ReliabilityTests::testEditorStatePersistence()
 void ReliabilityTests::testEncodingPreferencePersistence()
 {
     clearAllSettings();
-    
+
     const auto customEncoding = QStringConverter::Utf16LE;
     const bool customBom = true;
-    
+
     // First window: set encoding preference
     {
         MainWindow window1;
         window1.show();
         QTRY_VERIFY(window1.isVisible());
-        
+
         // Note: This test may need adjustment based on actual API
         // Currently just verifies that encoding state is maintained
         const QString tempFile = createTempFile(QStringLiteral("Test content"));
         QVERIFY(window1.testSaveDocumentWithEncoding(tempFile, customEncoding, customBom));
     }
-    
+
     // Encoding preferences are saved per-document, not globally
     // This test validates that pattern
 }
@@ -459,9 +457,9 @@ void ReliabilityTests::testSaveWithInsufficientSpace()
 void ReliabilityTests::testWindowPositionPersistence()
 {
     clearAllSettings();
-    
+
     const QPoint customPosition(250, 300);
-    
+
     // Simulate previous session by writing position settings
     {
         QSettings settings;
@@ -472,13 +470,13 @@ void ReliabilityTests::testWindowPositionPersistence()
         settings.setValue("window/maximized", false);
         settings.sync();
     }
-    
+
     // New window: verify position loaded from settings
     {
         MainWindow window;
         window.show();
         QTRY_VERIFY(window.isVisible());
-        
+
         QCOMPARE(window.pos(), customPosition);
     }
 }
@@ -488,18 +486,18 @@ void ReliabilityTests::testWindowStateStability()
     MainWindow window;
     window.show();
     QTRY_VERIFY(window.isVisible());
-    
+
     // Test normal -> minimized -> normal
     window.showMinimized();
     QTRY_VERIFY(window.windowState().testFlag(Qt::WindowMinimized));
-    
+
     window.showNormal();
     QTRY_VERIFY(!window.windowState().testFlag(Qt::WindowMinimized));
-    
+
     // Test normal -> maximized -> normal
     window.showMaximized();
     QTRY_VERIFY(window.windowState().testFlag(Qt::WindowMaximized));
-    
+
     window.showNormal();
     QTRY_VERIFY(!window.windowState().testFlag(Qt::WindowMaximized));
 }
@@ -509,28 +507,28 @@ void ReliabilityTests::testRapidWindowStateChanges()
     MainWindow window;
     window.show();
     QTRY_VERIFY(window.isVisible());
-    
+
     // Rapidly cycle through states
     for (int i = 0; i < 5; ++i)
     {
         window.showMinimized();
         QApplication::processEvents();
-        
+
         window.showNormal();
         QApplication::processEvents();
-        
+
         window.showMaximized();
         QApplication::processEvents();
-        
+
         window.showNormal();
         QApplication::processEvents();
     }
-    
+
     // Verify window is still functional
     QVERIFY(window.isVisible());
     auto* editor = window.editorForTest();
     QVERIFY(editor);
-    
+
     // Verify can still edit
     editor->setPlainText(QStringLiteral("Test after rapid state changes"));
     QVERIFY(!editor->toPlainText().isEmpty());
@@ -539,25 +537,25 @@ void ReliabilityTests::testRapidWindowStateChanges()
 void ReliabilityTests::testCloseWithUnsavedChanges()
 {
     const QString testFile = createTempFile(QStringLiteral("Original content"));
-    
+
     MainWindow window;
     QVERIFY(window.testLoadDocument(testFile));
-    
+
     auto* editor = window.editorForTest();
     QVERIFY(editor);
-    
+
     // Make modifications
     editor->appendPlainText(QStringLiteral("\nModified content"));
     editor->document()->setModified(true);
     QVERIFY(editor->document()->isModified());
-    
+
     // Simulate save response
     window.enqueueDestructivePromptResponseForTest(QMessageBox::Save);
-    
+
     // Close event will trigger save
     QCloseEvent closeEvent;
     QApplication::sendEvent(&window, &closeEvent);
-    
+
     // If accepted, changes should be saved
     if (closeEvent.isAccepted())
     {
@@ -571,21 +569,21 @@ void ReliabilityTests::testCloseWithUnsavedChanges()
 void ReliabilityTests::testMultipleWindowStateCycles()
 {
     clearAllSettings();
-    
+
     for (int cycle = 0; cycle < 3; ++cycle)
     {
         MainWindow window;
         window.show();
         QTRY_VERIFY(window.isVisible());
-        
+
         window.showMaximized();
         QTRY_VERIFY(window.windowState().testFlag(Qt::WindowMaximized));
         QApplication::processEvents();
-        
+
         window.showNormal();
         QTRY_VERIFY(!window.windowState().testFlag(Qt::WindowMaximized));
         QApplication::processEvents();
-        
+
         // Verify editor still works
         auto* editor = window.editorForTest();
         QVERIFY(editor);
@@ -599,21 +597,21 @@ void ReliabilityTests::testMinimizeRestoreContent()
     MainWindow window;
     window.show();
     QTRY_VERIFY(window.isVisible());
-    
+
     auto* editor = window.editorForTest();
     QVERIFY(editor);
-    
+
     const QString testContent = QStringLiteral("Test content before minimize");
     editor->setPlainText(testContent);
-    
+
     // Minimize
     window.showMinimized();
     QTRY_VERIFY(window.windowState().testFlag(Qt::WindowMinimized));
-    
+
     // Restore
     window.showNormal();
     QTRY_VERIFY(!window.windowState().testFlag(Qt::WindowMinimized));
-    
+
     // Verify content preserved
     QCOMPARE(editor->toPlainText(), testContent);
 }
@@ -623,24 +621,24 @@ void ReliabilityTests::testMaximizeRestoreContent()
     MainWindow window;
     window.show();
     QTRY_VERIFY(window.isVisible());
-    
+
     auto* editor = window.editorForTest();
     QVERIFY(editor);
-    
+
     const QString testContent = QStringLiteral("Test content before maximize\nLine 2\nLine 3");
     editor->setPlainText(testContent);
-    
+
     // Maximize
     window.showMaximized();
     QTRY_VERIFY(window.windowState().testFlag(Qt::WindowMaximized));
-    
+
     // Verify content preserved
     QCOMPARE(editor->toPlainText(), testContent);
-    
+
     // Restore
     window.showNormal();
     QTRY_VERIFY(!window.windowState().testFlag(Qt::WindowMaximized));
-    
+
     // Verify content still preserved
     QCOMPARE(editor->toPlainText(), testContent);
 }
@@ -656,7 +654,7 @@ QString ReliabilityTests::resolveTestFile(const QString& name) const
     {
         return {};
     }
-    
+
     const QString fullPath = dir.absoluteFilePath(name);
     if (QFileInfo::exists(fullPath))
     {
@@ -669,20 +667,20 @@ QString ReliabilityTests::createTempFile(const QString& content) const
 {
     QTemporaryFile tempFile(m_tempDir + QStringLiteral("/testfile_XXXXXX.txt"));
     tempFile.setAutoRemove(false);
-    
+
     if (!tempFile.open())
     {
         return {};
     }
-    
+
     if (!content.isEmpty())
     {
         tempFile.write(content.toUtf8());
     }
-    
+
     const QString fileName = tempFile.fileName();
     tempFile.close();
-    
+
     return fileName;
 }
 
@@ -691,7 +689,7 @@ void ReliabilityTests::clearAllSettings()
     QSettings settings;
     settings.clear();
     settings.sync();
-    
+
     const QString filePath = settings.fileName();
     QFile::remove(filePath);
     QFile::remove(filePath + QStringLiteral(".lock"));
@@ -737,7 +735,7 @@ bool ReliabilityTests::removeFilePermissions(const QString& path, bool read, boo
     {
         mode = S_IRUSR | S_IWUSR;
     }
-    
+
     return chmod(path.toLocal8Bit().constData(), mode) == 0;
 #else
     Q_UNUSED(read);
@@ -758,7 +756,7 @@ int main(int argc, char** argv)
     QCoreApplication::setOrganizationDomain(QStringLiteral("tests.gnotepad.app"));
     QCoreApplication::setApplicationName(QStringLiteral("GnotePadReliabilityTests"));
     QSettings::setDefaultFormat(QSettings::IniFormat);
-    
+
     ReliabilityTests tc;
     return QTest::qExec(&tc, argc, argv);
 }

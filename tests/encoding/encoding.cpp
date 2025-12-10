@@ -120,10 +120,10 @@ void EncodingEdgeCasesTests::testMixedLineEndings()
     QVERIFY(mixedFile.open(QIODevice::WriteOnly));
 
     // Mix of CRLF, LF, and CR line endings
-    mixedFile.write("Line 1\r\n");    // Windows
-    mixedFile.write("Line 2\n");      // Unix
-    mixedFile.write("Line 3\r");      // Old Mac
-    mixedFile.write("Line 4\r\n");    // Windows again
+    mixedFile.write("Line 1\r\n"); // Windows
+    mixedFile.write("Line 2\n");   // Unix
+    mixedFile.write("Line 3\r");   // Old Mac
+    mixedFile.write("Line 4\r\n"); // Windows again
     mixedFile.close();
 
     MainWindow window;
@@ -132,7 +132,7 @@ void EncodingEdgeCasesTests::testMixedLineEndings()
     auto* editor = window.editorForTest();
     QVERIFY(editor);
     const QString content = editor->toPlainText();
-    
+
     // Verify content was loaded (exact line ending handling depends on Qt)
     QVERIFY(content.contains(QStringLiteral("Line 1")));
     QVERIFY(content.contains(QStringLiteral("Line 2")));
@@ -176,7 +176,7 @@ void EncodingEdgeCasesTests::testNullBytesHandling()
     const QString nullPath = tempDir.filePath(QStringLiteral("nullbytes.txt"));
     QFile nullFile(nullPath);
     QVERIFY(nullFile.open(QIODevice::WriteOnly));
-    
+
     // Write text with embedded null bytes
     QByteArray data = "Before";
     data.append('\0');
@@ -202,7 +202,7 @@ void EncodingEdgeCasesTests::testIncompleteUtf8Sequences()
     const QString incompletePath = tempDir.filePath(QStringLiteral("incomplete_utf8.txt"));
     QFile incompleteFile(incompletePath);
     QVERIFY(incompleteFile.open(QIODevice::WriteOnly));
-    
+
     // Write valid UTF-8 followed by incomplete sequence
     incompleteFile.write("Valid text ");
     incompleteFile.write("\xC3"); // Start of 2-byte UTF-8 but truncated
@@ -211,10 +211,10 @@ void EncodingEdgeCasesTests::testIncompleteUtf8Sequences()
     MainWindow window;
     // Should handle gracefully, possibly with replacement character
     bool loaded = window.testLoadDocument(incompletePath);
-    
+
     auto* editor = window.editorForTest();
     QVERIFY(editor);
-    
+
     if (loaded)
     {
         const QString content = editor->toPlainText();
@@ -230,7 +230,7 @@ void EncodingEdgeCasesTests::testBomWithoutContent()
     const QString bomOnlyPath = tempDir.filePath(QStringLiteral("bom_only.txt"));
     QFile bomOnlyFile(bomOnlyPath);
     QVERIFY(bomOnlyFile.open(QIODevice::WriteOnly));
-    
+
     // Write UTF-8 BOM only, no content
     bomOnlyFile.write(QByteArray::fromHex("efbbbf"));
     bomOnlyFile.close();
@@ -240,11 +240,11 @@ void EncodingEdgeCasesTests::testBomWithoutContent()
 
     auto* editor = window.editorForTest();
     QVERIFY(editor);
-    
+
     // Should detect BOM even with no content
     QCOMPARE(window.currentEncodingForTest(), QStringConverter::Utf8);
     QVERIFY(window.currentBomForTest());
-    
+
     // Content should be empty (BOM is not content)
     QVERIFY(editor->toPlainText().isEmpty());
 }
@@ -257,7 +257,7 @@ void EncodingEdgeCasesTests::testMultipleBomMarkers()
     const QString multiPath = tempDir.filePath(QStringLiteral("multi_bom.txt"));
     QFile multiFile(multiPath);
     QVERIFY(multiFile.open(QIODevice::WriteOnly));
-    
+
     // Write UTF-8 BOM twice (unusual but should handle)
     multiFile.write(QByteArray::fromHex("efbbbf"));
     multiFile.write(QByteArray::fromHex("efbbbf"));
@@ -266,10 +266,10 @@ void EncodingEdgeCasesTests::testMultipleBomMarkers()
 
     MainWindow window;
     bool loaded = window.testLoadDocument(multiPath);
-    
+
     auto* editor = window.editorForTest();
     QVERIFY(editor);
-    
+
     if (loaded)
     {
         // Should detect encoding, handling of multiple BOMs is implementation-defined
@@ -325,7 +325,7 @@ void EncodingEdgeCasesTests::testUnsupportedEncoding()
 
     auto* editor = window.editorForTest();
     QVERIFY(editor);
-    
+
     // Should default to UTF-8 for unknown/ambiguous files
     QCOMPARE(window.currentEncodingForTest(), QStringConverter::Utf8);
     QCOMPARE(editor->toPlainText(), QStringLiteral("Simple ASCII text"));

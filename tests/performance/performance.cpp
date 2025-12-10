@@ -20,8 +20,9 @@
 #include <fstream>
 
 #if defined(Q_OS_LINUX)
-#include <unistd.h>
 #include <cstdio>
+
+#include <unistd.h>
 #endif
 
 using namespace GnotePad::ui;
@@ -29,16 +30,16 @@ using namespace GnotePad::ui;
 // Performance thresholds (in milliseconds)
 namespace PerformanceThresholds
 {
-    constexpr int LOAD_100KB_MS = 1000;   // Max time to load 100KB file
-    constexpr int LOAD_500KB_MS = 3000;   // Max time to load 500KB file
-    constexpr int LOAD_1MB_MS = 6000;     // Max time to load 1MB file
-    constexpr int SAVE_LARGE_MS = 3000;   // Max time to save large file
-    constexpr int ENCODING_MS = 2000;     // Max time for encoding conversion
+    constexpr int LOAD_100KB_MS = 1000;      // Max time to load 100KB file
+    constexpr int LOAD_500KB_MS = 3000;      // Max time to load 500KB file
+    constexpr int LOAD_1MB_MS = 6000;        // Max time to load 1MB file
+    constexpr int SAVE_LARGE_MS = 3000;      // Max time to save large file
+    constexpr int ENCODING_MS = 2000;        // Max time for encoding conversion
     constexpr int SCROLL_100_LINES_MS = 500; // Max time to scroll 100 lines
-    constexpr int FIND_MS = 1000;         // Max time for find operation
-    constexpr int REPLACE_MS = 2000;      // Max time for replace operation
-    constexpr int UNDO_REDO_MS = 100;     // Max time for single undo/redo
-    constexpr int ZOOM_MS = 200;          // Max time for zoom operation
+    constexpr int FIND_MS = 1000;            // Max time for find operation
+    constexpr int REPLACE_MS = 2000;         // Max time for replace operation
+    constexpr int UNDO_REDO_MS = 100;        // Max time for single undo/redo
+    constexpr int ZOOM_MS = 200;             // Max time for zoom operation
 } // namespace PerformanceThresholds
 
 PerformanceTests::PerformanceTests(QObject* parent) : QObject(parent)
@@ -86,11 +87,10 @@ void PerformanceTests::generateTestFile(const QString& path, qint64 sizeInBytes)
     }
 
     // Generate realistic text content with line breaks
-    const QString paragraph = QStringLiteral(
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit. "
-        "Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. "
-        "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris. "
-        "This is line %1 of the performance test file.\n");
+    const QString paragraph = QStringLiteral("Lorem ipsum dolor sit amet, consectetur adipiscing elit. "
+                                             "Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. "
+                                             "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris. "
+                                             "This is line %1 of the performance test file.\n");
 
     qint64 bytesWritten = 0;
     int lineNumber = 0;
@@ -155,9 +155,7 @@ void PerformanceTests::testLoadLargeFile100KB()
     qInfo() << "Load time for 100KB file:" << loadTime << "ms";
 
     QVERIFY2(loadTime < PerformanceThresholds::LOAD_100KB_MS,
-             qPrintable(QString("Load time %1ms exceeds threshold %2ms")
-                            .arg(loadTime)
-                            .arg(PerformanceThresholds::LOAD_100KB_MS)));
+             qPrintable(QString("Load time %1ms exceeds threshold %2ms").arg(loadTime).arg(PerformanceThresholds::LOAD_100KB_MS)));
 
     auto* editor = window.editorForTest();
     QVERIFY(editor);
@@ -182,9 +180,7 @@ void PerformanceTests::testLoadLargeFile500KB()
     qInfo() << "Load time for 500KB file:" << loadTime << "ms";
 
     QVERIFY2(loadTime < PerformanceThresholds::LOAD_500KB_MS,
-             qPrintable(QString("Load time %1ms exceeds threshold %2ms")
-                            .arg(loadTime)
-                            .arg(PerformanceThresholds::LOAD_500KB_MS)));
+             qPrintable(QString("Load time %1ms exceeds threshold %2ms").arg(loadTime).arg(PerformanceThresholds::LOAD_500KB_MS)));
 
     auto* editor = window.editorForTest();
     QVERIFY(editor);
@@ -208,9 +204,7 @@ void PerformanceTests::testLoadLargeFile1MB()
     qInfo() << "Load time for 1MB file:" << loadTime << "ms";
 
     QVERIFY2(loadTime < PerformanceThresholds::LOAD_1MB_MS,
-             qPrintable(QString("Load time %1ms exceeds threshold %2ms")
-                            .arg(loadTime)
-                            .arg(PerformanceThresholds::LOAD_1MB_MS)));
+             qPrintable(QString("Load time %1ms exceeds threshold %2ms").arg(loadTime).arg(PerformanceThresholds::LOAD_1MB_MS)));
 
     auto* editor = window.editorForTest();
     QVERIFY(editor);
@@ -251,10 +245,9 @@ void PerformanceTests::testScrollPerformanceLargeFile()
     const qint64 scrollTime = timer.elapsed();
     qInfo() << "Scroll time for 100 steps:" << scrollTime << "ms";
 
-    QVERIFY2(scrollTime < PerformanceThresholds::SCROLL_100_LINES_MS,
-             qPrintable(QString("Scroll time %1ms exceeds threshold %2ms")
-                            .arg(scrollTime)
-                            .arg(PerformanceThresholds::SCROLL_100_LINES_MS)));
+    QVERIFY2(
+        scrollTime < PerformanceThresholds::SCROLL_100_LINES_MS,
+        qPrintable(QString("Scroll time %1ms exceeds threshold %2ms").arg(scrollTime).arg(PerformanceThresholds::SCROLL_100_LINES_MS)));
 }
 
 void PerformanceTests::testEditPerformanceLargeFile()
@@ -319,9 +312,7 @@ void PerformanceTests::testSaveLargeFile()
     qInfo() << "Save time for 500KB file:" << saveTime << "ms";
 
     QVERIFY2(saveTime < PerformanceThresholds::SAVE_LARGE_MS,
-             qPrintable(QString("Save time %1ms exceeds threshold %2ms")
-                            .arg(saveTime)
-                            .arg(PerformanceThresholds::SAVE_LARGE_MS)));
+             qPrintable(QString("Save time %1ms exceeds threshold %2ms").arg(saveTime).arg(PerformanceThresholds::SAVE_LARGE_MS)));
 
     // Verify file was saved
     QVERIFY(QFileInfo::exists(saveFile));
@@ -352,9 +343,7 @@ void PerformanceTests::testEncodingConversionUtf8ToUtf16LE()
     qInfo() << "UTF-8 to UTF-16LE conversion time:" << conversionTime << "ms";
 
     QVERIFY2(conversionTime < PerformanceThresholds::ENCODING_MS,
-             qPrintable(QString("Encoding time %1ms exceeds threshold %2ms")
-                            .arg(conversionTime)
-                            .arg(PerformanceThresholds::ENCODING_MS)));
+             qPrintable(QString("Encoding time %1ms exceeds threshold %2ms").arg(conversionTime).arg(PerformanceThresholds::ENCODING_MS)));
 
     // Verify the conversion preserved content
     editor->clear();
@@ -387,9 +376,7 @@ void PerformanceTests::testEncodingConversionUtf8ToUtf16BE()
     qInfo() << "UTF-8 to UTF-16BE conversion time:" << conversionTime << "ms";
 
     QVERIFY2(conversionTime < PerformanceThresholds::ENCODING_MS,
-             qPrintable(QString("Encoding time %1ms exceeds threshold %2ms")
-                            .arg(conversionTime)
-                            .arg(PerformanceThresholds::ENCODING_MS)));
+             qPrintable(QString("Encoding time %1ms exceeds threshold %2ms").arg(conversionTime).arg(PerformanceThresholds::ENCODING_MS)));
 
     // Verify the conversion preserved content
     editor->clear();
@@ -471,8 +458,7 @@ void PerformanceTests::testMemoryUsageDuringEncoding()
 
         // Memory usage should be reasonable (< 50MB for 1MB file)
         QVERIFY2(memoryDelta < 50 * 1024 * 1024,
-                 qPrintable(QString("Memory usage %1MB exceeds expected range")
-                                .arg(memoryDelta / (1024 * 1024))));
+                 qPrintable(QString("Memory usage %1MB exceeds expected range").arg(memoryDelta / (1024 * 1024))));
     }
     else
     {
@@ -511,9 +497,7 @@ void PerformanceTests::testFindPerformanceLargeFile()
     qInfo() << "Find time for 10 operations on 200KB file:" << findTime << "ms";
 
     QVERIFY2(findTime < PerformanceThresholds::FIND_MS,
-             qPrintable(QString("Find time %1ms exceeds threshold %2ms")
-                            .arg(findTime)
-                            .arg(PerformanceThresholds::FIND_MS)));
+             qPrintable(QString("Find time %1ms exceeds threshold %2ms").arg(findTime).arg(PerformanceThresholds::FIND_MS)));
 }
 
 void PerformanceTests::testReplacePerformanceLargeFile()
@@ -540,9 +524,7 @@ void PerformanceTests::testReplacePerformanceLargeFile()
     qInfo() << "Replace time for" << replacedCount << "occurrences:" << replaceTime << "ms";
 
     QVERIFY2(replaceTime < PerformanceThresholds::REPLACE_MS,
-             qPrintable(QString("Replace time %1ms exceeds threshold %2ms")
-                            .arg(replaceTime)
-                            .arg(PerformanceThresholds::REPLACE_MS)));
+             qPrintable(QString("Replace time %1ms exceeds threshold %2ms").arg(replaceTime).arg(PerformanceThresholds::REPLACE_MS)));
 
     QVERIFY(replacedCount > 0);
 }
@@ -589,11 +571,9 @@ void PerformanceTests::testUndoRedoStackPerformance()
     const qint64 redoTime = timer.elapsed();
     qInfo() << "100 redo operations time:" << redoTime << "ms";
 
-    QVERIFY2(undoTime < PerformanceThresholds::UNDO_REDO_MS * 100,
-             qPrintable(QString("Undo time %1ms exceeds threshold").arg(undoTime)));
+    QVERIFY2(undoTime < PerformanceThresholds::UNDO_REDO_MS * 100, qPrintable(QString("Undo time %1ms exceeds threshold").arg(undoTime)));
 
-    QVERIFY2(redoTime < PerformanceThresholds::UNDO_REDO_MS * 100,
-             qPrintable(QString("Redo time %1ms exceeds threshold").arg(redoTime)));
+    QVERIFY2(redoTime < PerformanceThresholds::UNDO_REDO_MS * 100, qPrintable(QString("Redo time %1ms exceeds threshold").arg(redoTime)));
 }
 
 void PerformanceTests::testZoomOperationsPerformance()
@@ -629,8 +609,7 @@ void PerformanceTests::testZoomOperationsPerformance()
     const qint64 zoomTime = timer.elapsed();
     qInfo() << "Zoom operations time (20 operations):" << zoomTime << "ms";
 
-    QVERIFY2(zoomTime < PerformanceThresholds::ZOOM_MS * 20,
-             qPrintable(QString("Zoom time %1ms exceeds threshold").arg(zoomTime)));
+    QVERIFY2(zoomTime < PerformanceThresholds::ZOOM_MS * 20, qPrintable(QString("Zoom time %1ms exceeds threshold").arg(zoomTime)));
 
     QCOMPARE(editor->zoomPercentage(), originalZoom);
 }
@@ -660,8 +639,7 @@ void PerformanceTests::testDocumentModificationPerformance()
     QVERIFY(editor->document()->isModified());
 
     // Should be very fast since it's just flag checking
-    QVERIFY2(modificationTime < 1000,
-             qPrintable(QString("Modification detection time %1ms is too slow").arg(modificationTime)));
+    QVERIFY2(modificationTime < 1000, qPrintable(QString("Modification detection time %1ms is too slow").arg(modificationTime)));
 }
 
 void PerformanceTests::testMassiveInsertOperations()
