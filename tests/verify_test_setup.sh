@@ -126,7 +126,7 @@ echo "5. Checking file sizes..."
 
 LARGE_FILE="${TESTFILES_DIR}/utf8-tests/large_multilingual.txt"
 if [ -f "$LARGE_FILE" ]; then
-    SIZE=$(stat -f%z "$LARGE_FILE" 2>/dev/null || stat -c%s "$LARGE_FILE" 2>/dev/null)
+    SIZE=$(wc -c < "$LARGE_FILE" 2>/dev/null | tr -d ' ')
     if [ "$SIZE" -gt 50000 ]; then
         pass "Large test file is ${SIZE} bytes (> 50KB)"
     else

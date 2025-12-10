@@ -1,8 +1,8 @@
 Zero-width characters:
-- Zero width space: A​B (between A and B)
-- Zero width non-joiner: A‌B
-- Zero width joiner: A‍B
-- Byte order mark: ﻿(at start)
+- Zero width space (U+200B): A​B (invisible character between A and B)
+- Zero width non-joiner (U+200C): A‌B
+- Zero width joiner (U+200D): A‍B
+- Byte order mark (U+FEFF): ﻿(at start)
 
 Direction marks:
 - Left-to-right mark: A‎B

@@ -1013,7 +1013,8 @@ void MainWindowSmokeTests::testLargeFileEncodingRoundTrip()
     QVERIFY(editor);
     const QString originalContent = editor->toPlainText();
     const qsizetype originalLength = originalContent.length();
-    QVERIFY(originalLength > 10000); // Ensure it's actually large
+    constexpr qsizetype MINIMUM_LARGE_FILE_SIZE = 10000;
+    QVERIFY(originalLength > MINIMUM_LARGE_FILE_SIZE); // Ensure it's actually large
     
     QTemporaryDir tempDir;
     QVERIFY(tempDir.isValid());
@@ -1027,10 +1028,10 @@ void MainWindowSmokeTests::testLargeFileEncodingRoundTrip()
     };
     
     const std::array<EncodingTest, 4> tests{
-        EncodingTest{QStringLiteral("large_utf8_bom.txt"), QStringConverter::Utf8, true},
-        EncodingTest{QStringLiteral("large_utf8_nobom.txt"), QStringConverter::Utf8, false},
-        EncodingTest{QStringLiteral("large_utf16le.txt"), QStringConverter::Utf16LE, true},
-        EncodingTest{QStringLiteral("large_utf16be.txt"), QStringConverter::Utf16BE, true},
+        EncodingTest{.fileName = QStringLiteral("large_utf8_bom.txt"), .encoding = QStringConverter::Utf8, .bom = true},
+        EncodingTest{.fileName = QStringLiteral("large_utf8_nobom.txt"), .encoding = QStringConverter::Utf8, .bom = false},
+        EncodingTest{.fileName = QStringLiteral("large_utf16le.txt"), .encoding = QStringConverter::Utf16LE, .bom = true},
+        EncodingTest{.fileName = QStringLiteral("large_utf16be.txt"), .encoding = QStringConverter::Utf16BE, .bom = true},
     };
     
     for (const auto& test : tests)
