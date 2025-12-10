@@ -1330,8 +1330,8 @@ void MainWindowSmokeTests::testEditMenuActionsEnabled()
 
     for (const auto* action : actions)
     {
-        const QString text = action->text().toLower();
-        if (text.contains(QStringLiteral("copy")) && !text.contains(QStringLiteral("&")))
+        const QString text = action->text().toLower().remove(QLatin1Char('&'));
+        if (text.contains(QStringLiteral("copy")))
         {
             foundCopyAction = true;
             QVERIFY(action->isEnabled() || !action->isVisible());
