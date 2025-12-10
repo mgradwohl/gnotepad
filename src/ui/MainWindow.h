@@ -108,6 +108,22 @@ public:
     {
         return m_timeDateAction;
     }
+    QString defaultPrinterNameForTest() const
+    {
+        return m_defaultPrinterName;
+    }
+    void setDefaultPrinterNameForTest(const QString& printerName)
+    {
+        m_defaultPrinterName = printerName;
+    }
+    void testLoadPrinterSettings(QSettings& settings)
+    {
+        loadPrinterSettings(settings);
+    }
+    void testSavePrinterSettings(QSettings& settings) const
+    {
+        savePrinterSettings(settings);
+    }
 #endif
 
 private slots:

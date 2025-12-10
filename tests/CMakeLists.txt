@@ -96,6 +96,12 @@ set(GNOTE_SMOKE_TEST_FUNCTIONS
 	testRecentFilesMenu
 	testDestructivePrompts
 	testShortcutCommands
+	testLoadPrinterSettingsValid
+	testLoadPrinterSettingsInvalid
+	testSavePrinterSettingsEmpty
+	testSavePrinterSettingsNonEmpty
+	testPrinterRoundTrip
+	testDefaultPrinterBehavior
 )
 
 foreach(test_name IN LISTS GNOTE_SMOKE_TEST_FUNCTIONS)
