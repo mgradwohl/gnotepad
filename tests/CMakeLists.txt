@@ -21,6 +21,10 @@ target_include_directories(GnotePadSmoke PRIVATE
 
 target_sources(GnotePadSmoke PRIVATE
 	${CMAKE_SOURCE_DIR}/src/ui/MainWindow.cpp
+	${CMAKE_SOURCE_DIR}/src/ui/MainWindow.FileIO.cpp
+	${CMAKE_SOURCE_DIR}/src/ui/MainWindow.Settings.cpp
+	${CMAKE_SOURCE_DIR}/src/ui/MainWindow.Search.cpp
+	${CMAKE_SOURCE_DIR}/src/ui/PrintSupport.cpp
 	${CMAKE_SOURCE_DIR}/src/ui/TextEditor.cpp
 	${GNOTE_RESOURCES}
 )

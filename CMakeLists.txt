@@ -109,12 +109,17 @@ set(GNOTE_SOURCES
     src/gnotepad.cpp
     src/app/Application.cpp
     src/ui/MainWindow.cpp
+    src/ui/MainWindow.FileIO.cpp
+    src/ui/MainWindow.Settings.cpp
+    src/ui/MainWindow.Search.cpp
+    src/ui/PrintSupport.cpp
     src/ui/TextEditor.cpp
 )
 
 set(GNOTE_HEADERS
     src/app/Application.h
     src/ui/MainWindow.h
+    src/ui/PrintSupport.h
     src/ui/TextEditor.h
 )
 

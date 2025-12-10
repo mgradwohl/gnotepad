@@ -116,7 +116,7 @@ private slots:
     void handleSaveFile();
     void handleSaveFileAs();
     void handleChangeEncoding();
-    void handlePrintToPdf();
+    void handlePrint();
     void handleToggleStatusBar(bool checked);
     void handleToggleLineNumbers(bool checked);
     void handleZoomIn();
@@ -155,6 +155,7 @@ private:
     static constexpr int AboutDialogMinTextWidth = 500;
     static constexpr int FontDialogWidth = 640;
     static constexpr int FontDialogHeight = 480;
+    static constexpr auto UntitledDocumentTitle = "Untitled";
     static constexpr qreal InvalidFontPointSize = -1.0;
 
     void buildMenus();
