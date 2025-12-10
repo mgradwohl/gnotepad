@@ -193,6 +193,9 @@ set(GNOTE_CMDLINE_TEST_FUNCTIONS
 	testHeadlessSmokeParsing
 	testNoFlagsParsing
 	testQuitAfterInitBehavior
+	testHelpOption
+	testVersionOption
+	testInvalidOption
 )
 
 foreach(test_name IN LISTS GNOTE_CMDLINE_TEST_FUNCTIONS)
@@ -203,6 +206,197 @@ foreach(test_name IN LISTS GNOTE_CMDLINE_TEST_FUNCTIONS)
 endforeach()
 
 add_test(NAME gnotepad_cmdline_all COMMAND $<TARGET_FILE:GnotePadCmdLine>)
+
+# Menu actions tests
+add_executable(GnotePadMenuActions
+	menuactions/menuactions.cpp
+	menuactions/MenuActionsTests.h
+)
+
+set_source_files_properties(
+	menuactions/menuactions.cpp
+	menuactions/MenuActionsTests.h
+	PROPERTIES SKIP_CLANG_TIDY TRUE
+)
+
+target_compile_features(GnotePadMenuActions PRIVATE cxx_std_23)
+
+if(COMMAND gnote_apply_default_warnings)
+	gnote_apply_default_warnings(GnotePadMenuActions)
+endif()
+
+target_include_directories(GnotePadMenuActions PRIVATE
+	${CMAKE_SOURCE_DIR}/src
+)
+
+target_sources(GnotePadMenuActions PRIVATE
+	${CMAKE_SOURCE_DIR}/src/ui/MainWindow.cpp
+	${CMAKE_SOURCE_DIR}/src/ui/MainWindow.FileIO.cpp
+	${CMAKE_SOURCE_DIR}/src/ui/MainWindow.Settings.cpp
+	${CMAKE_SOURCE_DIR}/src/ui/MainWindow.Search.cpp
+	${CMAKE_SOURCE_DIR}/src/ui/PrintSupport.cpp
+	${CMAKE_SOURCE_DIR}/src/ui/TextEditor.cpp
+	${GNOTE_RESOURCES}
+)
+
+set_target_properties(GnotePadMenuActions PROPERTIES AUTOMOC ON)
+
+target_link_libraries(GnotePadMenuActions PRIVATE
+	Qt6::Core
+	Qt6::Gui
+	Qt6::Widgets
+	Qt6::Test
+	Qt6::PrintSupport
+	Qt6::Svg
+	Qt6::SvgWidgets
+	spdlog::spdlog_header_only
+)
+
+target_compile_definitions(GnotePadMenuActions PRIVATE GNOTE_TEST_HOOKS)
+
+if(WIN32)
+	add_custom_command(TARGET GnotePadMenuActions POST_BUILD
+		COMMAND ${CMAKE_COMMAND} -E make_directory "$<TARGET_FILE_DIR:GnotePadMenuActions>/plugins"
+		COMMAND ${CMAKE_COMMAND} -E copy_directory
+			$<$<CONFIG:Debug>:${QT6_DEBUG_BIN}>
+			$<$<NOT:$<CONFIG:Debug>>:${QT6_RELEASE_BIN}>
+			"$<TARGET_FILE_DIR:GnotePadMenuActions>"
+		COMMAND ${CMAKE_COMMAND} -E copy_directory
+			$<$<CONFIG:Debug>:${QT6_DEBUG_PLUGINS}>
+			$<$<NOT:$<CONFIG:Debug>>:${QT6_RELEASE_PLUGINS}>
+			"$<TARGET_FILE_DIR:GnotePadMenuActions>/plugins"
+		COMMAND ${CMAKE_COMMAND} -E copy_if_different
+			$<$<CONFIG:Debug>:${CMAKE_CURRENT_BINARY_DIR}/qt.tests.debug.conf>
+			$<$<NOT:$<CONFIG:Debug>>:${CMAKE_CURRENT_BINARY_DIR}/qt.tests.release.conf>
+			"$<TARGET_FILE_DIR:GnotePadMenuActions>/qt.conf"
+		COMMENT "Copying Qt runtime and plugins beside GnotePadMenuActions.exe"
+	)
+endif()
+
+set(GNOTE_MENUACTIONS_TEST_FUNCTIONS
+	testNewFileAction
+	testSaveActionEnabledStates
+	testSaveAsActionEnabledStates
+	testPrintActionEnabledStates
+	testCutCopyDeleteEnabledStates
+	testSelectAllAction
+	testUndoRedoActions
+	testFindActionEnabledStates
+	testReplaceActionEnabledStates
+	testGoToLineActionEnabledStates
+	testFindNextPreviousEnabledStates
+	testZoomActionsEnabled
+	testStatusBarToggle
+	testLineNumberToggle
+	testWordWrapToggle
+	testTimeDateActionEnabledStates
+	testOpenNonExistentFile
+	testSaveToReadOnlyLocation
+)
+
+foreach(test_name IN LISTS GNOTE_MENUACTIONS_TEST_FUNCTIONS)
+	add_test(
+		NAME gnotepad_${test_name}
+		COMMAND $<TARGET_FILE:GnotePadMenuActions> ${test_name}
+	)
+endforeach()
+
+add_test(NAME gnotepad_menuactions_all COMMAND $<TARGET_FILE:GnotePadMenuActions>)
+
+# Encoding edge case tests
+add_executable(GnotePadEncoding
+	encoding/encoding.cpp
+	encoding/EncodingEdgeCasesTests.h
+)
+
+set_source_files_properties(
+	encoding/encoding.cpp
+	encoding/EncodingEdgeCasesTests.h
+	PROPERTIES SKIP_CLANG_TIDY TRUE
+)
+
+target_compile_features(GnotePadEncoding PRIVATE cxx_std_23)
+
+if(COMMAND gnote_apply_default_warnings)
+	gnote_apply_default_warnings(GnotePadEncoding)
+endif()
+
+target_include_directories(GnotePadEncoding PRIVATE
+	${CMAKE_SOURCE_DIR}/src
+)
+
+target_sources(GnotePadEncoding PRIVATE
+	${CMAKE_SOURCE_DIR}/src/ui/MainWindow.cpp
+	${CMAKE_SOURCE_DIR}/src/ui/MainWindow.FileIO.cpp
+	${CMAKE_SOURCE_DIR}/src/ui/MainWindow.Settings.cpp
+	${CMAKE_SOURCE_DIR}/src/ui/MainWindow.Search.cpp
+	${CMAKE_SOURCE_DIR}/src/ui/PrintSupport.cpp
+	${CMAKE_SOURCE_DIR}/src/ui/TextEditor.cpp
+	${GNOTE_RESOURCES}
+)
+
+set_target_properties(GnotePadEncoding PROPERTIES AUTOMOC ON)
+
+target_link_libraries(GnotePadEncoding PRIVATE
+	Qt6::Core
+	Qt6::Gui
+	Qt6::Widgets
+	Qt6::Test
+	Qt6::PrintSupport
+	Qt6::Svg
+	Qt6::SvgWidgets
+	spdlog::spdlog_header_only
+)
+
+target_compile_definitions(GnotePadEncoding PRIVATE GNOTE_TEST_HOOKS)
+
+if(WIN32)
+	add_custom_command(TARGET GnotePadEncoding POST_BUILD
+		COMMAND ${CMAKE_COMMAND} -E make_directory "$<TARGET_FILE_DIR:GnotePadEncoding>/plugins"
+		COMMAND ${CMAKE_COMMAND} -E copy_directory
+			$<$<CONFIG:Debug>:${QT6_DEBUG_BIN}>
+			$<$<NOT:$<CONFIG:Debug>>:${QT6_RELEASE_BIN}>
+			"$<TARGET_FILE_DIR:GnotePadEncoding>"
+		COMMAND ${CMAKE_COMMAND} -E copy_directory
+			$<$<CONFIG:Debug>:${QT6_DEBUG_PLUGINS}>
+			$<$<NOT:$<CONFIG:Debug>>:${QT6_RELEASE_PLUGINS}>
+			"$<TARGET_FILE_DIR:GnotePadEncoding>/plugins"
+		COMMAND ${CMAKE_COMMAND} -E copy_if_different
+			$<$<CONFIG:Debug>:${CMAKE_CURRENT_BINARY_DIR}/qt.tests.debug.conf>
+			$<$<NOT:$<CONFIG:Debug>>:${CMAKE_CURRENT_BINARY_DIR}/qt.tests.release.conf>
+			"$<TARGET_FILE_DIR:GnotePadEncoding>/qt.conf"
+		COMMENT "Copying Qt runtime and plugins beside GnotePadEncoding.exe"
+	)
+endif()
+
+add_custom_command(TARGET GnotePadEncoding POST_BUILD
+	COMMAND ${CMAKE_COMMAND} -E copy_directory
+		${CMAKE_SOURCE_DIR}/tests/testfiles
+		$<TARGET_FILE_DIR:GnotePadEncoding>/testfiles
+)
+
+set(GNOTE_ENCODING_TEST_FUNCTIONS
+	testEmptyFileEncoding
+	testSingleByteFile
+	testLargeUtf8File
+	testMixedLineEndings
+	testTrailingNewlines
+	testNullBytesHandling
+	testIncompleteUtf8Sequences
+	testBomWithoutContent
+	testMultipleBomMarkers
+	testEncodingConversionErrors
+	testUnsupportedEncoding
+)
+
+foreach(test_name IN LISTS GNOTE_ENCODING_TEST_FUNCTIONS)
+	add_test(
+		NAME gnotepad_${test_name}
+		COMMAND $<TARGET_FILE:GnotePadEncoding> ${test_name}
+	)
+endforeach()
+
+add_test(NAME gnotepad_encoding_all COMMAND $<TARGET_FILE:GnotePadEncoding>)
 
 # Qt style configuration tests
 add_executable(GnotePadStyle
@@ -270,3 +464,117 @@ foreach(test_name IN LISTS GNOTE_STYLE_TEST_FUNCTIONS)
 endforeach()
 
 add_test(NAME gnotepad_style_all COMMAND $<TARGET_FILE:GnotePadStyle>)
+
+# Performance tests
+add_executable(GnotePadPerformance
+	performance/performance.cpp
+	performance/PerformanceTests.h
+)
+
+set_source_files_properties(
+	performance/performance.cpp
+	performance/PerformanceTests.h
+	PROPERTIES SKIP_CLANG_TIDY TRUE
+)
+
+target_compile_features(GnotePadPerformance PRIVATE cxx_std_23)
+
+if(COMMAND gnote_apply_default_warnings)
+	gnote_apply_default_warnings(GnotePadPerformance)
+endif()
+
+target_include_directories(GnotePadPerformance PRIVATE
+	${CMAKE_SOURCE_DIR}/src
+)
+
+target_sources(GnotePadPerformance PRIVATE
+	${CMAKE_SOURCE_DIR}/src/ui/MainWindow.cpp
+	${CMAKE_SOURCE_DIR}/src/ui/MainWindow.FileIO.cpp
+	${CMAKE_SOURCE_DIR}/src/ui/MainWindow.Settings.cpp
+	${CMAKE_SOURCE_DIR}/src/ui/MainWindow.Search.cpp
+	${CMAKE_SOURCE_DIR}/src/ui/PrintSupport.cpp
+	${CMAKE_SOURCE_DIR}/src/ui/TextEditor.cpp
+	${GNOTE_RESOURCES}
+)
+
+set_target_properties(GnotePadPerformance PROPERTIES AUTOMOC ON)
+
+target_link_libraries(GnotePadPerformance PRIVATE
+	Qt6::Core
+	Qt6::Gui
+	Qt6::Widgets
+	Qt6::Test
+	Qt6::PrintSupport
+	Qt6::Svg
+	Qt6::SvgWidgets
+	spdlog::spdlog_header_only
+)
+
+target_compile_definitions(GnotePadPerformance PRIVATE GNOTE_TEST_HOOKS)
+
+if(WIN32)
+	# Stage Qt runtime and plugins beside the test binary so offscreen platform plugin is found.
+	get_filename_component(QT6_PREFIX "${Qt6_DIR}/../.." ABSOLUTE)
+	set(QT6_DEBUG_BIN "${QT6_PREFIX}/debug/bin")
+	set(QT6_RELEASE_BIN "${QT6_PREFIX}/bin")
+	set(QT6_DEBUG_PLUGINS "${QT6_PREFIX}/debug/Qt6/plugins")
+	set(QT6_RELEASE_PLUGINS "${QT6_PREFIX}/Qt6/plugins")
+
+	file(GENERATE OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/qt.tests.debug.conf" CONTENT "[Paths]\nPlugins=plugins\n")
+	file(GENERATE OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/qt.tests.release.conf" CONTENT "[Paths]\nPlugins=plugins\n")
+
+	add_custom_command(TARGET GnotePadPerformance POST_BUILD
+		COMMAND ${CMAKE_COMMAND} -E make_directory "$<TARGET_FILE_DIR:GnotePadPerformance>/plugins"
+		COMMAND ${CMAKE_COMMAND} -E copy_directory
+			$<$<CONFIG:Debug>:${QT6_DEBUG_BIN}>
+			$<$<NOT:$<CONFIG:Debug>>:${QT6_RELEASE_BIN}>
+			"$<TARGET_FILE_DIR:GnotePadPerformance>"
+		COMMAND ${CMAKE_COMMAND} -E copy_directory
+			$<$<CONFIG:Debug>:${QT6_DEBUG_PLUGINS}>
+			$<$<NOT:$<CONFIG:Debug>>:${QT6_RELEASE_PLUGINS}>
+			"$<TARGET_FILE_DIR:GnotePadPerformance>/plugins"
+		COMMAND ${CMAKE_COMMAND} -E copy_if_different
+			$<$<CONFIG:Debug>:${CMAKE_CURRENT_BINARY_DIR}/qt.tests.debug.conf>
+			$<$<NOT:$<CONFIG:Debug>>:${CMAKE_CURRENT_BINARY_DIR}/qt.tests.release.conf>
+			"$<TARGET_FILE_DIR:GnotePadPerformance>/qt.conf"
+		COMMENT "Copying Qt runtime and plugins beside GnotePadPerformance.exe"
+	)
+endif()
+
+add_custom_command(TARGET GnotePadPerformance POST_BUILD
+	COMMAND ${CMAKE_COMMAND} -E make_directory
+		$<TARGET_FILE_DIR:GnotePadPerformance>/testfiles/performance
+)
+
+set(GNOTE_PERFORMANCE_TEST_FUNCTIONS
+	testLoadLargeFile100KB
+	testLoadLargeFile500KB
+	testLoadLargeFile1MB
+	testScrollPerformanceLargeFile
+	testEditPerformanceLargeFile
+	testSaveLargeFile
+	testEncodingConversionUtf8ToUtf16LE
+	testEncodingConversionUtf8ToUtf16BE
+	testEncodingRoundTripPerformance
+	testMemoryUsageDuringEncoding
+	testFindPerformanceLargeFile
+	testReplacePerformanceLargeFile
+	testUndoRedoStackPerformance
+	testZoomOperationsPerformance
+	testDocumentModificationPerformance
+	testMassiveInsertOperations
+	testMassiveDeleteOperations
+	testContinuousEditing
+)
+
+foreach(test_name IN LISTS GNOTE_PERFORMANCE_TEST_FUNCTIONS)
+	add_test(
+		NAME gnotepad_perf_${test_name}
+		COMMAND $<TARGET_FILE:GnotePadPerformance> ${test_name}
+	)
+	# Performance tests are labeled separately so they can be run independently
+	set_tests_properties(gnotepad_perf_${test_name} PROPERTIES LABELS "Performance")
+endforeach()
+
+add_test(NAME gnotepad_performance_all COMMAND $<TARGET_FILE:GnotePadPerformance>)
+set_tests_properties(gnotepad_performance_all PROPERTIES LABELS "Performance")

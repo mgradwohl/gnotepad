@@ -10,6 +10,9 @@ ApplicationCmdLineTests::ApplicationCmdLineTests(QObject* parent) : QObject(pare
 
 void ApplicationCmdLineTests::setupParser(QCommandLineParser& parser)
 {
+    parser.setApplicationDescription(QStringLiteral("GnotePad - A modern Qt text editor"));
+    parser.addHelpOption();
+    parser.addVersionOption();
     parser.setSingleDashWordOptionMode(QCommandLineParser::ParseAsLongOptions);
 
     QCommandLineOption quitAfterInitOption({QStringLiteral("quit-after-init"), QStringLiteral("headless-smoke")},
@@ -78,6 +81,66 @@ void ApplicationCmdLineTests::testQuitAfterInitBehavior()
 
     QVERIFY(parser2.parse(args2));
     QVERIFY(parser2.isSet(QStringLiteral("headless-smoke")));
+}
+
+void ApplicationCmdLineTests::testHelpOption()
+{
+    // Test that --help flag is recognized
+    QCommandLineParser parser;
+    setupParser(parser);
+
+    QStringList args;
+    args << QStringLiteral("GnotePad") << QStringLiteral("--help");
+
+    QVERIFY(parser.parse(args));
+    QVERIFY(parser.isSet(QStringLiteral("help")));
+
+    // Test short form -h
+    QCommandLineParser parser2;
+    setupParser(parser2);
+
+    QStringList args2;
+    args2 << QStringLiteral("GnotePad") << QStringLiteral("-h");
+
+    QVERIFY(parser2.parse(args2));
+    QVERIFY(parser2.isSet(QStringLiteral("h")));
+}
+
+void ApplicationCmdLineTests::testVersionOption()
+{
+    // Test that --version flag is recognized
+    QCommandLineParser parser;
+    setupParser(parser);
+
+    QStringList args;
+    args << QStringLiteral("GnotePad") << QStringLiteral("--version");
+
+    QVERIFY(parser.parse(args));
+    QVERIFY(parser.isSet(QStringLiteral("version")));
+
+    // Test short form -v
+    QCommandLineParser parser2;
+    setupParser(parser2);
+
+    QStringList args2;
+    args2 << QStringLiteral("GnotePad") << QStringLiteral("-v");
+
+    QVERIFY(parser2.parse(args2));
+    QVERIFY(parser2.isSet(QStringLiteral("v")));
+}
+
+void ApplicationCmdLineTests::testInvalidOption()
+{
+    // Test that invalid options are properly rejected
+    QCommandLineParser parser;
+    setupParser(parser);
+
+    QStringList args;
+    args << QStringLiteral("GnotePad") << QStringLiteral("--invalid-flag-xyz");
+
+    // parse() should return false for unknown options
+    QVERIFY(!parser.parse(args));
+    QVERIFY(!parser.errorText().isEmpty());
 }
 
 int main(int argc, char** argv)
