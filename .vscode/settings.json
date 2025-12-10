@@ -13,11 +13,18 @@
         "VCPKG_ROOT": "${env:VCPKG_ROOT}"
     },
     "C_Cpp.intelliSenseEngine": "disabled",
-    "C_Cpp.default.compilerPath": "clang++",
-    "C_Cpp.default.configurationProvider": "ms-vscode.cmake-tools",
+    "C_Cpp.autocomplete": "disabled",
     "C_Cpp.errorSquiggles": "disabled",
     "C_Cpp.default.cppStandard": "c++23",
     "C_Cpp.default.cStandard": "c17",
+    "C_Cpp.codeAnalysis.runAutomatically": false,
+    "C_Cpp.codeAnalysis.clangTidy.enabled": false,
+    "C_Cpp.enhancedColorization": "disabled",
+    "C_Cpp.dimInactiveRegions": false,
+    "C_Cpp.codeAnalysis.exclude": {
+        "**/build/**": true,
+        "**/_deps/**": true
+    },
     "clangd.path": "clangd",
     "clangd.arguments": [
         "--compile-commands-dir=${workspaceFolder}",
@@ -29,9 +36,24 @@
     "clang-format.executable": "clang-format",
     "clang-tidy.executable": "clang-tidy",
     "problems.excludePattern": {
-        "**/smoke.cpp": true
+        "**/smoke.cpp": true,
+        "**/build/**": true,
+        "**/_deps/**": true,
+        "**/vcpkg/**": true,
+        "**/Qt6/**": true,
+        "**/llvm/**": true,
+        "**/spdlog/**": true,
+        "**/spdlog-src/**": true
     },
     "files.exclude": {
-    "**/generated/**": true
+        "**/generated/**": true
+    },
+    "files.watcherExclude": {
+        "**/build/**": true,
+        "**/_deps/**": true
+    },
+    "search.exclude": {
+        "**/build/**": true,
+        "**/_deps/**": true
     }
 }

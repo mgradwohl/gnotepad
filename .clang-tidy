@@ -7,26 +7,29 @@ Checks: >
   performance-*,
   portability-*,
   readability-*,
+  # Stuff you explicitly don't want:
   -readability-implicit-bool-conversion,
   -bugprone-easily-swappable-parameters,
   -modernize-use-trailing-return-type,
-  -modernize-use-nodiscard,
-  -modernize-use-auto,
   -readability-identifier-naming,
-  -readability-magic-numbers
+  -readability-identifier-length,
+  -readability-magic-numbers,
+  -readability-implicit-bool-conversion,
+  # cppcoreguidelines bits that are often noisy with Qt-ish / real-world code:
+  #-cppcoreguidelines-avoid-magic-numbers,
+  #-cppcoreguidelines-owning-memory,
+  #-cppcoreguidelines-pro-type-reinterpret-cast
+
 WarningsAsErrors: ''
+
+# Only run checks on your project code under src/ and tests/,
+# still excluding smoke.cpp as you had.
 HeaderFilterRegex: '^(?!.*smoke\.cpp$)(src|tests)/.*\.(h|hpp|cpp)$'
+
 FormatStyle: file
 User: "GnotePad"
 
 CheckOptions:
-  - key: readability-identifier-length.MinimumVariableNameLength
-    value: '1'
-  - key: readability-identifier-length.MinimumParameterNameLength
-    value: '1'
-  - key: readability-identifier-length.MinimumLoopCounterNameLength
-    value: '1'
-  - key: readability-identifier-length.MinimumExceptionNameLength
-    value: '1'
+  # Ignore external libs in include-cleaner:
   - key: misc-include-cleaner.IgnoreHeaders
-    value: '(.*/qt6/.*|.*/qsharedpointer_impl\.h)'
+    value: '(.*/qt6/.*|.*/qsharedpointer_impl\.h|.*/spdlog/.*|.*/vcpkg/.*)'

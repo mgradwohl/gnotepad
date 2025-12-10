@@ -160,10 +160,13 @@ Keeping headers tidy shrinks rebuild times and keeps clang-tidy's include-cleane
 1. **Include what you use.** If a symbol appears in a translation unit, include the header that provides it instead of relying on transitive includes.
 2. **Use `#pragma once`.** All project headers already opt in—match that style on any new files.
 3. **Honor the include order:**
-   - (Only in `.cpp` files) the corresponding header: `#include "ThisFile.h"`
-   - C++ standard library headers, alphabetical
-   - Third-party/library headers, alphabetical (e.g., `<spdlog/spdlog.h>`, `<QtCore/qstring.h>`)
-   - Project headers, alphabetical
+   1. This file's matching header first (`.cpp` files only): `#include "ThisFile.h"`
+   2. Project headers (`src/`, `include/`, `tests/`, etc.), alphabetical
+   3. Non-Qt third-party libraries (spdlog, fmt, boost, etc.), alphabetical
+   4. Qt headers, alphabetical
+   5. C++ standard library headers, alphabetical
+   6. Everything else (fallback)
+
    Separate each group with a blank line and avoid redundant includes.
 4. **New files inherit the same rules.** Start with the include skeleton above so diffs stay small.
 

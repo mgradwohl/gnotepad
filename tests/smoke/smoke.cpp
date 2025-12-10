@@ -1,4 +1,6 @@
-#include <QtWidgets/QApplication>
+#include "MainWindowSmokeTests.h"
+#include "ui/MainWindow.h"
+#include "ui/TextEditor.h"
 
 #include <QtCore/QByteArray>
 #include <QtCore/QDir>
@@ -11,23 +13,19 @@
 #include <QtCore/QStandardPaths>
 #include <QtCore/QStringList>
 #include <QtCore/QTemporaryDir>
-#include <QtTest/QTest>
-
-#include <QStringConverter>
 #include <QtGui/QAction>
 #include <QtGui/QFont>
 #include <QtGui/QTextCursor>
 #include <QtGui/QTextOption>
 #include <QtPrintSupport/QPrinterInfo>
+#include <QtTest/QTest>
+#include <QtWidgets/QApplication>
 #include <QtWidgets/QMenu>
 #include <QtWidgets/QMessageBox>
 #include <QtWidgets/QScrollBar>
 #include <QtWidgets/QStatusBar>
 
-#include "ui/MainWindow.h"
-#include "ui/TextEditor.h"
-
-#include "MainWindowSmokeTests.h"
+#include <QStringConverter>
 
 using namespace GnotePad::ui;
 
