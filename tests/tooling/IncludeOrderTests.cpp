@@ -33,7 +33,7 @@ IncludeOrderTests::IncludeCategory IncludeOrderTests::categorizeInclude(const QS
 
     // 2. Project headers (src/, include/, tests/)
     if (includePath.startsWith("src/") || includePath.startsWith("include/") || includePath.startsWith("tests/") ||
-        includePath.contains("ui/") || includePath.contains("app/"))
+        (includePath.startsWith("ui/") || includePath.startsWith("app/")))
     {
         return ProjectHeaders;
     }
@@ -74,7 +74,6 @@ bool IncludeOrderTests::validateIncludeOrder(const QString& filePath, const QStr
     int lineNumber = 0;
     int lastCategory = 0;
     bool inIncludeSection = false;
-    bool hasSeenNonInclude = false;
 
     while (!in.atEnd())
     {
@@ -114,8 +113,8 @@ bool IncludeOrderTests::validateIncludeOrder(const QString& filePath, const QStr
         }
         else if (inIncludeSection && !trimmed.isEmpty())
         {
-            // We've seen includes and now we see something else
-            hasSeenNonInclude = true;
+            // We've seen includes and now we see something else - end of include section
+            break;
         }
     }
 
