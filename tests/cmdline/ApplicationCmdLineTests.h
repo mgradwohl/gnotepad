@@ -1,7 +1,8 @@
 #pragma once
 
-#include <QObject>
 #include <QtCore/QCommandLineParser>
+
+#include <QObject>
 
 class ApplicationCmdLineTests : public QObject
 {

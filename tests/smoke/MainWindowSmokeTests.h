@@ -5,7 +5,7 @@
 
 namespace GnotePad::ui
 {
-class MainWindow;
+    class MainWindow;
 }
 
 class MainWindowSmokeTests : public QObject

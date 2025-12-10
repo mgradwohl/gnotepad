@@ -1,25 +1,19 @@
 BasedOnStyle: LLVM
+Language: Cpp
+
+# C++23 project (use Latest for newer clang-format compatibility)
+Standard: Latest
+
 IndentWidth: 4
 TabWidth: 4
 UseTab: Never
-ColumnLimit: 140
-AllowShortIfStatementsOnASingleLine: false
-BreakBeforeBraces: Allman
-PointerAlignment: Left
-SortIncludes: true
-SpacesInParentheses: false
-SpaceAfterTemplateKeyword: false
-AlignAfterOpenBracket: Align
-ReflowComments: true
-AccessModifierOffset: -4
-SpaceAfterCStyleCast: true
-AlignConsecutiveAssignments: false
-AlignConsecutiveDeclarations: false
-AllowShortFunctionsOnASingleLine: false
-AllowShortBlocksOnASingleLine: false
-AllowShortLambdasOnASingleLine: Inline
 
-# Explicit Allman brace control for fine-grained consistency
+ColumnLimit: 140
+ContinuationIndentWidth: 4
+
+# Allman braces everywhere
+BreakBeforeBraces: Allman
+
 BraceWrapping:
   AfterClass: true
   AfterControlStatement: true
@@ -28,7 +22,89 @@ BraceWrapping:
   AfterNamespace: true
   AfterStruct: true
   AfterUnion: true
+  AfterCaseLabel: true
   BeforeCatch: true
   BeforeElse: true
-  AfterCaseLabel: true
   IndentBraces: false
+  SplitEmptyFunction: false
+  SplitEmptyRecord: false
+  SplitEmptyNamespace: false
+
+# Make spacing consistent & readable
+SpaceInEmptyParentheses: false
+SpacesInParentheses: false
+SpaceAfterCStyleCast: true
+SpaceAfterTemplateKeyword: false
+SpaceBeforeRangeBasedForLoopColon: true
+SpaceBeforeInheritanceColon: true
+SpaceBeforeCtorInitializerColon: true
+SpaceBeforeAssignmentOperators: true
+
+# Function calls: no space before, but control statements get one
+SpaceBeforeParens: ControlStatements
+
+# Pointer/reference style
+PointerAlignment: Left
+ReferenceAlignment: Left                  # `int& ref`
+
+# Keep if/for/while blocks multi-line & readable
+AllowShortIfStatementsOnASingleLine: Never
+AllowShortFunctionsOnASingleLine: false
+AllowShortBlocksOnASingleLine: false
+AllowShortLambdasOnASingleLine: Inline
+
+# Alignment / wrapping
+AlignAfterOpenBracket: Align
+AlignConsecutiveAssignments: false
+AlignConsecutiveDeclarations: false
+AlignOperands: AlignAfterOperator
+BinPackArguments: false
+BinPackParameters: false
+BreakConstructorInitializers: BeforeColon
+ConstructorInitializerAllOnOneLineOrOnePerLine: true
+
+# Includes
+SortIncludes: true
+IncludeBlocks: Regroup
+
+IncludeCategories:
+  # 1. Main/matching header for this translation unit
+  - Regex: '^"([^"]+)\.h"$'
+    Priority: 1
+
+  # 2. Project-local headers
+  # Adjust these paths if your tree structure differs
+  - Regex: '^"(src|include|tests)/.*"'
+    Priority: 2
+
+  # 3. Third-party non-Qt libraries (spdlog, fmt, boost, etc.)
+  - Regex: '^<(spdlog|fmt|boost)/.*>'
+    Priority: 3
+
+  # 4. Qt headers
+  - Regex: '^<Qt[^>]*>'
+    Priority: 4
+
+  # 5. C++ standard library
+  - Regex: '^<([a-zA-Z0-9_]+)>$'
+    Priority: 5
+
+  # 6. Everything else (system misc, OS libs, unknown libs)
+  - Regex: '.*'
+    Priority: 6
+
+SortUsingDeclarations: true
+
+# Comments
+ReflowComments: true
+CommentPragmas: '^ NOLINT'
+
+# Access modifiers (Qt/LLVM-ish)
+AccessModifierOffset: -4
+EmptyLineAfterAccessModifier: Never
+
+# Namespaces
+NamespaceIndentation: All
+FixNamespaceComments: true
+CompactNamespaces: false
+SeparateDefinitionBlocks: Always

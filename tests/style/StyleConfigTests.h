@@ -1,7 +1,8 @@
 #pragma once
 
-#include <QObject>
 #include <QtWidgets/qapplication.h>
+
+#include <QObject>
 
 class StyleConfigTests : public QObject
 {
