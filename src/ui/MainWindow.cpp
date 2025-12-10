@@ -6,7 +6,7 @@
 #include <QtCore/qdatetime.h>
 #include <QtCore/qfileinfo.h>
 #include <QtCore/qlocale.h>
-#include <QSignalBlocker>
+#include <QtCore/qsignalblocker.h>
 #include <QtCore/qstring.h>
 #include <QtCore/qstringliteral.h>
 #include <QtCore/qstringlist.h>
