@@ -246,7 +246,6 @@ private:
     QStringList m_recentFiles;
     QString m_lastOpenDirectory;
     QString m_lastSaveDirectory;
-    QString m_lastPdfDirectory;
     int m_tabSizeSpaces{DefaultTabSizeSpaces};
     int m_currentZoomPercent{DefaultZoomPercent};
     DateFormatPreference m_dateFormatPreference{DateFormatPreference::Short};

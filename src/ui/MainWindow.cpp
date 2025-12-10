@@ -6,8 +6,8 @@
 #include <QtCore/qdatetime.h>
 #include <QtCore/qfileinfo.h>
 #include <QtCore/qlocale.h>
-#include <QSignalBlocker>
 #include <QtCore/qstringconverter.h>
+#include <QtCore/qsignalblocker.h>
 #include <QtCore/qstring.h>
 #include <QtCore/qstringliteral.h>
 #include <QtCore/qstringlist.h>
@@ -563,11 +563,11 @@ void MainWindow::updateActionStates()
     }
     if (m_wordWrapAction)
     {
-        m_wordWrapAction->setEnabled(hasContent);
+        m_wordWrapAction->setEnabled(true);
     }
     if (m_statusBarToggle)
     {
-        m_statusBarToggle->setEnabled(hasContent);
+        m_statusBarToggle->setEnabled(true);
     }
 }
 
