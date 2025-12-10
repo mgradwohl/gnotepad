@@ -17,17 +17,11 @@ GnotePad is a cross-platform Qt 6 clone of the Windows 10 Notepad experience. Th
 
 Download the latest release from the [Releases page](https://github.com/mgradwohl/gnotepad/releases):
 
-- **Linux**: AppImage, DEB, or RPM packages
-- **Windows**: Installer (coming soon)
+- **Linux: DEB, or RPM packages (AppImage and Flatpak are coming soon)**
+- **Windows**: ZIP (coming soon)
 - **macOS**: DMG package (coming soon)
 
 ### Linux Quick Start
-
-**AppImage:**
-```bash
-chmod +x GnotePad-0.8.1-x86_64.AppImage
-./GnotePad-0.8.1-x86_64.AppImage
-```
 
 **DEB/RPM:**
 ```bash
@@ -35,17 +29,19 @@ sudo dpkg -i gnotepad-0.8.1-Linux.deb  # Debian/Ubuntu
 sudo rpm -i gnotepad-0.8.1-Linux.rpm   # Fedora/RHEL
 ```
 
-**Flatpak:**
+**AppImage (coming soon)**
+```bash
+chmod +x GnotePad-0.8.1-x86_64.AppImage
+./GnotePad-0.8.1-x86_64.AppImage
+```
+**Flatpak: (coming soon)**
 ```bash
 flatpak install flathub app.gnotepad.GnotePad
 flatpak run app.gnotepad.GnotePad
 ```
-
 ## Building from Source
 
 For developers who want to build from source, see [CONTRIBUTING.md](CONTRIBUTING.md) for detailed build instructions and development environment setup.
-
-
 
 ## Documentation
 

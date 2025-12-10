@@ -48,6 +48,25 @@ private slots:
     void testEncodingRoundTripUtf16Variants();
     void testLargeFileEncodingRoundTrip();
     void testMixedContentPreservation();
+    // New UI interaction tests
+    void testStatusBarToggle();
+    void testStatusBarLabelsUpdate();
+    void testZoomLabelUpdates();
+    void testMenuActionsExist();
+    void testMenuShortcuts();
+    void testEditMenuActionsEnabled();
+    void testFindDialogInvocation();
+    void testReplaceDialogInvocation();
+    void testGoToLineDialog();
+    void testTabSizeDialog();
+    void testFontDialogInvocation();
+    void testWordWrapToggle();
+    void testDateFormatPreference();
+    void testAboutDialog();
+    void testEncodingDialogFlow();
+    void testActionStateManagement();
+    void testTooltipPresence();
+    void testRecentFilesMenuActions();
 
 private: // NOLINT(readability-redundant-access-specifiers)
     QString resolveTestFile(const QString& name) const;

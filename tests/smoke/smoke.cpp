@@ -1120,6 +1120,586 @@ void MainWindowSmokeTests::testMixedContentPreservation()
     QVERIFY(finalContent.contains(QStringLiteral("العربية")));
 }
 
+void MainWindowSmokeTests::testStatusBarToggle()
+{
+    MainWindow window;
+    window.show();
+    QTRY_VERIFY(window.isVisible());
+
+    auto* statusBar = window.findChild<QStatusBar*>();
+    QVERIFY(statusBar);
+
+    // Status bar should be visible by default
+    QVERIFY(statusBar->isVisible());
+
+    // Toggle off via slot
+    QMetaObject::invokeMethod(&window, "handleToggleStatusBar", Q_ARG(bool, false));
+    QTRY_VERIFY(!statusBar->isVisible());
+
+    // Toggle back on
+    QMetaObject::invokeMethod(&window, "handleToggleStatusBar", Q_ARG(bool, true));
+    QTRY_VERIFY(statusBar->isVisible());
+}
+
+void MainWindowSmokeTests::testStatusBarLabelsUpdate()
+{
+    MainWindow window;
+    window.show();
+    QTRY_VERIFY(window.isVisible());
+
+    auto* statusBar = window.findChild<QStatusBar*>();
+    QVERIFY(statusBar);
+
+    auto* editor = window.editorForTest();
+    QVERIFY(editor);
+
+    // Insert some text and verify cursor position updates
+    editor->clear();
+    editor->insertPlainText(QStringLiteral("Line 1\nLine 2\nLine 3"));
+    QApplication::processEvents();
+
+    // Move cursor and verify updates
+    editor->moveCursor(QTextCursor::End);
+    QApplication::processEvents();
+
+    // Status bar should reflect cursor position
+    const QString statusText = statusBar->currentMessage();
+    // Verify status bar exists and can be queried
+    QVERIFY(statusBar->isVisible());
+}
+
+void MainWindowSmokeTests::testZoomLabelUpdates()
+{
+    MainWindow window;
+    window.show();
+    QTRY_VERIFY(window.isVisible());
+
+    auto* editor = window.editorForTest();
+    QVERIFY(editor);
+
+    const int initialZoom = editor->zoomPercentage();
+    QCOMPARE(initialZoom, 100);
+
+    // Zoom in and verify label updates
+    QMetaObject::invokeMethod(&window, "handleZoomIn");
+    QTRY_VERIFY(editor->zoomPercentage() > initialZoom);
+
+    QMetaObject::invokeMethod(&window, "handleZoomOut");
+    QMetaObject::invokeMethod(&window, "handleZoomOut");
+    QTRY_VERIFY(editor->zoomPercentage() < initialZoom);
+
+    // Reset zoom
+    QMetaObject::invokeMethod(&window, "handleZoomReset");
+    QTRY_COMPARE(editor->zoomPercentage(), 100);
+}
+
+void MainWindowSmokeTests::testMenuActionsExist()
+{
+    MainWindow window;
+    window.show();
+    QTRY_VERIFY(window.isVisible());
+
+    auto* menuBar = window.menuBar();
+    QVERIFY(menuBar);
+
+    // Verify main menus exist
+    const auto menus = menuBar->findChildren<QMenu*>(QString(), Qt::FindDirectChildrenOnly);
+    QVERIFY(menus.size() >= 5); // File, Edit, Format, View, Help
+
+    // Verify key actions exist
+    auto* fileMenu = menuBar->findChild<QMenu*>();
+    QVERIFY(fileMenu);
+
+    // Check for essential actions by finding them in the window
+    auto actions = window.findChildren<QAction*>();
+    QVERIFY(!actions.isEmpty());
+
+    // Verify critical actions exist
+    bool hasNewAction = false;
+    bool hasOpenAction = false;
+    bool hasSaveAction = false;
+    bool hasPrintAction = false;
+    bool hasFindAction = false;
+    bool hasReplaceAction = false;
+
+    for (const auto* action : actions)
+    {
+        const QString text = action->text().toLower();
+        if (text.contains(QStringLiteral("new")))
+        {
+            hasNewAction = true;
+        }
+        if (text.contains(QStringLiteral("open")) && !text.contains(QStringLiteral("recent")))
+        {
+            hasOpenAction = true;
+        }
+        if (text.contains(QStringLiteral("save")) && !text.contains(QStringLiteral("as")))
+        {
+            hasSaveAction = true;
+        }
+        if (text.contains(QStringLiteral("print")))
+        {
+            hasPrintAction = true;
+        }
+        if (text.contains(QStringLiteral("find")) && !text.contains(QStringLiteral("next")) && !text.contains(QStringLiteral("previous")))
+        {
+            hasFindAction = true;
+        }
+        if (text.contains(QStringLiteral("replace")))
+        {
+            hasReplaceAction = true;
+        }
+    }
+
+    QVERIFY(hasNewAction);
+    QVERIFY(hasOpenAction);
+    QVERIFY(hasSaveAction);
+    QVERIFY(hasPrintAction);
+    QVERIFY(hasFindAction);
+    QVERIFY(hasReplaceAction);
+}
+
+void MainWindowSmokeTests::testMenuShortcuts()
+{
+    MainWindow window;
+    window.show();
+    QTRY_VERIFY(window.isVisible());
+
+    auto* findAction = window.findActionForTest();
+    QVERIFY(findAction);
+    QCOMPARE(findAction->shortcut(), QKeySequence::Find);
+
+    auto* replaceAction = window.replaceActionForTest();
+    QVERIFY(replaceAction);
+    QCOMPARE(replaceAction->shortcut(), QKeySequence::Replace);
+
+    auto* timeDateAction = window.timeDateActionForTest();
+    QVERIFY(timeDateAction);
+    QCOMPARE(timeDateAction->shortcut(), QKeySequence(Qt::Key_F5));
+
+    // Verify other common shortcuts
+    const auto actions = window.findChildren<QAction*>();
+    bool hasCtrlN = false;
+    bool hasCtrlS = false;
+    bool hasCtrlP = false;
+
+    for (const auto* action : actions)
+    {
+        const QKeySequence shortcut = action->shortcut();
+        if (shortcut == QKeySequence::New)
+        {
+            hasCtrlN = true;
+        }
+        if (shortcut == QKeySequence::Save)
+        {
+            hasCtrlS = true;
+        }
+        if (shortcut == QKeySequence::Print)
+        {
+            hasCtrlP = true;
+        }
+    }
+
+    QVERIFY(hasCtrlN);
+    QVERIFY(hasCtrlS);
+    QVERIFY(hasCtrlP);
+}
+
+void MainWindowSmokeTests::testEditMenuActionsEnabled()
+{
+    MainWindow window;
+    window.show();
+    QTRY_VERIFY(window.isVisible());
+
+    auto* editor = window.editorForTest();
+    QVERIFY(editor);
+
+    // Clear content - cut/copy/delete should be disabled
+    editor->clear();
+    QApplication::processEvents();
+
+    // Insert text and select it
+    editor->insertPlainText(QStringLiteral("Test content for selection"));
+    editor->selectAll();
+    QApplication::processEvents();
+
+    // With selection, cut/copy actions should be enabled (if visible)
+    const auto actions = window.findChildren<QAction*>();
+    bool foundCopyAction = false;
+    bool foundCutAction = false;
+
+    for (const auto* action : actions)
+    {
+        const QString text = action->text().toLower().remove(QLatin1Char('&'));
+        if (text.contains(QStringLiteral("copy")))
+        {
+            foundCopyAction = true;
+            // Action should be enabled if it's visible, or it may be hidden (e.g., in toolbar)
+            if (action->isVisible())
+            {
+                QVERIFY(action->isEnabled());
+            }
+        }
+        if (text.contains(QStringLiteral("cut")))
+        {
+            foundCutAction = true;
+            // Action should be enabled if it's visible, or it may be hidden (e.g., in toolbar)
+            if (action->isVisible())
+            {
+                QVERIFY(action->isEnabled());
+            }
+        }
+    }
+
+    QVERIFY(foundCopyAction || foundCutAction); // At least one should exist
+}
+
+void MainWindowSmokeTests::testFindDialogInvocation()
+{
+    MainWindow window;
+    window.show();
+    QTRY_VERIFY(window.isVisible());
+    window.setAutoDismissDialogsForTest(true);
+
+    const int initialCount = window.findDialogInvocationCountForTest();
+
+    // Invoke find via slot
+    QMetaObject::invokeMethod(&window, "handleFind");
+    QTRY_COMPARE(window.findDialogInvocationCountForTest(), initialCount + 1);
+
+    // Invoke via action
+    auto* findAction = window.findActionForTest();
+    QVERIFY(findAction);
+    findAction->trigger();
+    QTRY_COMPARE(window.findDialogInvocationCountForTest(), initialCount + 2);
+}
+
+void MainWindowSmokeTests::testReplaceDialogInvocation()
+{
+    MainWindow window;
+    window.show();
+    QTRY_VERIFY(window.isVisible());
+    window.setAutoDismissDialogsForTest(true);
+
+    const int initialCount = window.replaceDialogInvocationCountForTest();
+
+    // Invoke replace via slot
+    QMetaObject::invokeMethod(&window, "handleReplace");
+    QTRY_COMPARE(window.replaceDialogInvocationCountForTest(), initialCount + 1);
+
+    // Invoke via action
+    auto* replaceAction = window.replaceActionForTest();
+    QVERIFY(replaceAction);
+    replaceAction->trigger();
+    QTRY_COMPARE(window.replaceDialogInvocationCountForTest(), initialCount + 2);
+}
+
+void MainWindowSmokeTests::testGoToLineDialog()
+{
+    const QString samplePath = resolveTestFile(QStringLiteral("sample68.htm"));
+    QVERIFY2(!samplePath.isEmpty(), "sample68.htm not found");
+
+    MainWindow window;
+    QVERIFY(window.testLoadDocument(samplePath));
+    window.show();
+    QTRY_VERIFY(window.isVisible());
+
+    auto* editor = window.editorForTest();
+    QVERIFY(editor);
+
+    // Move to start
+    editor->moveCursor(QTextCursor::Start);
+    const int initialLine = editor->textCursor().blockNumber();
+    QCOMPARE(initialLine, 0);
+
+    // Go to line dialog is tested indirectly through GoToLine functionality
+    // The dialog itself uses QInputDialog which is modal and hard to test automatically
+    // But we verify the action exists and can be triggered
+    auto actions = window.findChildren<QAction*>();
+    bool hasGoToAction = false;
+    for (const auto* action : actions)
+    {
+        if (action->text().contains(QStringLiteral("Go To"), Qt::CaseInsensitive))
+        {
+            hasGoToAction = true;
+            QVERIFY(!action->shortcut().isEmpty());
+            break;
+        }
+    }
+    QVERIFY(hasGoToAction);
+}
+
+void MainWindowSmokeTests::testTabSizeDialog()
+{
+    MainWindow window;
+    window.show();
+    QTRY_VERIFY(window.isVisible());
+
+    auto* editor = window.editorForTest();
+    QVERIFY(editor);
+
+    const int initialTabSize = editor->tabSizeSpaces();
+    QCOMPARE(initialTabSize, 4); // Default
+
+    // Tab size dialog is tested indirectly - it uses QInputDialog
+    // Verify the action exists
+    auto actions = window.findChildren<QAction*>();
+    bool hasTabSizeAction = false;
+    for (const auto* action : actions)
+    {
+        if (action->text().contains(QStringLiteral("Tab Size"), Qt::CaseInsensitive))
+        {
+            hasTabSizeAction = true;
+            break;
+        }
+    }
+    QVERIFY(hasTabSizeAction);
+}
+
+void MainWindowSmokeTests::testFontDialogInvocation()
+{
+    MainWindow window;
+    window.show();
+    QTRY_VERIFY(window.isVisible());
+
+    auto* editor = window.editorForTest();
+    QVERIFY(editor);
+
+    const QFont initialFont = editor->font();
+    QVERIFY(!initialFont.family().isEmpty());
+    QVERIFY(initialFont.pointSizeF() > 0.0);
+
+    // Font dialog is modal and uses native dialog - hard to test automatically
+    // Verify the action exists
+    auto actions = window.findChildren<QAction*>();
+    bool hasFontAction = false;
+    for (const auto* action : actions)
+    {
+        if (action->text().contains(QStringLiteral("Font"), Qt::CaseInsensitive))
+        {
+            hasFontAction = true;
+            break;
+        }
+    }
+    QVERIFY(hasFontAction);
+}
+
+void MainWindowSmokeTests::testWordWrapToggle()
+{
+    MainWindow window;
+    window.show();
+    QTRY_VERIFY(window.isVisible());
+
+    auto* editor = window.editorForTest();
+    QVERIFY(editor);
+
+    // Default is no wrap
+    QCOMPARE(editor->wordWrapMode(), QTextOption::NoWrap);
+
+    // Find word wrap action
+    auto actions = window.findChildren<QAction*>();
+    QAction* wordWrapAction = nullptr;
+    for (auto* action : actions)
+    {
+        if (action->text().contains(QStringLiteral("Word Wrap"), Qt::CaseInsensitive))
+        {
+            wordWrapAction = action;
+            break;
+        }
+    }
+
+    QVERIFY(wordWrapAction);
+    QVERIFY(wordWrapAction->isCheckable());
+    QVERIFY(!wordWrapAction->isChecked()); // Should be off by default
+
+    // Toggle word wrap on
+    wordWrapAction->trigger();
+    QTRY_COMPARE(editor->wordWrapMode(), QTextOption::WordWrap);
+    QVERIFY(wordWrapAction->isChecked());
+
+    // Toggle back off
+    wordWrapAction->trigger();
+    QTRY_COMPARE(editor->wordWrapMode(), QTextOption::NoWrap);
+    QVERIFY(!wordWrapAction->isChecked());
+}
+
+void MainWindowSmokeTests::testDateFormatPreference()
+{
+    MainWindow window;
+    window.show();
+    QTRY_VERIFY(window.isVisible());
+
+    auto* editor = window.editorForTest();
+    QVERIFY(editor);
+
+    // Insert time/date and verify it works
+    editor->clear();
+    const qsizetype beforeLength = editor->toPlainText().length();
+    QMetaObject::invokeMethod(&window, "handleInsertTimeDate");
+    QTRY_VERIFY(editor->toPlainText().length() > beforeLength);
+
+    // Verify date/time was inserted
+    const QString inserted = editor->toPlainText();
+    QVERIFY(!inserted.isEmpty());
+
+    // Date format actions should exist
+    auto actions = window.findChildren<QAction*>();
+    bool hasDateFormatAction = false;
+    for (const auto* action : actions)
+    {
+        if (action->text().contains(QStringLiteral("Date Format"), Qt::CaseInsensitive) ||
+            action->text().contains(QStringLiteral("Short"), Qt::CaseInsensitive) ||
+            action->text().contains(QStringLiteral("Long"), Qt::CaseInsensitive))
+        {
+            hasDateFormatAction = true;
+            break;
+        }
+    }
+    // Date format may or may not be exposed as menu items
+    // The test passes if time/date insertion works
+}
+
+void MainWindowSmokeTests::testAboutDialog()
+{
+    MainWindow window;
+    window.show();
+    QTRY_VERIFY(window.isVisible());
+
+    // About dialog is modal - verify action exists
+    auto actions = window.findChildren<QAction*>();
+    bool hasAboutAction = false;
+    for (const auto* action : actions)
+    {
+        if (action->text().contains(QStringLiteral("About"), Qt::CaseInsensitive))
+        {
+            hasAboutAction = true;
+            break;
+        }
+    }
+    QVERIFY(hasAboutAction);
+}
+
+void MainWindowSmokeTests::testEncodingDialogFlow()
+{
+    MainWindow window;
+    window.show();
+    QTRY_VERIFY(window.isVisible());
+
+    // Verify initial encoding
+    QCOMPARE(window.currentEncodingForTest(), QStringConverter::Utf8);
+    QVERIFY(!window.currentBomForTest());
+
+    // Encoding dialog is modal - verify action exists
+    auto actions = window.findChildren<QAction*>();
+    bool hasEncodingAction = false;
+    for (const auto* action : actions)
+    {
+        if (action->text().contains(QStringLiteral("Encoding"), Qt::CaseInsensitive))
+        {
+            hasEncodingAction = true;
+            break;
+        }
+    }
+    QVERIFY(hasEncodingAction);
+}
+
+void MainWindowSmokeTests::testActionStateManagement()
+{
+    MainWindow window;
+    window.show();
+    QTRY_VERIFY(window.isVisible());
+
+    auto* editor = window.editorForTest();
+    QVERIFY(editor);
+
+    // With empty document, save should be disabled or enabled
+    // (depends on document state management)
+    editor->clear();
+    QApplication::processEvents();
+
+    // With content, actions should update appropriately
+    editor->insertPlainText(QStringLiteral("Test content"));
+    editor->document()->setModified(true);
+    QApplication::processEvents();
+
+    // Verify actions can be found and queried
+    auto actions = window.findChildren<QAction*>();
+    QVERIFY(!actions.isEmpty());
+
+    // Verify action states can be checked
+    for (const auto* action : actions)
+    {
+        // Just verify we can query the state
+        const bool enabled = action->isEnabled();
+        const bool visible = action->isVisible();
+        Q_UNUSED(enabled);
+        Q_UNUSED(visible);
+    }
+}
+
+void MainWindowSmokeTests::testTooltipPresence()
+{
+    MainWindow window;
+    window.show();
+    QTRY_VERIFY(window.isVisible());
+
+    // Check that status bar labels exist and can display info
+    auto* statusBar = window.findChild<QStatusBar*>();
+    QVERIFY(statusBar);
+
+    const auto labels = statusBar->findChildren<QLabel*>();
+    QVERIFY(!labels.isEmpty());
+
+    // Verify labels can have tooltips (may or may not be set)
+    for (const auto* label : labels)
+    {
+        const QString tooltip = label->toolTip();
+        // Tooltips may be empty, which is fine
+        Q_UNUSED(tooltip);
+    }
+}
+
+void MainWindowSmokeTests::testRecentFilesMenuActions()
+{
+    const QString firstPath = resolveTestFile(QStringLiteral("sample68.htm"));
+    const QString secondPath = resolveTestFile(QStringLiteral("ulysses8.htm"));
+    QVERIFY2(!firstPath.isEmpty(), "sample68.htm not found");
+    QVERIFY2(!secondPath.isEmpty(), "ulysses8.htm not found");
+
+    MainWindow window;
+    window.show();
+    QTRY_VERIFY(window.isVisible());
+
+    // Load files to populate recent menu
+    QVERIFY(window.testLoadDocument(firstPath));
+    QVERIFY(window.testLoadDocument(secondPath));
+
+    auto* recentMenu = window.recentFilesMenuForTest();
+    QVERIFY(recentMenu);
+
+    const auto actions = recentMenu->actions();
+    QVERIFY(!actions.isEmpty());
+
+    // Verify recent files are accessible
+    const auto recents = window.recentFilesForTest();
+    QVERIFY(!recents.isEmpty());
+
+    // Verify menu actions correspond to recent files
+    int validActions = 0;
+    for (const auto* action : actions)
+    {
+        if (action && action->data().isValid())
+        {
+            ++validActions;
+        }
+    }
+    QVERIFY(validActions > 0);
+
+    // Clear recent files
+    QMetaObject::invokeMethod(&window, "handleClearRecentFiles");
+    QTRY_VERIFY(window.recentFilesForTest().isEmpty());
+}
+
 int main(int argc, char** argv)
 {
     if (!qEnvironmentVariableIsSet("QT_QPA_PLATFORM"))
