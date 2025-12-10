@@ -111,7 +111,6 @@ void ToolingConfigTests::testIncludeCleanerExclusionsPresent()
              ".clang-tidy must configure misc-include-cleaner.IgnoreHeaders to exclude external libraries");
 
     // Verify Qt and spdlog are excluded
-    QVERIFY2(content.contains("qt6") || content.contains("Qt"),
-             "Qt headers should be excluded from include-cleaner checks");
+    QVERIFY2(content.contains("qt6") || content.contains("Qt"), "Qt headers should be excluded from include-cleaner checks");
     QVERIFY2(content.contains("spdlog"), "spdlog headers should be excluded from include-cleaner checks");
 }

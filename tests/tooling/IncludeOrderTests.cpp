@@ -11,8 +11,7 @@ IncludeOrderTests::IncludeOrderTests(QObject* parent) : QObject(parent)
 {
 }
 
-IncludeOrderTests::IncludeCategory IncludeOrderTests::categorizeInclude(const QString& includeLine,
-                                                                         const QString& expectedMatchingHeader)
+IncludeOrderTests::IncludeCategory IncludeOrderTests::categorizeInclude(const QString& includeLine, const QString& expectedMatchingHeader)
 {
     // Extract the include path from #include "..." or #include <...>
     QRegularExpression includeRegex(R"(^\s*#include\s+[<"]([^">]+)[">])");
