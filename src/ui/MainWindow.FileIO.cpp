@@ -1,5 +1,6 @@
 #include "ui/MainWindow.h"
 
+#include "app/Application.h"
 #include "ui/TextEditor.h"
 
 #include <spdlog/spdlog.h>
@@ -60,7 +61,10 @@ namespace GnotePad::ui
         QFile file(filePath);
         if (!file.open(QIODevice::ReadOnly))
         {
-            QMessageBox::warning(this, tr("Open File"), tr("Unable to open %1").arg(filePath));
+            if (!GnotePad::Application::isHeadlessSmokeMode())
+            {
+                QMessageBox::warning(this, tr("Open File"), tr("Unable to open %1").arg(filePath));
+            }
             spdlog::error("Failed to open {}", filePath.toStdString());
             return false;
         }
@@ -73,7 +77,10 @@ namespace GnotePad::ui
         const QString text = decoder(rawData.mid(bomLength));
         if (decoder.hasError())
         {
-            QMessageBox::warning(this, tr("Open File"), tr("Unsupported encoding in %1").arg(filePath));
+            if (!GnotePad::Application::isHeadlessSmokeMode())
+            {
+                QMessageBox::warning(this, tr("Open File"), tr("Unsupported encoding in %1").arg(filePath));
+            }
             spdlog::error("Unsupported encoding while opening {}", filePath.toStdString());
             return false;
         }
@@ -106,7 +113,10 @@ namespace GnotePad::ui
         QSaveFile file(filePath);
         if (!file.open(QIODevice::WriteOnly))
         {
-            QMessageBox::warning(this, tr("Save File"), tr("Unable to save %1").arg(filePath));
+            if (!GnotePad::Application::isHeadlessSmokeMode())
+            {
+                QMessageBox::warning(this, tr("Save File"), tr("Unable to save %1").arg(filePath));
+            }
             spdlog::error("Failed to open {} for writing", filePath.toStdString());
             return false;
         }
@@ -116,7 +126,10 @@ namespace GnotePad::ui
         const QByteArray encoded = encoder(text);
         if (encoder.hasError())
         {
-            QMessageBox::warning(this, tr("Save File"), tr("Unable to encode document using %1").arg(encodingLabel()));
+            if (!GnotePad::Application::isHeadlessSmokeMode())
+            {
+                QMessageBox::warning(this, tr("Save File"), tr("Unable to encode document using %1").arg(encodingLabel()));
+            }
             spdlog::error("Encoding error while saving {}", filePath.toStdString());
             return false;
         }
@@ -130,14 +143,20 @@ namespace GnotePad::ui
 
         if (file.write(payload) != payload.size())
         {
-            QMessageBox::warning(this, tr("Save File"), tr("Failed to write data to %1").arg(filePath));
+            if (!GnotePad::Application::isHeadlessSmokeMode())
+            {
+                QMessageBox::warning(this, tr("Save File"), tr("Failed to write data to %1").arg(filePath));
+            }
             spdlog::error("Short write while saving {}", filePath.toStdString());
             return false;
         }
 
         if (!file.commit())
         {
-            QMessageBox::warning(this, tr("Save File"), tr("Failed to finalize %1").arg(filePath));
+            if (!GnotePad::Application::isHeadlessSmokeMode())
+            {
+                QMessageBox::warning(this, tr("Save File"), tr("Failed to finalize %1").arg(filePath));
+            }
             spdlog::error("Failed to commit save file for {}", filePath.toStdString());
             return false;
         }

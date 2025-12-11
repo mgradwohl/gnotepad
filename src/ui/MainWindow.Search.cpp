@@ -81,7 +81,10 @@ namespace GnotePad::ui
 
         if (!performFind(term, buildFindFlags()))
         {
-            QMessageBox::information(this, tr("Find"), tr("Cannot find \"%1\".").arg(term));
+            if (!GnotePad::Application::isHeadlessSmokeMode())
+            {
+                QMessageBox::information(this, tr("Find"), tr("Cannot find \"%1\".").arg(term));
+            }
         }
     }
 
@@ -95,7 +98,10 @@ namespace GnotePad::ui
 
         if (!performFind(m_lastSearchTerm, buildFindFlags()))
         {
-            QMessageBox::information(this, tr("Find"), tr("Cannot find \"%1\".").arg(m_lastSearchTerm));
+            if (!GnotePad::Application::isHeadlessSmokeMode())
+            {
+                QMessageBox::information(this, tr("Find"), tr("Cannot find \"%1\".").arg(m_lastSearchTerm));
+            }
         }
     }
 
@@ -109,7 +115,10 @@ namespace GnotePad::ui
 
         if (!performFind(m_lastSearchTerm, buildFindFlags(QTextDocument::FindBackward)))
         {
-            QMessageBox::information(this, tr("Find"), tr("Cannot find \"%1\".").arg(m_lastSearchTerm));
+            if (!GnotePad::Application::isHeadlessSmokeMode())
+            {
+                QMessageBox::information(this, tr("Find"), tr("Cannot find \"%1\".").arg(m_lastSearchTerm));
+            }
         }
     }
 
@@ -175,7 +184,10 @@ namespace GnotePad::ui
                     }
                     if (!performFind(m_lastSearchTerm, buildFindFlags()))
                     {
-                        QMessageBox::information(this, tr("Replace"), tr("Cannot find \"%1\".").arg(m_lastSearchTerm));
+                        if (!GnotePad::Application::isHeadlessSmokeMode())
+                        {
+                            QMessageBox::information(this, tr("Replace"), tr("Cannot find \"%1\".").arg(m_lastSearchTerm));
+                        }
                     }
                 });
 
@@ -191,7 +203,10 @@ namespace GnotePad::ui
                     }
                     if (!replaceNextOccurrence(m_lastSearchTerm, m_lastReplaceText, buildFindFlags()))
                     {
-                        QMessageBox::information(this, tr("Replace"), tr("Cannot find \"%1\".").arg(m_lastSearchTerm));
+                        if (!GnotePad::Application::isHeadlessSmokeMode())
+                        {
+                            QMessageBox::information(this, tr("Replace"), tr("Cannot find \"%1\".").arg(m_lastSearchTerm));
+                        }
                     }
                 });
 
@@ -206,7 +221,10 @@ namespace GnotePad::ui
                         return;
                     }
                     const int count = replaceAllOccurrences(m_lastSearchTerm, m_lastReplaceText, buildFindFlags());
-                    QMessageBox::information(this, tr("Replace"), tr("Replaced %1 occurrence(s).").arg(count));
+                    if (!GnotePad::Application::isHeadlessSmokeMode())
+                    {
+                        QMessageBox::information(this, tr("Replace"), tr("Replaced %1 occurrence(s).").arg(count));
+                    }
                 });
 
         connect(closeButton, &QPushButton::clicked, &dialog, &QDialog::reject);
