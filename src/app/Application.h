@@ -41,7 +41,6 @@ namespace GnotePad
         std::unique_ptr<ui::MainWindow> m_mainWindow;
         QIcon m_applicationIcon;
         bool m_quitAfterInit{false};
-        static bool s_headlessSmokeMode;
     };
 
 } // namespace GnotePad
