@@ -11,6 +11,46 @@ IncludeOrderTests::IncludeOrderTests(QObject* parent) : QObject(parent)
 {
 }
 
+QString IncludeOrderTests::findProjectRoot() const
+{
+    // Start from current directory and search up for src directory
+    QString searchDir = QDir::currentPath();
+    constexpr int kMaxSearchDepth = 20; // Prevent infinite loop
+
+    for (int depth = 0; depth < kMaxSearchDepth; ++depth)
+    {
+        if (QFileInfo::exists(searchDir + "/src") && QDir(searchDir + "/src").exists())
+        {
+            return searchDir;
+        }
+
+        QDir parent(searchDir);
+        if (!parent.cdUp())
+        {
+            break; // Can't go up any more (reached root)
+        }
+
+        QString newPath = parent.canonicalPath();
+        if (newPath == searchDir)
+        {
+            break; // Already at root
+        }
+        searchDir = newPath;
+    }
+
+    return QString(); // Not found
+}
+
+void IncludeOrderTests::initTestCase()
+{
+    m_projectRoot = findProjectRoot();
+    if (m_projectRoot.isEmpty())
+    {
+        QFAIL("Could not find project root directory (no src directory found)");
+    }
+    qInfo() << "Project root:" << m_projectRoot;
+}
+
 IncludeOrderTests::IncludeCategory IncludeOrderTests::categorizeInclude(const QString& includeLine, const QString& expectedMatchingHeader)
 {
     // Extract the include path from #include "..." or #include <...>
@@ -123,52 +163,34 @@ bool IncludeOrderTests::validateIncludeOrder(const QString& filePath, const QStr
 
 void IncludeOrderTests::testSampleSourceFileIncludeOrder()
 {
-    QString projectRoot = QDir::currentPath();
-    while (!QFileInfo::exists(projectRoot + "/src") && projectRoot != "/")
-    {
-        projectRoot = QDir(projectRoot).filePath("..");
-        projectRoot = QDir(projectRoot).canonicalPath();
-    }
-
     // Test a sample .cpp file (Application.cpp)
-    QString filePath = projectRoot + "/src/app/Application.cpp";
-    if (QFileInfo::exists(filePath))
+    QString filePath = m_projectRoot + "/src/app/Application.cpp";
+    if (!QFileInfo::exists(filePath))
     {
-        QVERIFY2(validateIncludeOrder(filePath, "Application.h"),
-                 qPrintable(QString("Include order validation failed for %1").arg(filePath)));
+        QSKIP(qPrintable(QString("Source file not found: %1").arg(filePath)));
     }
+    QVERIFY2(validateIncludeOrder(filePath, "Application.h"),
+             qPrintable(QString("Include order validation failed for %1").arg(filePath)));
 }
 
 void IncludeOrderTests::testMainWindowIncludeOrder()
 {
-    QString projectRoot = QDir::currentPath();
-    while (!QFileInfo::exists(projectRoot + "/src") && projectRoot != "/")
+    QString filePath = m_projectRoot + "/src/ui/MainWindow.cpp";
+    if (!QFileInfo::exists(filePath))
     {
-        projectRoot = QDir(projectRoot).filePath("..");
-        projectRoot = QDir(projectRoot).canonicalPath();
+        QSKIP(qPrintable(QString("Source file not found: %1").arg(filePath)));
     }
-
-    QString filePath = projectRoot + "/src/ui/MainWindow.cpp";
-    if (QFileInfo::exists(filePath))
-    {
-        QVERIFY2(validateIncludeOrder(filePath, "MainWindow.h"),
-                 qPrintable(QString("Include order validation failed for %1").arg(filePath)));
-    }
+    QVERIFY2(validateIncludeOrder(filePath, "MainWindow.h"),
+             qPrintable(QString("Include order validation failed for %1").arg(filePath)));
 }
 
 void IncludeOrderTests::testTextEditorIncludeOrder()
 {
-    QString projectRoot = QDir::currentPath();
-    while (!QFileInfo::exists(projectRoot + "/src") && projectRoot != "/")
+    QString filePath = m_projectRoot + "/src/ui/TextEditor.cpp";
+    if (!QFileInfo::exists(filePath))
     {
-        projectRoot = QDir(projectRoot).filePath("..");
-        projectRoot = QDir(projectRoot).canonicalPath();
+        QSKIP(qPrintable(QString("Source file not found: %1").arg(filePath)));
     }
-
-    QString filePath = projectRoot + "/src/ui/TextEditor.cpp";
-    if (QFileInfo::exists(filePath))
-    {
-        QVERIFY2(validateIncludeOrder(filePath, "TextEditor.h"),
-                 qPrintable(QString("Include order validation failed for %1").arg(filePath)));
-    }
+    QVERIFY2(validateIncludeOrder(filePath, "TextEditor.h"),
+             qPrintable(QString("Include order validation failed for %1").arg(filePath)));
 }

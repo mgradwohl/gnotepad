@@ -10,16 +10,49 @@ ToolingConfigTests::ToolingConfigTests(QObject* parent) : QObject(parent)
 {
 }
 
-void ToolingConfigTests::testClangTidyConfigExists()
+QString ToolingConfigTests::findProjectRoot() const
 {
-    QString projectRoot = QDir::currentPath();
-    while (!QFileInfo::exists(projectRoot + "/.clang-tidy") && projectRoot != "/")
+    // Start from current directory and search up for .clang-tidy or .clang-format
+    QString searchDir = QDir::currentPath();
+    constexpr int kMaxSearchDepth = 20; // Prevent infinite loop
+
+    for (int depth = 0; depth < kMaxSearchDepth; ++depth)
     {
-        projectRoot = QDir(projectRoot).filePath("..");
-        projectRoot = QDir(projectRoot).canonicalPath();
+        if (QFileInfo::exists(searchDir + "/.clang-tidy") || QFileInfo::exists(searchDir + "/.clang-format"))
+        {
+            return searchDir;
+        }
+
+        QDir parent(searchDir);
+        if (!parent.cdUp())
+        {
+            break; // Can't go up any more (reached root)
+        }
+
+        QString newPath = parent.canonicalPath();
+        if (newPath == searchDir)
+        {
+            break; // Already at root
+        }
+        searchDir = newPath;
     }
 
-    QFileInfo clangTidyFile(projectRoot + "/.clang-tidy");
+    return QString(); // Not found
+}
+
+void ToolingConfigTests::initTestCase()
+{
+    m_projectRoot = findProjectRoot();
+    if (m_projectRoot.isEmpty())
+    {
+        QFAIL("Could not find project root directory (no .clang-tidy or .clang-format found)");
+    }
+    qInfo() << "Project root:" << m_projectRoot;
+}
+
+void ToolingConfigTests::testClangTidyConfigExists()
+{
+    QFileInfo clangTidyFile(m_projectRoot + "/.clang-tidy");
     QVERIFY2(clangTidyFile.exists(), ".clang-tidy configuration file must exist in project root");
     QVERIFY2(clangTidyFile.isFile(), ".clang-tidy must be a regular file");
     QVERIFY2(clangTidyFile.isReadable(), ".clang-tidy must be readable");
@@ -27,14 +60,7 @@ void ToolingConfigTests::testClangTidyConfigExists()
 
 void ToolingConfigTests::testClangTidyConfigIsValid()
 {
-    QString projectRoot = QDir::currentPath();
-    while (!QFileInfo::exists(projectRoot + "/.clang-tidy") && projectRoot != "/")
-    {
-        projectRoot = QDir(projectRoot).filePath("..");
-        projectRoot = QDir(projectRoot).canonicalPath();
-    }
-
-    QFile file(projectRoot + "/.clang-tidy");
+    QFile file(m_projectRoot + "/.clang-tidy");
     QVERIFY(file.open(QIODevice::ReadOnly | QIODevice::Text));
 
     QTextStream in(&file);
@@ -49,14 +75,7 @@ void ToolingConfigTests::testClangTidyConfigIsValid()
 
 void ToolingConfigTests::testClangFormatConfigExists()
 {
-    QString projectRoot = QDir::currentPath();
-    while (!QFileInfo::exists(projectRoot + "/.clang-format") && projectRoot != "/")
-    {
-        projectRoot = QDir(projectRoot).filePath("..");
-        projectRoot = QDir(projectRoot).canonicalPath();
-    }
-
-    QFileInfo clangFormatFile(projectRoot + "/.clang-format");
+    QFileInfo clangFormatFile(m_projectRoot + "/.clang-format");
     QVERIFY2(clangFormatFile.exists(), ".clang-format configuration file must exist in project root");
     QVERIFY2(clangFormatFile.isFile(), ".clang-format must be a regular file");
     QVERIFY2(clangFormatFile.isReadable(), ".clang-format must be readable");
@@ -64,14 +83,7 @@ void ToolingConfigTests::testClangFormatConfigExists()
 
 void ToolingConfigTests::testClangFormatConfigIsValid()
 {
-    QString projectRoot = QDir::currentPath();
-    while (!QFileInfo::exists(projectRoot + "/.clang-format") && projectRoot != "/")
-    {
-        projectRoot = QDir(projectRoot).filePath("..");
-        projectRoot = QDir(projectRoot).canonicalPath();
-    }
-
-    QFile file(projectRoot + "/.clang-format");
+    QFile file(m_projectRoot + "/.clang-format");
     QVERIFY(file.open(QIODevice::ReadOnly | QIODevice::Text));
 
     QTextStream in(&file);
@@ -91,14 +103,7 @@ void ToolingConfigTests::testClangFormatConfigIsValid()
 
 void ToolingConfigTests::testIncludeCleanerExclusionsPresent()
 {
-    QString projectRoot = QDir::currentPath();
-    while (!QFileInfo::exists(projectRoot + "/.clang-tidy") && projectRoot != "/")
-    {
-        projectRoot = QDir(projectRoot).filePath("..");
-        projectRoot = QDir(projectRoot).canonicalPath();
-    }
-
-    QFile file(projectRoot + "/.clang-tidy");
+    QFile file(m_projectRoot + "/.clang-tidy");
     QVERIFY(file.open(QIODevice::ReadOnly | QIODevice::Text));
 
     QTextStream in(&file);

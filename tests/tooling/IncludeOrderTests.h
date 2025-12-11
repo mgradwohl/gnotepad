@@ -1,6 +1,7 @@
 #pragma once
 
 #include <QObject>
+#include <QString>
 
 class IncludeOrderTests : public QObject
 {
@@ -10,6 +11,7 @@ public:
     explicit IncludeOrderTests(QObject* parent = nullptr);
 
 private slots:
+    void initTestCase();
     void testSampleSourceFileIncludeOrder();
     void testMainWindowIncludeOrder();
     void testTextEditorIncludeOrder();
@@ -25,6 +27,9 @@ private:
         Other = 6
     };
 
+    QString findProjectRoot() const;
     IncludeCategory categorizeInclude(const QString& includeLine, const QString& expectedMatchingHeader);
     bool validateIncludeOrder(const QString& filePath, const QString& expectedMatchingHeader = QString());
+
+    QString m_projectRoot;
 };
