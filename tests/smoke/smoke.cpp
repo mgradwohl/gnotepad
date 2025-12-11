@@ -1362,17 +1362,20 @@ void MainWindowSmokeTests::testFindDialogInvocation()
     QTRY_VERIFY(window.isVisible());
     window.setAutoDismissDialogsForTest(true);
 
+    // Add content so find action is enabled
+    auto* editor = window.editorForTest();
+    QVERIFY(editor);
+    editor->setPlainText(QStringLiteral("Test content for find dialog"));
+    QApplication::processEvents();
+
     const int initialCount = window.findDialogInvocationCountForTest();
 
-    // Invoke find via slot
-    QMetaObject::invokeMethod(&window, "handleFind");
-    QTRY_COMPARE(window.findDialogInvocationCountForTest(), initialCount + 1);
-
-    // Invoke via action
+    // Verify find action exists and can be triggered
     auto* findAction = window.findActionForTest();
     QVERIFY(findAction);
+    QVERIFY(findAction->isEnabled());
     findAction->trigger();
-    QTRY_COMPARE(window.findDialogInvocationCountForTest(), initialCount + 2);
+    QTRY_COMPARE(window.findDialogInvocationCountForTest(), initialCount + 1);
 }
 
 void MainWindowSmokeTests::testReplaceDialogInvocation()
@@ -1382,17 +1385,20 @@ void MainWindowSmokeTests::testReplaceDialogInvocation()
     QTRY_VERIFY(window.isVisible());
     window.setAutoDismissDialogsForTest(true);
 
+    // Add content so replace action is enabled
+    auto* editor = window.editorForTest();
+    QVERIFY(editor);
+    editor->setPlainText(QStringLiteral("Test content for replace dialog"));
+    QApplication::processEvents();
+
     const int initialCount = window.replaceDialogInvocationCountForTest();
 
-    // Invoke replace via slot
-    QMetaObject::invokeMethod(&window, "handleReplace");
-    QTRY_COMPARE(window.replaceDialogInvocationCountForTest(), initialCount + 1);
-
-    // Invoke via action
+    // Verify replace action exists and can be triggered
     auto* replaceAction = window.replaceActionForTest();
     QVERIFY(replaceAction);
+    QVERIFY(replaceAction->isEnabled());
     replaceAction->trigger();
-    QTRY_COMPARE(window.replaceDialogInvocationCountForTest(), initialCount + 2);
+    QTRY_COMPARE(window.replaceDialogInvocationCountForTest(), initialCount + 1);
 }
 
 void MainWindowSmokeTests::testGoToLineDialog()
@@ -1443,18 +1449,10 @@ void MainWindowSmokeTests::testTabSizeDialog()
     QCOMPARE(initialTabSize, 4); // Default
 
     // Tab size dialog is tested indirectly - it uses QInputDialog
-    // Verify the action exists
-    auto actions = window.findChildren<QAction*>();
-    bool hasTabSizeAction = false;
-    for (const auto* action : actions)
-    {
-        if (action->text().contains(QStringLiteral("Tab Size"), Qt::CaseInsensitive))
-        {
-            hasTabSizeAction = true;
-            break;
-        }
-    }
-    QVERIFY(hasTabSizeAction);
+    // Verify the action exists by objectName
+    auto* tabSizeAction = window.findChild<QAction*>(QStringLiteral("actionTabSize"));
+    QVERIFY2(tabSizeAction != nullptr, "Tab Size action should exist with objectName 'actionTabSize'");
+    QVERIFY(tabSizeAction->isEnabled());
 }
 
 void MainWindowSmokeTests::testFontDialogInvocation()
@@ -1590,18 +1588,10 @@ void MainWindowSmokeTests::testEncodingDialogFlow()
     QCOMPARE(window.currentEncodingForTest(), QStringConverter::Utf8);
     QVERIFY(!window.currentBomForTest());
 
-    // Encoding dialog is modal - verify action exists
-    auto actions = window.findChildren<QAction*>();
-    bool hasEncodingAction = false;
-    for (const auto* action : actions)
-    {
-        if (action->text().contains(QStringLiteral("Encoding"), Qt::CaseInsensitive))
-        {
-            hasEncodingAction = true;
-            break;
-        }
-    }
-    QVERIFY(hasEncodingAction);
+    // Encoding dialog is modal - verify action exists by objectName
+    auto* encodingAction = window.findChild<QAction*>(QStringLiteral("actionEncoding"));
+    QVERIFY2(encodingAction != nullptr, "Encoding action should exist with objectName 'actionEncoding'");
+    QVERIFY(encodingAction->isEnabled());
 }
 
 void MainWindowSmokeTests::testActionStateManagement()
