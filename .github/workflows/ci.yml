@@ -9,7 +9,7 @@ on:
 jobs:
   format-check:
     name: Code Formatting Check
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
 
     steps:
     - name: Checkout code
@@ -46,7 +46,7 @@ jobs:
 
   static-analysis:
     name: Static Analysis (clang-tidy)
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
 
     steps:
     - name: Checkout code
@@ -83,7 +83,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest]
+        os: [ubuntu-24.04]
         build-type: [Debug, Release]
 
     runs-on: ${{ matrix.os }}
@@ -121,7 +121,7 @@ jobs:
       if: runner.os == 'Linux'
       run: |
         sudo apt-get update
-        sudo apt-get install -y xvfb libgl1-mesa-dri libegl1-mesa libgbm1
+        sudo apt-get install -y xvfb mesa-utils mesa-utils-extra libegl-mesa0 libgl1-mesa-dri libgbm1
 
     - name: Run tests (Linux with Xvfb)
       if: runner.os == 'Linux'
