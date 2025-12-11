@@ -20,6 +20,7 @@ target_include_directories(GnotePadSmoke PRIVATE
 )
 
 target_sources(GnotePadSmoke PRIVATE
+	${CMAKE_SOURCE_DIR}/src/app/Application.cpp
 	${CMAKE_SOURCE_DIR}/src/ui/MainWindow.cpp
 	${CMAKE_SOURCE_DIR}/src/ui/MainWindow.FileIO.cpp
 	${CMAKE_SOURCE_DIR}/src/ui/MainWindow.Settings.cpp
@@ -230,6 +231,7 @@ target_include_directories(GnotePadMenuActions PRIVATE
 )
 
 target_sources(GnotePadMenuActions PRIVATE
+	${CMAKE_SOURCE_DIR}/src/app/Application.cpp
 	${CMAKE_SOURCE_DIR}/src/ui/MainWindow.cpp
 	${CMAKE_SOURCE_DIR}/src/ui/MainWindow.FileIO.cpp
 	${CMAKE_SOURCE_DIR}/src/ui/MainWindow.Settings.cpp
@@ -326,6 +328,7 @@ target_include_directories(GnotePadEncoding PRIVATE
 )
 
 target_sources(GnotePadEncoding PRIVATE
+	${CMAKE_SOURCE_DIR}/src/app/Application.cpp
 	${CMAKE_SOURCE_DIR}/src/ui/MainWindow.cpp
 	${CMAKE_SOURCE_DIR}/src/ui/MainWindow.FileIO.cpp
 	${CMAKE_SOURCE_DIR}/src/ui/MainWindow.Settings.cpp
