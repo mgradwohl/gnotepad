@@ -141,8 +141,8 @@ namespace GnotePad
 
     bool Application::isHeadlessSmokeMode()
     {
-        auto* app = qobject_cast<Application*>(QCoreApplication::instance());
-        return app ? app->m_quitAfterInit : false;
+        const auto args = QCoreApplication::arguments();
+        return args.contains(QStringLiteral("--quit-after-init")) || args.contains(QStringLiteral("--headless-smoke"));
     }
 
     void Application::configureStyle()

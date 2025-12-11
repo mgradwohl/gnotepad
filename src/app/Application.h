@@ -29,7 +29,7 @@ namespace GnotePad
         Application& operator=(Application&&) = delete;
 
         int run();
-        
+
         static bool isHeadlessSmokeMode();
 
     private:
