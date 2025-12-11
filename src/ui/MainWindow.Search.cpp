@@ -1,5 +1,6 @@
 #include "ui/MainWindow.h"
 
+#include "app/Application.h"
 #include "ui/TextEditor.h"
 
 #include <QtCore/qtimer.h>
@@ -52,12 +53,28 @@ namespace GnotePad::ui
         connect(buttons, &QDialogButtonBox::accepted, &dialog, &QDialog::accept);
         connect(buttons, &QDialogButtonBox::rejected, &dialog, &QDialog::reject);
 
+        bool shouldAutoDismiss = false;
 #if defined(GNOTE_TEST_HOOKS)
-        if (m_testAutoDismissDialogs)
-        {
-            QTimer::singleShot(0, &dialog, &QDialog::reject);
-        }
+        shouldAutoDismiss = m_testAutoDismissDialogs;
 #endif
+        if (!shouldAutoDismiss && GnotePad::Application::isHeadlessSmokeMode())
+        {
+            shouldAutoDismiss = true;
+        }
+
+        if (shouldAutoDismiss)
+        {
+#if defined(GNOTE_TEST_HOOKS)
+            if (m_testAutoDismissDialogs)
+            {
+                QTimer::singleShot(0, &dialog, &QDialog::reject);
+            }
+            else
+#endif
+            {
+                QTimer::singleShot(0, &dialog, &QDialog::accept);
+            }
+        }
 
         if (dialog.exec() != QDialog::Accepted)
         {
@@ -75,7 +92,10 @@ namespace GnotePad::ui
 
         if (!performFind(term, buildFindFlags()))
         {
-            QMessageBox::information(this, tr("Find"), tr("Cannot find \"%1\".").arg(term));
+            if (!GnotePad::Application::isHeadlessSmokeMode())
+            {
+                QMessageBox::information(this, tr("Find"), tr("Cannot find \"%1\".").arg(term));
+            }
         }
     }
 
@@ -89,7 +109,10 @@ namespace GnotePad::ui
 
         if (!performFind(m_lastSearchTerm, buildFindFlags()))
         {
-            QMessageBox::information(this, tr("Find"), tr("Cannot find \"%1\".").arg(m_lastSearchTerm));
+            if (!GnotePad::Application::isHeadlessSmokeMode())
+            {
+                QMessageBox::information(this, tr("Find"), tr("Cannot find \"%1\".").arg(m_lastSearchTerm));
+            }
         }
     }
 
@@ -103,7 +126,10 @@ namespace GnotePad::ui
 
         if (!performFind(m_lastSearchTerm, buildFindFlags(QTextDocument::FindBackward)))
         {
-            QMessageBox::information(this, tr("Find"), tr("Cannot find \"%1\".").arg(m_lastSearchTerm));
+            if (!GnotePad::Application::isHeadlessSmokeMode())
+            {
+                QMessageBox::information(this, tr("Find"), tr("Cannot find \"%1\".").arg(m_lastSearchTerm));
+            }
         }
     }
 
@@ -169,7 +195,10 @@ namespace GnotePad::ui
                     }
                     if (!performFind(m_lastSearchTerm, buildFindFlags()))
                     {
-                        QMessageBox::information(this, tr("Replace"), tr("Cannot find \"%1\".").arg(m_lastSearchTerm));
+                        if (!GnotePad::Application::isHeadlessSmokeMode())
+                        {
+                            QMessageBox::information(this, tr("Replace"), tr("Cannot find \"%1\".").arg(m_lastSearchTerm));
+                        }
                     }
                 });
 
@@ -185,7 +214,10 @@ namespace GnotePad::ui
                     }
                     if (!replaceNextOccurrence(m_lastSearchTerm, m_lastReplaceText, buildFindFlags()))
                     {
-                        QMessageBox::information(this, tr("Replace"), tr("Cannot find \"%1\".").arg(m_lastSearchTerm));
+                        if (!GnotePad::Application::isHeadlessSmokeMode())
+                        {
+                            QMessageBox::information(this, tr("Replace"), tr("Cannot find \"%1\".").arg(m_lastSearchTerm));
+                        }
                     }
                 });
 
@@ -200,17 +232,27 @@ namespace GnotePad::ui
                         return;
                     }
                     const int count = replaceAllOccurrences(m_lastSearchTerm, m_lastReplaceText, buildFindFlags());
-                    QMessageBox::information(this, tr("Replace"), tr("Replaced %1 occurrence(s).").arg(count));
+                    if (!GnotePad::Application::isHeadlessSmokeMode())
+                    {
+                        QMessageBox::information(this, tr("Replace"), tr("Replaced %1 occurrence(s).").arg(count));
+                    }
                 });
 
         connect(closeButton, &QPushButton::clicked, &dialog, &QDialog::reject);
 
+        bool shouldAutoDismiss = false;
 #if defined(GNOTE_TEST_HOOKS)
-        if (m_testAutoDismissDialogs)
+        shouldAutoDismiss = m_testAutoDismissDialogs;
+#endif
+        if (!shouldAutoDismiss && GnotePad::Application::isHeadlessSmokeMode())
+        {
+            shouldAutoDismiss = true;
+        }
+
+        if (shouldAutoDismiss)
         {
             QTimer::singleShot(0, &dialog, &QDialog::reject);
         }
-#endif
 
         dialog.exec();
     }

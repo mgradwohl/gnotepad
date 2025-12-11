@@ -29,6 +29,8 @@ namespace GnotePad
         Application& operator=(Application&&) = delete;
 
         int run();
+        
+        static bool isHeadlessSmokeMode();
 
     private:
         void parseCommandLine(const QStringList& arguments);
@@ -39,6 +41,7 @@ namespace GnotePad
         std::unique_ptr<ui::MainWindow> m_mainWindow;
         QIcon m_applicationIcon;
         bool m_quitAfterInit{false};
+        static bool s_headlessSmokeMode;
     };
 
 } // namespace GnotePad

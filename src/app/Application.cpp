@@ -38,6 +38,8 @@ namespace
 namespace GnotePad
 {
 
+    bool Application::s_headlessSmokeMode = false;
+
     Application::Application(int& argc, char** argv) : QApplication(argc, argv)
     {
 #if defined(_WIN32) && !defined(NDEBUG)
@@ -137,6 +139,12 @@ namespace GnotePad
         parser.process(arguments);
 
         m_quitAfterInit = parser.isSet(quitAfterInitOption);
+        s_headlessSmokeMode = m_quitAfterInit;
+    }
+
+    bool Application::isHeadlessSmokeMode()
+    {
+        return s_headlessSmokeMode;
     }
 
     void Application::configureStyle()
