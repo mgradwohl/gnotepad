@@ -1,5 +1,6 @@
 #include "ui/MainWindow.h"
 
+#include "app/Application.h"
 #include "ui/TextEditor.h"
 
 #include <QtCore/qtimer.h>
@@ -57,7 +58,12 @@ namespace GnotePad::ui
         {
             QTimer::singleShot(0, &dialog, &QDialog::reject);
         }
+        else
 #endif
+        if (GnotePad::Application::isHeadlessSmokeMode())
+        {
+            QTimer::singleShot(0, &dialog, &QDialog::accept);
+        }
 
         if (dialog.exec() != QDialog::Accepted)
         {
@@ -210,7 +216,12 @@ namespace GnotePad::ui
         {
             QTimer::singleShot(0, &dialog, &QDialog::reject);
         }
+        else
 #endif
+        if (GnotePad::Application::isHeadlessSmokeMode())
+        {
+            QTimer::singleShot(0, &dialog, &QDialog::reject);
+        }
 
         dialog.exec();
     }

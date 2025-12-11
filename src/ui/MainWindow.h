@@ -274,6 +274,8 @@ namespace GnotePad::ui
         QAction* m_replaceAction{nullptr};
         QAction* m_goToAction{nullptr};
         QAction* m_timeDateAction{nullptr};
+        QAction* m_tabSizeAction{nullptr};
+        QAction* m_encodingAction{nullptr};
         QMenu* m_recentFilesMenu{nullptr};
 
         QString m_currentFilePath;

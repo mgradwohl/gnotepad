@@ -120,7 +120,8 @@ namespace GnotePad::ui
         refreshRecentFilesMenu();
         m_saveAction = fileMenu->addAction(tr("&Save"), QKeySequence::Save, this, &MainWindow::handleSaveFile);
         m_saveAsAction = fileMenu->addAction(tr("Save &As…"), QKeySequence::SaveAs, this, &MainWindow::handleSaveFileAs);
-        fileMenu->addAction(tr("E&ncoding…"), this, &MainWindow::handleChangeEncoding);
+        m_encodingAction = fileMenu->addAction(tr("E&ncoding…"), this, &MainWindow::handleChangeEncoding);
+        m_encodingAction->setObjectName(QStringLiteral("actionEncoding"));
         fileMenu->addSeparator();
         fileMenu->addAction(tr("Choose P&rinter…"), this, &MainWindow::handleChoosePrinter);
         m_printAction = fileMenu->addAction(tr("&Print"), QKeySequence::Print, this, &MainWindow::handlePrint);
@@ -151,7 +152,8 @@ namespace GnotePad::ui
                 [this](bool checked) { m_editor->setWordWrapMode(checked ? QTextOption::WordWrap : QTextOption::NoWrap); });
 
         formatMenu->addAction(tr("&Font…"), this, &MainWindow::handleChooseFont);
-        formatMenu->addAction(tr("Tab &Size…"), this, &MainWindow::handleSetTabSize);
+        m_tabSizeAction = formatMenu->addAction(tr("Tab &Size…"), this, &MainWindow::handleSetTabSize);
+        m_tabSizeAction->setObjectName(QStringLiteral("actionTabSize"));
 
         auto* dateFormatMenu = formatMenu->addMenu(tr("Time/&Date Format"));
         // NOLINTNEXTLINE(cppcoreguidelines-owning-memory)  // QActionGroups are owned by their QObject parent.
