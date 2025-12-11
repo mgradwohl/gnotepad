@@ -53,16 +53,27 @@ namespace GnotePad::ui
         connect(buttons, &QDialogButtonBox::accepted, &dialog, &QDialog::accept);
         connect(buttons, &QDialogButtonBox::rejected, &dialog, &QDialog::reject);
 
+        bool shouldAutoDismiss = false;
 #if defined(GNOTE_TEST_HOOKS)
-        if (m_testAutoDismissDialogs)
-        {
-            QTimer::singleShot(0, &dialog, &QDialog::reject);
-        }
-        else
+        shouldAutoDismiss = m_testAutoDismissDialogs;
 #endif
-        if (GnotePad::Application::isHeadlessSmokeMode())
+        if (!shouldAutoDismiss && GnotePad::Application::isHeadlessSmokeMode())
         {
-            QTimer::singleShot(0, &dialog, &QDialog::accept);
+            shouldAutoDismiss = true;
+        }
+
+        if (shouldAutoDismiss)
+        {
+#if defined(GNOTE_TEST_HOOKS)
+            if (m_testAutoDismissDialogs)
+            {
+                QTimer::singleShot(0, &dialog, &QDialog::reject);
+            }
+            else
+#endif
+            {
+                QTimer::singleShot(0, &dialog, &QDialog::accept);
+            }
         }
 
         if (dialog.exec() != QDialog::Accepted)
@@ -229,14 +240,16 @@ namespace GnotePad::ui
 
         connect(closeButton, &QPushButton::clicked, &dialog, &QDialog::reject);
 
+        bool shouldAutoDismiss = false;
 #if defined(GNOTE_TEST_HOOKS)
-        if (m_testAutoDismissDialogs)
-        {
-            QTimer::singleShot(0, &dialog, &QDialog::reject);
-        }
-        else
+        shouldAutoDismiss = m_testAutoDismissDialogs;
 #endif
-        if (GnotePad::Application::isHeadlessSmokeMode())
+        if (!shouldAutoDismiss && GnotePad::Application::isHeadlessSmokeMode())
+        {
+            shouldAutoDismiss = true;
+        }
+
+        if (shouldAutoDismiss)
         {
             QTimer::singleShot(0, &dialog, &QDialog::reject);
         }
