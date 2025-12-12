@@ -15,7 +15,12 @@
 			},
 			"problemMatcher": [
 				"$gcc"
-			]
+			],
+			"presentation": {
+				"reveal": "silent",
+				"panel": "shared",
+				"clear": true
+			}
 		},
 		{
 			"label": "Build RelWithDebInfo (Linux)",
@@ -28,7 +33,12 @@
 			"group": "build",
 			"problemMatcher": [
 				"$gcc"
-			]
+			],
+			"presentation": {
+				"reveal": "silent",
+				"panel": "shared",
+				"clear": true
+			}
 		},
 		{
 			"label": "Build Release (Linux)",
@@ -41,7 +51,12 @@
 			"group": "build",
 			"problemMatcher": [
 				"$gcc"
-			]
+			],
+			"presentation": {
+				"reveal": "silent",
+				"panel": "shared",
+				"clear": true
+			}
 		},
 		{
 			"label": "Build Optimized (Linux)",
@@ -54,7 +69,12 @@
 			"group": "build",
 			"problemMatcher": [
 				"$gcc"
-			]
+			],
+			"presentation": {
+				"reveal": "silent",
+				"panel": "shared",
+				"clear": true
+			}
 		},
 		{
 			"label": "Configure Debug (Windows)",
@@ -82,7 +102,12 @@
 			"group": "build",
 			"problemMatcher": [
 				"$gcc"
-			]
+			],
+			"presentation": {
+				"reveal": "silent",
+				"panel": "shared",
+				"clear": true
+			}
 		},
 		{
 			"label": "Build Debug (Windows)",
@@ -95,7 +120,11 @@
 			"dependsOn": "Configure Debug (Windows)",
 			"problemMatcher": [
 				"$gcc"
-			]
+			],
+			"presentation": {
+				"reveal": "silent",
+				"panel": "shared"
+			}
 		},
 		{
 			"label": "Configure RelWithDebInfo (Windows)",
@@ -123,7 +152,12 @@
 			"group": "build",
 			"problemMatcher": [
 				"$gcc"
-			]
+			],
+			"presentation": {
+				"reveal": "silent",
+				"panel": "shared",
+				"clear": true
+			}
 		},
 		{
 			"label": "Build RelWithDebInfo (Windows)",
@@ -136,7 +170,11 @@
 			"dependsOn": "Configure RelWithDebInfo (Windows)",
 			"problemMatcher": [
 				"$gcc"
-			]
+			],
+			"presentation": {
+				"reveal": "silent",
+				"panel": "shared"
+			}
 		},
 		{
 			"label": "Configure Release (Windows)",
@@ -164,7 +202,12 @@
 			"group": "build",
 			"problemMatcher": [
 				"$gcc"
-			]
+			],
+			"presentation": {
+				"reveal": "silent",
+				"panel": "shared",
+				"clear": true
+			}
 		},
 		{
 			"label": "Build Release (Windows)",
@@ -177,7 +220,11 @@
 			"dependsOn": "Configure Release (Windows)",
 			"problemMatcher": [
 				"$gcc"
-			]
+			],
+			"presentation": {
+				"reveal": "silent",
+				"panel": "shared"
+			}
 		},
 		{
 			"label": "Configure Optimized (Windows)",
@@ -210,7 +257,12 @@
 			"group": "build",
 			"problemMatcher": [
 				"$gcc"
-			]
+			],
+			"presentation": {
+				"reveal": "silent",
+				"panel": "shared",
+				"clear": true
+			}
 		},
 		{
 			"label": "Build Optimized (Windows)",
@@ -223,7 +275,11 @@
 			"dependsOn": "Configure Optimized (Windows)",
 			"problemMatcher": [
 				"$gcc"
-			]
+			],
+			"presentation": {
+				"reveal": "silent",
+				"panel": "shared"
+			}
 		},
 		{
 			"label": "Run GnotePad (Optimized, Windows, No Debugger)",
@@ -248,7 +304,12 @@
 			"group": "test",
 			"problemMatcher": [
 				"$gcc"
-			]
+			],
+			"presentation": {
+				"reveal": "always",
+				"panel": "shared",
+				"clear": true
+			}
 		},
 		{
 			"label": "Scan-Build (Debug, Linux)",
@@ -261,7 +322,12 @@
 			"group": "test",
 			"problemMatcher": [
 				"$gcc"
-			]
+			],
+			"presentation": {
+				"reveal": "always",
+				"panel": "shared",
+				"clear": true
+			}
 		},
 		{
 			"label": "Clang-Format (Linux)",
@@ -272,7 +338,12 @@
 				"cmake --build build/debug --target run-clang-format"
 			],
 			"group": "test",
-			"problemMatcher": []
+			"problemMatcher": [],
+			"presentation": {
+				"reveal": "always",
+				"panel": "shared",
+				"clear": true
+			}
 		},
 		// ===== Static Analysis (Windows) =====
 		{
@@ -301,7 +372,12 @@
 			"group": "test",
 			"problemMatcher": [
 				"$gcc"
-			]
+			],
+			"presentation": {
+				"reveal": "silent",
+				"panel": "shared",
+				"clear": true
+			}
 		},
 		{
 			"label": "Clang-Tidy (Debug, Windows)",
@@ -318,7 +394,11 @@
 			"group": "test",
 			"problemMatcher": [
 				"$gcc"
-			]
+			],
+			"presentation": {
+				"reveal": "always",
+				"panel": "shared"
+			}
 		},
 		{
 			"label": "Configure Scan-Build (Debug, Windows)",
@@ -347,7 +427,12 @@
 			"group": "test",
 			"problemMatcher": [
 				"$gcc"
-			]
+			],
+			"presentation": {
+				"reveal": "silent",
+				"panel": "shared",
+				"clear": true
+			}
 		},
 		{
 			"label": "Scan-Build (Debug, Windows)",
@@ -361,7 +446,11 @@
 			"group": "test",
 			"problemMatcher": [
 				"$gcc"
-			]
+			],
+			"presentation": {
+				"reveal": "always",
+				"panel": "shared"
+			}
 		},
 		{
 			"label": "Clang-Format (Windows)",
@@ -374,7 +463,12 @@
 				"run-clang-format"
 			],
 			"group": "test",
-			"problemMatcher": []
+			"problemMatcher": [],
+			"presentation": {
+				"reveal": "always",
+				"panel": "shared",
+				"clear": true
+			}
 		},
 		// ===== Publish =====
 		{
@@ -386,7 +480,12 @@
 				"tools/publish-win.ps1"
 			],
 			"dependsOn": "Build Optimized (Windows)",
-			"problemMatcher": []
+			"problemMatcher": [],
+			"presentation": {
+				"reveal": "always",
+				"panel": "dedicated",
+				"clear": true
+			}
 		}
 	]
 }
