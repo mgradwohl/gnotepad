@@ -252,7 +252,7 @@
 			"command": "bash",
 			"args": [
 				"-lc",
-				"cmake -S . -B build/analyze -G Ninja -DCMAKE_CXX_COMPILER=/usr/lib/llvm-21/bin/clang++ -DCMAKE_CXX_STANDARD=23 -DCMAKE_CXX_STANDARD_REQUIRED=ON -DCMAKE_CXX_EXTENSIONS=OFF -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DCMAKE_PREFIX_PATH=/usr/lib/x86_64-linux-gnu/cmake/Qt6 -DCMAKE_BUILD_TYPE=Debug && scan-build -o scan-build-report --status-bugs cmake --build build/analyze"
+				"cmake -S . -B build/analyze -G Ninja -DCMAKE_C_COMPILER=/usr/lib/llvm-21/bin/clang -DCMAKE_CXX_COMPILER=/usr/lib/llvm-21/bin/clang++ -DCMAKE_CXX_STANDARD=23 -DCMAKE_CXX_STANDARD_REQUIRED=ON -DCMAKE_CXX_EXTENSIONS=OFF -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DCMAKE_PREFIX_PATH=/usr/lib/x86_64-linux-gnu/cmake/Qt6 -DCMAKE_BUILD_TYPE=Debug && scan-build -o scan-build-report --status-bugs --use-cc=/usr/lib/llvm-21/bin/clang --use-c++=/usr/lib/llvm-21/bin/clang++ cmake --build build/analyze"
 			],
 			"problemMatcher": [
 				"$gcc"
