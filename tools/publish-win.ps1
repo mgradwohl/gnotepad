@@ -103,7 +103,15 @@ if (-not (Test-Path $distRoot)) {
 
 $version = $env:GNOTE_VERSION
 if ([string]::IsNullOrWhiteSpace($version)) {
-    $version = "0.8.1"
+    # Extract version from CMakeLists.txt
+    $cmakeFile = Join-Path $repoRoot "CMakeLists.txt"
+    $versionMatch = Select-String -Path $cmakeFile -Pattern 'project\s*\(\s*GnotePad\s+VERSION\s+([0-9.]+)' | Select-Object -First 1
+    if ($versionMatch) {
+        $version = $versionMatch.Matches[0].Groups[1].Value
+    } else {
+        $version = "0.0.0"
+        Write-Warning "Could not extract version from CMakeLists.txt, using $version"
+    }
 }
 $zipPath = Join-Path $distRoot "GnotePad-$version-windows.zip"
 if (Test-Path $zipPath) {

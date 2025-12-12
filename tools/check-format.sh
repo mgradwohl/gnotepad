@@ -7,7 +7,7 @@ PROJECT_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
 
 # Find clang-format executable
 CLANG_FORMAT=""
-for cmd in clang-format-15 clang-format-16 clang-format-17 clang-format; do
+for cmd in /usr/lib/llvm-21/bin/clang-format clang-format-21 clang-format-18 clang-format-17 clang-format; do
     if command -v "$cmd" &> /dev/null; then
         CLANG_FORMAT="$cmd"
         break

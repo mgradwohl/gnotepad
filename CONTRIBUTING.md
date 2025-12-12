@@ -298,6 +298,22 @@ Keeping headers tidy shrinks rebuild times and keeps clang-tidy's include-cleane
 
    Separate each group with a blank line and avoid redundant includes.
 
+   **Example** (for a hypothetical `MainWindow.cpp`):
+   ```cpp
+   #include "MainWindow.h"                    // 1. Matching header
+
+   #include "app/Application.h"               // 2. Project headers
+   #include "ui/TextEditor.h"
+
+   #include <spdlog/spdlog.h>                 // 3. Third-party non-Qt
+
+   #include <QtWidgets/QFileDialog>           // 4. Qt headers
+   #include <QtWidgets/QMessageBox>
+
+   #include <memory>                          // 5. C++ standard library
+   #include <string>
+   ```
+
 4. **Use modern preprocessor directives (C++23):**
    - Use `#ifdef X` instead of `#if defined(X)` for simple checks
    - Use `#ifndef X` instead of `#if !defined(X)`
