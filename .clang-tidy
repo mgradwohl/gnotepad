@@ -7,19 +7,13 @@ Checks: >
   performance-*,
   portability-*,
   readability-*,
-  # Stuff you explicitly don't want:
   -bugprone-easily-swappable-parameters,
   -modernize-use-trailing-return-type,
   -readability-identifier-naming,
   -readability-identifier-length,
   -readability-magic-numbers,
   -readability-implicit-bool-conversion,
-  -bugprone-easily-swappable-parameters,
-  -portability-avoid-pragma-once
-  # cppcoreguidelines bits that are often noisy with Qt-ish / real-world code:
-  #-cppcoreguidelines-avoid-magic-numbers,
-  #-cppcoreguidelines-owning-memory,
-  #-cppcoreguidelines-pro-type-reinterpret-cast
+  -portability-avoid-pragma-once,
 
 WarningsAsErrors: ''
 SystemHeaders: false
