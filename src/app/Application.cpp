@@ -5,6 +5,11 @@
 #endif
 
 #include <spdlog/spdlog.h>
+#ifdef _WIN32
+#include <spdlog/sinks/msvc_sink.h>
+#include <spdlog/sinks/stdout_color_sinks.h>
+#include <spdlog/sinks/wincolor_sink.h>
+#endif
 
 #include <QtCore/qcommandlineoption.h>
 #include <QtCore/qcommandlineparser.h>
@@ -20,12 +25,6 @@
 
 #include <memory>
 #include <string>
-
-#ifdef _WIN32
-#include <spdlog/sinks/msvc_sink.h>
-#include <spdlog/sinks/stdout_color_sinks.h>
-#include <spdlog/sinks/wincolor_sink.h>
-#endif
 
 // Do not change to constexpr, this is set and passed in by the build system
 // NOLINTNEXTLINE(cppcoreguidelines-macro-usage)
