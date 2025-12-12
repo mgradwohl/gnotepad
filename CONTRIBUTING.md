@@ -8,17 +8,20 @@ Thanks for helping improve GnotePad! This document provides comprehensive guidan
 
 - **CMake** 3.26+ (we are using 4.2)
 - **Build System:** Ninja or Make (Ninja recommended)
-- **Compiler:** Clang 15+ (or Apple Clang 15+ on macOS)
+- **Compiler:** Clang 21+ with lld linker (or Apple Clang 15+ on macOS)
 - **Qt:** 6.5+ development packages (Widgets, Gui, Core, PrintSupport, Svg, SvgWidgets, Test)
 - **Logging:** spdlog (automatically fetched via CMake FetchContent)
+- **Static Analysis:** clang-tidy 21+, clang-format 21+
 
 ### Linux/Ubuntu Setup
 
 Install dependencies:
 
 ```bash
-sudo apt install clang ninja-build qt6-base-dev qt6-base-dev-tools qt6-tools-dev cmake git
+sudo apt install clang-21 lld-21 clang-tidy-21 clang-format-21 ninja-build qt6-base-dev qt6-base-dev-tools qt6-tools-dev cmake git
 ```
+
+Note: clang-21 packages are available from the LLVM apt repository. See https://apt.llvm.org/ for setup instructions.
 
 ### Windows Setup
 
@@ -95,9 +98,15 @@ brew install cmake ninja llvm qt@6
 
 ```bash
 cmake -S . -B build/debug -G Ninja \
-  -DCMAKE_CXX_COMPILER=clang++ \
+  -DCMAKE_CXX_COMPILER=/usr/lib/llvm-21/bin/clang++ \
+  -DCMAKE_CXX_STANDARD=23 \
+  -DCMAKE_CXX_STANDARD_REQUIRED=ON \
+  -DCMAKE_CXX_EXTENSIONS=OFF \
+  -DCMAKE_EXPORT_COMPILE_COMMANDS=ON \
   -DCMAKE_PREFIX_PATH=/usr/lib/x86_64-linux-gnu/cmake/Qt6 \
-  -DCMAKE_BUILD_TYPE=Debug
+  -DCMAKE_BUILD_TYPE=Debug \
+  -DCMAKE_EXE_LINKER_FLAGS=-fuse-ld=lld \
+  -DCMAKE_SHARED_LINKER_FLAGS=-fuse-ld=lld
 cmake --build build/debug
 ctest --test-dir build/debug
 ```
@@ -159,7 +168,13 @@ resources/
 └── icons/                # Application icons
 
 tests/
-└── smoke/                # Smoke tests using Qt Test framework
+├── smoke/                # Smoke tests using Qt Test framework
+├── cmdline/              # Command-line parsing tests
+├── menuactions/          # Menu action state and behavior tests
+├── encoding/             # Encoding edge case tests
+├── style/                # Qt style configuration tests
+├── tooling/              # Clang tooling configuration tests
+└── testfiles/            # Test data files with various encodings
 
 packaging/
 ├── linux/                # Linux packaging files (AppImage, Flatpak, DEB, RPM)
@@ -220,11 +235,20 @@ VS Code's C/C++ IntelliSense engine is disabled to avoid conflicting diagnostics
 ### VS Code Tasks
 
 The project includes predefined tasks in `.vscode/tasks.json`:
-- **Debug Build** - Build with debug symbols
-- **Release Build** - Build optimized release version
-- **Clang-Tidy (Debug)** - Run static analysis
-- **Scan-Build (Debug)** - Run clang static analyzer
-- **Clang-Format** - Format all source files
+- **Build Debug (Linux)** - Build with debug symbols (default)
+- **Build RelWithDebInfo (Linux)** - Build with optimizations + debug info
+- **Build Release (Linux)** - Build optimized release version
+- **Build Optimized (Linux)** - Build with LTO, march=x86-64-v3, stripped
+- **Clang-Tidy (Debug, Linux)** - Run static analysis
+- **Scan-Build (Debug, Linux)** - Run clang static analyzer
+- **Clang-Format (Linux)** - Format all source files
+
+### VS Code Launch Configurations
+
+The project includes predefined launch configs in `.vscode/launch.json`:
+- **Debug GnotePad (Debug, Linux)** - Debug build with full symbols
+- **Debug GnotePad (RelWithDebInfo, Linux)** - Optimized with debug info
+- **Run GnotePad (Release/Optimized, Linux)** - Production builds
 
 ## Testing
 
@@ -273,6 +297,12 @@ Keeping headers tidy shrinks rebuild times and keeps clang-tidy's include-cleane
    6. Everything else (fallback)
 
    Separate each group with a blank line and avoid redundant includes.
+
+4. **Use modern preprocessor directives (C++23):**
+   - Use `#ifdef X` instead of `#if defined(X)` for simple checks
+   - Use `#ifndef X` instead of `#if !defined(X)`
+   - Use `#elifdef X` instead of `#elif defined(X)`
+   - Compound conditions like `#if defined(X) && !defined(Y)` stay as-is
    
 5. **New files inherit the same rules.** Start with the include skeleton above so diffs stay small.
 

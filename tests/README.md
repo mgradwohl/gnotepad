@@ -27,6 +27,16 @@ tests/
 │   └── smoke.cpp
 ├── cmdline/                  # Command-line argument parsing tests
 │   └── cmdline.cpp
+├── encoding/                 # Encoding edge case tests
+│   └── encoding.cpp
+├── menuactions/              # Menu action state and behavior tests
+│   └── menuactions.cpp
+├── style/                    # Qt style configuration tests
+│   └── style.cpp
+├── tooling/                  # Clang tooling configuration tests
+│   ├── ToolingConfigTests.h
+│   ├── IncludeOrderTests.h
+│   └── tooling.cpp
 ├── testfiles/                # Test data files
 │   ├── encoding-tests/       # Files with various encodings and BOMs
 │   ├── utf8-tests/           # UTF-8 multilingual and Unicode test files
