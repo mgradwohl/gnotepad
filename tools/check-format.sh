@@ -27,13 +27,13 @@ cd "$PROJECT_ROOT"
 # Find all .cpp and .h files in src and tests directories
 VIOLATIONS_FOUND=0
 
-find src tests -type f \( -name "*.cpp" -o -name "*.h" \) ! -path "*/build/*" ! -path "*/.git/*" -print0 | while IFS= read -r -d '' file; do
+while IFS= read -r -d '' file; do
     # Check if file would be modified by clang-format
     if ! "$CLANG_FORMAT" --dry-run -Werror "$file" &> /dev/null; then
         echo "Formatting violation: $file"
         VIOLATIONS_FOUND=1
     fi
-done
+done < <(find src tests -type f \( -name "*.cpp" -o -name "*.h" \) ! -path "*/build/*" ! -path "*/.git/*" -print0)
 
 if [ $VIOLATIONS_FOUND -eq 1 ]; then
     echo ""

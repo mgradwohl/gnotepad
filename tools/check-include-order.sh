@@ -108,12 +108,12 @@ check_file_includes() {
 # Find all .cpp files in src directory and check include order robustly
 VIOLATIONS_FOUND=0
 
-find src -type f -name "*.cpp" ! -path "*/build/*" ! -path "*/.git/*" -print0 | while IFS= read -r -d '' file; do
+while IFS= read -r -d '' file; do
     if ! check_file_includes "$file"; then
         echo "Include order violation in: $file"
         VIOLATIONS_FOUND=1
     fi
-done
+done < <(find src -type f -name "*.cpp" ! -path "*/build/*" ! -path "*/.git/*" -print0)
 
 if [ $VIOLATIONS_FOUND -eq 1 ]; then
     echo ""

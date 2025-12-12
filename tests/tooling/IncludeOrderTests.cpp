@@ -169,8 +169,7 @@ void IncludeOrderTests::testSampleSourceFileIncludeOrder()
     {
         QSKIP(qPrintable(QString("Source file not found: %1").arg(filePath)));
     }
-    QVERIFY2(validateIncludeOrder(filePath, "Application.h"),
-             qPrintable(QString("Include order validation failed for %1").arg(filePath)));
+    QVERIFY2(validateIncludeOrder(filePath, "Application.h"), qPrintable(QString("Include order validation failed for %1").arg(filePath)));
 }
 
 void IncludeOrderTests::testMainWindowIncludeOrder()
@@ -180,8 +179,7 @@ void IncludeOrderTests::testMainWindowIncludeOrder()
     {
         QSKIP(qPrintable(QString("Source file not found: %1").arg(filePath)));
     }
-    QVERIFY2(validateIncludeOrder(filePath, "MainWindow.h"),
-             qPrintable(QString("Include order validation failed for %1").arg(filePath)));
+    QVERIFY2(validateIncludeOrder(filePath, "MainWindow.h"), qPrintable(QString("Include order validation failed for %1").arg(filePath)));
 }
 
 void IncludeOrderTests::testTextEditorIncludeOrder()
@@ -191,6 +189,5 @@ void IncludeOrderTests::testTextEditorIncludeOrder()
     {
         QSKIP(qPrintable(QString("Source file not found: %1").arg(filePath)));
     }
-    QVERIFY2(validateIncludeOrder(filePath, "TextEditor.h"),
-             qPrintable(QString("Include order validation failed for %1").arg(filePath)));
+    QVERIFY2(validateIncludeOrder(filePath, "TextEditor.h"), qPrintable(QString("Include order validation failed for %1").arg(filePath)));
 }
