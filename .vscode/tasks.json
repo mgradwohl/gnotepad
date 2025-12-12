@@ -13,7 +13,9 @@
 				"kind": "build",
 				"isDefault": true
 			},
-			"problemMatcher": ["$gcc"]
+			"problemMatcher": [
+				"$gcc"
+			]
 		},
 		{
 			"label": "Build RelWithDebInfo (Linux)",
@@ -24,7 +26,9 @@
 				"cmake -S . -B build/relwithdebinfo -G Ninja -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_CXX_STANDARD=23 -DCMAKE_CXX_STANDARD_REQUIRED=ON -DCMAKE_CXX_EXTENSIONS=OFF -DCMAKE_PREFIX_PATH=/usr/lib/x86_64-linux-gnu/cmake/Qt6 -DCMAKE_BUILD_TYPE=RelWithDebInfo && cmake --build build/relwithdebinfo"
 			],
 			"group": "build",
-			"problemMatcher": ["$gcc"]
+			"problemMatcher": [
+				"$gcc"
+			]
 		},
 		{
 			"label": "Build Release (Linux)",
@@ -35,7 +39,9 @@
 				"cmake -S . -B build/release -G Ninja -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_CXX_STANDARD=23 -DCMAKE_CXX_STANDARD_REQUIRED=ON -DCMAKE_CXX_EXTENSIONS=OFF -DCMAKE_PREFIX_PATH=/usr/lib/x86_64-linux-gnu/cmake/Qt6 -DCMAKE_BUILD_TYPE=Release && cmake --build build/release"
 			],
 			"group": "build",
-			"problemMatcher": ["$gcc"]
+			"problemMatcher": [
+				"$gcc"
+			]
 		},
 		{
 			"label": "Build Optimized (Linux)",
@@ -43,19 +49,24 @@
 			"command": "bash",
 			"args": [
 				"-lc",
-				"cmake -S . -B build/optimized -G Ninja -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_CXX_STANDARD=23 -DCMAKE_CXX_STANDARD_REQUIRED=ON -DCMAKE_CXX_EXTENSIONS=OFF -DCMAKE_PREFIX_PATH=/usr/lib/x86_64-linux-gnu/cmake/Qt6 -DCMAKE_BUILD_TYPE=Release -DGNOTE_ENABLE_IPO=ON -DCMAKE_INTERPROCEDURAL_OPTIMIZATION=ON -DCMAKE_EXE_LINKER_FLAGS_RELEASE='-s' -DCMAKE_SHARED_LINKER_FLAGS_RELEASE='-s' && cmake --build build/optimized"
+				"cmake -S . -B build/optimized -G Ninja -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_CXX_STANDARD=23 -DCMAKE_CXX_STANDARD_REQUIRED=ON -DCMAKE_CXX_EXTENSIONS=OFF -DCMAKE_PREFIX_PATH=/usr/lib/x86_64-linux-gnu/cmake/Qt6 -DCMAKE_BUILD_TYPE=Release -DGNOTE_ENABLE_IPO=ON -DCMAKE_INTERPROCEDURAL_OPTIMIZATION=ON -DCMAKE_EXE_LINKER_FLAGS_RELEASE='-s' -DCMAKE_SHARED_LINKER_FLAGS_RELEASE='-s' -DCMAKE_CXX_FLAGS_RELEASE='-O3 -DNDEBUG -march=x86-64-v3 -fomit-frame-pointer' && cmake --build build/optimized"
 			],
 			"group": "build",
-			"problemMatcher": ["$gcc"]
+			"problemMatcher": [
+				"$gcc"
+			]
 		},
 		{
 			"label": "Configure Debug (Windows)",
 			"type": "shell",
 			"command": "cmake",
 			"args": [
-				"-S", ".",
-				"-B", "build/win-debug",
-				"-G", "Ninja",
+				"-S",
+				".",
+				"-B",
+				"build/win-debug",
+				"-G",
+				"Ninja",
 				"-DCMAKE_CXX_COMPILER=${env:LLVM_ROOT}/bin/clang++.exe",
 				"-DCMAKE_CXX_STANDARD=23",
 				"-DCMAKE_CXX_STANDARD_REQUIRED=ON",
@@ -68,24 +79,34 @@
 				"-DCMAKE_SHARED_LINKER_FLAGS=-fuse-ld=lld"
 			],
 			"group": "build",
-			"problemMatcher": ["$gcc"]
+			"problemMatcher": [
+				"$gcc"
+			]
 		},
 		{
 			"label": "Build Debug (Windows)",
 			"type": "shell",
 			"command": "cmake",
-			"args": ["--build", "build/win-debug"],
+			"args": [
+				"--build",
+				"build/win-debug"
+			],
 			"dependsOn": "Configure Debug (Windows)",
-			"problemMatcher": ["$gcc"]
+			"problemMatcher": [
+				"$gcc"
+			]
 		},
 		{
 			"label": "Configure RelWithDebInfo (Windows)",
 			"type": "shell",
 			"command": "cmake",
 			"args": [
-				"-S", ".",
-				"-B", "build/win-relwithdebinfo",
-				"-G", "Ninja",
+				"-S",
+				".",
+				"-B",
+				"build/win-relwithdebinfo",
+				"-G",
+				"Ninja",
 				"-DCMAKE_CXX_COMPILER=${env:LLVM_ROOT}/bin/clang++.exe",
 				"-DCMAKE_CXX_STANDARD=23",
 				"-DCMAKE_CXX_STANDARD_REQUIRED=ON",
@@ -98,24 +119,34 @@
 				"-DCMAKE_SHARED_LINKER_FLAGS=-fuse-ld=lld"
 			],
 			"group": "build",
-			"problemMatcher": ["$gcc"]
+			"problemMatcher": [
+				"$gcc"
+			]
 		},
 		{
 			"label": "Build RelWithDebInfo (Windows)",
 			"type": "shell",
 			"command": "cmake",
-			"args": ["--build", "build/win-relwithdebinfo"],
+			"args": [
+				"--build",
+				"build/win-relwithdebinfo"
+			],
 			"dependsOn": "Configure RelWithDebInfo (Windows)",
-			"problemMatcher": ["$gcc"]
+			"problemMatcher": [
+				"$gcc"
+			]
 		},
 		{
 			"label": "Configure Release (Windows)",
 			"type": "shell",
 			"command": "cmake",
 			"args": [
-				"-S", ".",
-				"-B", "build/win-release",
-				"-G", "Ninja",
+				"-S",
+				".",
+				"-B",
+				"build/win-release",
+				"-G",
+				"Ninja",
 				"-DCMAKE_CXX_COMPILER=${env:LLVM_ROOT}/bin/clang++.exe",
 				"-DCMAKE_CXX_STANDARD=23",
 				"-DCMAKE_CXX_STANDARD_REQUIRED=ON",
@@ -128,24 +159,34 @@
 				"-DCMAKE_SHARED_LINKER_FLAGS=-fuse-ld=lld"
 			],
 			"group": "build",
-			"problemMatcher": ["$gcc"]
+			"problemMatcher": [
+				"$gcc"
+			]
 		},
 		{
 			"label": "Build Release (Windows)",
 			"type": "shell",
 			"command": "cmake",
-			"args": ["--build", "build/win-release"],
+			"args": [
+				"--build",
+				"build/win-release"
+			],
 			"dependsOn": "Configure Release (Windows)",
-			"problemMatcher": ["$gcc"]
+			"problemMatcher": [
+				"$gcc"
+			]
 		},
 		{
 			"label": "Configure Optimized (Windows)",
 			"type": "shell",
 			"command": "cmake",
 			"args": [
-				"-S", ".",
-				"-B", "build/win-optimized",
-				"-G", "Ninja",
+				"-S",
+				".",
+				"-B",
+				"build/win-optimized",
+				"-G",
+				"Ninja",
 				"-DCMAKE_CXX_COMPILER=${env:LLVM_ROOT}/bin/clang++.exe",
 				"-DCMAKE_CXX_STANDARD=23",
 				"-DCMAKE_CXX_STANDARD_REQUIRED=ON",
@@ -157,18 +198,37 @@
 				"-DGNOTE_ENABLE_IPO=ON",
 				"-DCMAKE_INTERPROCEDURAL_OPTIMIZATION=ON",
 				"-DCMAKE_EXE_LINKER_FLAGS=-fuse-ld=lld",
-				"-DCMAKE_SHARED_LINKER_FLAGS=-fuse-ld=lld"
+				"-DCMAKE_SHARED_LINKER_FLAGS=-fuse-ld=lld",
+				"-DCMAKE_CXX_FLAGS_RELEASE=-O3 -DNDEBUG -march=x86-64-v3 -fomit-frame-pointer"
 			],
 			"group": "build",
-			"problemMatcher": ["$gcc"]
+			"problemMatcher": [
+				"$gcc"
+			]
 		},
 		{
 			"label": "Build Optimized (Windows)",
 			"type": "shell",
 			"command": "cmake",
-			"args": ["--build", "build/win-optimized"],
+			"args": [
+				"--build",
+				"build/win-optimized"
+			],
 			"dependsOn": "Configure Optimized (Windows)",
-			"problemMatcher": ["$gcc"]
+			"problemMatcher": [
+				"$gcc"
+			]
+		},
+		{
+			"label": "Run GnotePad (Optimized, Windows, No Debugger)",
+			"type": "shell",
+			"command": "${workspaceFolder}/build/win-optimized/GnotePad.exe",
+			"dependsOn": "Build Optimized (Windows)",
+			"problemMatcher": [],
+			"presentation": {
+				"reveal": "silent",
+				"panel": "shared"
+			}
 		},
 		{
 			"label": "Clang-Tidy (Debug, Linux)",
@@ -178,7 +238,9 @@
 				"-lc",
 				"cmake -S . -B build/debug -G Ninja -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_CXX_STANDARD=23 -DCMAKE_CXX_STANDARD_REQUIRED=ON -DCMAKE_CXX_EXTENSIONS=OFF -DCMAKE_PREFIX_PATH=/usr/lib/x86_64-linux-gnu/cmake/Qt6 -DCMAKE_BUILD_TYPE=Debug -DGNOTE_ENABLE_CLANG_TIDY=ON && cmake --build build/debug"
 			],
-			"problemMatcher": ["$gcc"]
+			"problemMatcher": [
+				"$gcc"
+			]
 		},
 		{
 			"label": "Scan-Build (Debug, Linux)",
@@ -188,7 +250,9 @@
 				"-lc",
 				"cmake -S . -B build/analyze -G Ninja -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_CXX_STANDARD=23 -DCMAKE_CXX_STANDARD_REQUIRED=ON -DCMAKE_CXX_EXTENSIONS=OFF -DCMAKE_PREFIX_PATH=/usr/lib/x86_64-linux-gnu/cmake/Qt6 -DCMAKE_BUILD_TYPE=Debug && scan-build -o scan-build-report --status-bugs cmake --build build/analyze"
 			],
-			"problemMatcher": ["$gcc"]
+			"problemMatcher": [
+				"$gcc"
+			]
 		},
 		{
 			"label": "Clang-Format (Linux)",
@@ -199,8 +263,7 @@
 				"cmake --build build/debug --target run-clang-format"
 			],
 			"problemMatcher": []
-		}
-		,
+		},
 		{
 			"label": "Publish (Windows)",
 			"type": "shell",

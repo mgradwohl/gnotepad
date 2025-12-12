@@ -101,6 +101,8 @@ namespace GnotePad::ui
         }
 
         defaultFont.setStyleHint(QFont::Monospace);
+        defaultFont.setStyleStrategy(QFont::PreferAntialias);
+        defaultFont.setHintingPreference(QFont::PreferFullHinting);
         m_editor->applyEditorFont(defaultFont);
         m_editor->setTabSizeSpaces(m_tabSizeSpaces);
     }

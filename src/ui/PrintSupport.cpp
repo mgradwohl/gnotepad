@@ -38,7 +38,7 @@ namespace GnotePad::ui::PrintSupport
         constexpr qreal GutterPaddingPt = 6.0;        // Padding around line numbers (points)
         constexpr qreal HeaderFooterPaddingPt = 12.0; // Space between header/footer and content (points)
         constexpr qreal MonitorDPI = 96.0;            // Standard monitor DPI for scaling fallback
-    }                                                 // namespace
+    } // namespace
 
     void forcePrintColors(QTextDocument* doc)
     {

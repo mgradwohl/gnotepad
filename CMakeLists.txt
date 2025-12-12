@@ -160,6 +160,11 @@ add_executable(GnotePad
     ${GNOTE_RESOURCES}
 )
 
+# Add Windows application manifest for DPI awareness and other settings
+if(WIN32)
+    target_sources(GnotePad PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/resources/app.manifest")
+endif()
+
 target_compile_features(GnotePad PRIVATE cxx_std_23)
 
 gnote_apply_default_warnings(GnotePad)
