@@ -45,7 +45,12 @@
             "program": "${workspaceFolder}/build/release/GnotePad",
             "args": [],
             "cwd": "${workspaceFolder}",
+            "env": {
+                "LD_LIBRARY_PATH": ""
+            },
             "preLaunchTask": "Build Release (Linux)",
+            "terminal": "integrated",
+            "noDebug": true,
             "presentation": {
                 "group": "run-linux",
                 "order": 3
@@ -126,6 +131,8 @@
                 "QT_LOGGING_RULES": "qt.*.debug=false"
             },
             "preLaunchTask": "Build Release (Windows)",
+            "terminal": "integrated",
+            "noDebug": true,
             "presentation": {
                 "group": "run-windows",
                 "order": 3
@@ -141,7 +148,8 @@
             "env": {
                 "PATH": "${env:VCPKG_ROOT}\\installed\\x64-windows\\bin;${env:PATH}",
                 "QT_PLUGIN_PATH": "${env:VCPKG_ROOT}\\installed\\x64-windows\\Qt6\\plugins",
-                "QT_QPA_PLATFORM_PLUGIN_PATH": "${env:VCPKG_ROOT}\\installed\\x64-windows\\Qt6\\plugins\\platforms"
+                "QT_QPA_PLATFORM_PLUGIN_PATH": "${env:VCPKG_ROOT}\\installed\\x64-windows\\Qt6\\plugins\\platforms",
+                "QT_LOGGING_RULES": "qt.*.debug=false"
             },
             "preLaunchTask": "Build Optimized (Windows)",
             "terminal": "integrated",

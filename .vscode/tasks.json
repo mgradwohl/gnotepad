@@ -203,6 +203,8 @@
 				"-DCMAKE_INTERPROCEDURAL_OPTIMIZATION=ON",
 				"-DCMAKE_EXE_LINKER_FLAGS=-fuse-ld=lld",
 				"-DCMAKE_SHARED_LINKER_FLAGS=-fuse-ld=lld",
+				"-DCMAKE_EXE_LINKER_FLAGS_RELEASE=-s",
+				"-DCMAKE_SHARED_LINKER_FLAGS_RELEASE=-s",
 				"-DCMAKE_CXX_FLAGS_RELEASE=-O3 -DNDEBUG -march=x86-64-v3 -fomit-frame-pointer"
 			],
 			"group": "build",
@@ -234,14 +236,16 @@
 				"panel": "shared"
 			}
 		},
+		// ===== Static Analysis (Linux) =====
 		{
 			"label": "Clang-Tidy (Debug, Linux)",
 			"type": "shell",
 			"command": "bash",
 			"args": [
 				"-lc",
-				"cmake -S . -B build/debug -G Ninja -DCMAKE_CXX_COMPILER=/usr/lib/llvm-21/bin/clang++ -DCMAKE_CXX_STANDARD=23 -DCMAKE_CXX_STANDARD_REQUIRED=ON -DCMAKE_CXX_EXTENSIONS=OFF -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DCMAKE_PREFIX_PATH=/usr/lib/x86_64-linux-gnu/cmake/Qt6 -DCMAKE_BUILD_TYPE=Debug && cmake --build build/debug --target copy-compile-commands run-clang-tidy"
+				"cmake -S . -B build/debug -G Ninja -DCMAKE_CXX_COMPILER=/usr/lib/llvm-21/bin/clang++ -DCMAKE_CXX_STANDARD=23 -DCMAKE_CXX_STANDARD_REQUIRED=ON -DCMAKE_CXX_EXTENSIONS=OFF -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DCMAKE_PREFIX_PATH=/usr/lib/x86_64-linux-gnu/cmake/Qt6 -DCMAKE_BUILD_TYPE=Debug -DCMAKE_EXE_LINKER_FLAGS=-fuse-ld=lld -DCMAKE_SHARED_LINKER_FLAGS=-fuse-ld=lld && cmake --build build/debug --target copy-compile-commands run-clang-tidy"
 			],
+			"group": "test",
 			"problemMatcher": [
 				"$gcc"
 			]
@@ -252,8 +256,9 @@
 			"command": "bash",
 			"args": [
 				"-lc",
-				"cmake -S . -B build/analyze -G Ninja -DCMAKE_C_COMPILER=/usr/lib/llvm-21/bin/clang -DCMAKE_CXX_COMPILER=/usr/lib/llvm-21/bin/clang++ -DCMAKE_CXX_STANDARD=23 -DCMAKE_CXX_STANDARD_REQUIRED=ON -DCMAKE_CXX_EXTENSIONS=OFF -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DCMAKE_PREFIX_PATH=/usr/lib/x86_64-linux-gnu/cmake/Qt6 -DCMAKE_BUILD_TYPE=Debug && scan-build -o scan-build-report --status-bugs --use-cc=/usr/lib/llvm-21/bin/clang --use-c++=/usr/lib/llvm-21/bin/clang++ cmake --build build/analyze"
+				"cmake -S . -B build/analyze -G Ninja -DCMAKE_C_COMPILER=/usr/lib/llvm-21/bin/clang -DCMAKE_CXX_COMPILER=/usr/lib/llvm-21/bin/clang++ -DCMAKE_CXX_STANDARD=23 -DCMAKE_CXX_STANDARD_REQUIRED=ON -DCMAKE_CXX_EXTENSIONS=OFF -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DCMAKE_PREFIX_PATH=/usr/lib/x86_64-linux-gnu/cmake/Qt6 -DCMAKE_BUILD_TYPE=Debug -DCMAKE_EXE_LINKER_FLAGS=-fuse-ld=lld -DCMAKE_SHARED_LINKER_FLAGS=-fuse-ld=lld && scan-build -o scan-build-report --status-bugs --use-cc=/usr/lib/llvm-21/bin/clang --use-c++=/usr/lib/llvm-21/bin/clang++ cmake --build build/analyze"
 			],
+			"group": "test",
 			"problemMatcher": [
 				"$gcc"
 			]
@@ -266,8 +271,112 @@
 				"-lc",
 				"cmake --build build/debug --target run-clang-format"
 			],
+			"group": "test",
 			"problemMatcher": []
 		},
+		// ===== Static Analysis (Windows) =====
+		{
+			"label": "Configure Clang-Tidy (Debug, Windows)",
+			"type": "shell",
+			"command": "cmake",
+			"args": [
+				"-S",
+				".",
+				"-B",
+				"build/win-debug",
+				"-G",
+				"Ninja",
+				"-DCMAKE_CXX_COMPILER=${env:LLVM_ROOT}/bin/clang++.exe",
+				"-DCMAKE_CXX_STANDARD=23",
+				"-DCMAKE_CXX_STANDARD_REQUIRED=ON",
+				"-DCMAKE_CXX_EXTENSIONS=OFF",
+				"-DCMAKE_EXPORT_COMPILE_COMMANDS=ON",
+				"-DCMAKE_TOOLCHAIN_FILE=${env:VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake",
+				"-DQt6_DIR=${env:Qt6_DIR}",
+				"-DCMAKE_PREFIX_PATH=${env:QT6_PREFIX_PATH}",
+				"-DCMAKE_BUILD_TYPE=Debug",
+				"-DCMAKE_EXE_LINKER_FLAGS=-fuse-ld=lld",
+				"-DCMAKE_SHARED_LINKER_FLAGS=-fuse-ld=lld"
+			],
+			"group": "test",
+			"problemMatcher": [
+				"$gcc"
+			]
+		},
+		{
+			"label": "Clang-Tidy (Debug, Windows)",
+			"type": "shell",
+			"command": "cmake",
+			"args": [
+				"--build",
+				"build/win-debug",
+				"--target",
+				"copy-compile-commands",
+				"run-clang-tidy"
+			],
+			"dependsOn": "Configure Clang-Tidy (Debug, Windows)",
+			"group": "test",
+			"problemMatcher": [
+				"$gcc"
+			]
+		},
+		{
+			"label": "Configure Scan-Build (Debug, Windows)",
+			"type": "shell",
+			"command": "cmake",
+			"args": [
+				"-S",
+				".",
+				"-B",
+				"build/win-analyze",
+				"-G",
+				"Ninja",
+				"-DCMAKE_C_COMPILER=${env:LLVM_ROOT}/bin/clang.exe",
+				"-DCMAKE_CXX_COMPILER=${env:LLVM_ROOT}/bin/clang++.exe",
+				"-DCMAKE_CXX_STANDARD=23",
+				"-DCMAKE_CXX_STANDARD_REQUIRED=ON",
+				"-DCMAKE_CXX_EXTENSIONS=OFF",
+				"-DCMAKE_EXPORT_COMPILE_COMMANDS=ON",
+				"-DCMAKE_TOOLCHAIN_FILE=${env:VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake",
+				"-DQt6_DIR=${env:Qt6_DIR}",
+				"-DCMAKE_PREFIX_PATH=${env:QT6_PREFIX_PATH}",
+				"-DCMAKE_BUILD_TYPE=Debug",
+				"-DCMAKE_EXE_LINKER_FLAGS=-fuse-ld=lld",
+				"-DCMAKE_SHARED_LINKER_FLAGS=-fuse-ld=lld"
+			],
+			"group": "test",
+			"problemMatcher": [
+				"$gcc"
+			]
+		},
+		{
+			"label": "Scan-Build (Debug, Windows)",
+			"type": "shell",
+			"command": "pwsh",
+			"args": [
+				"-Command",
+				"& \"${env:LLVM_ROOT}/bin/scan-build.bat\" -o scan-build-report --status-bugs --use-cc=\"${env:LLVM_ROOT}/bin/clang.exe\" --use-c++=\"${env:LLVM_ROOT}/bin/clang++.exe\" cmake --build build/win-analyze"
+			],
+			"dependsOn": "Configure Scan-Build (Debug, Windows)",
+			"group": "test",
+			"problemMatcher": [
+				"$gcc"
+			]
+		},
+		{
+			"label": "Clang-Format (Windows)",
+			"type": "shell",
+			"command": "cmake",
+			"args": [
+				"--build",
+				"build/win-debug",
+				"--target",
+				"run-clang-format"
+			],
+			"group": "test",
+			"problemMatcher": []
+		},
+		// ===== Publish =====
 		{
 			"label": "Publish (Windows)",
 			"type": "shell",
