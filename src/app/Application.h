@@ -30,6 +30,8 @@ namespace GnotePad
 
         int run();
 
+        static bool isHeadlessSmokeMode();
+
     private:
         void parseCommandLine(const QStringList& arguments);
         void configureMetadata() const;

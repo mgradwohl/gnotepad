@@ -22,6 +22,7 @@
 #if defined(_WIN32)
 #include <spdlog/sinks/msvc_sink.h>
 #include <spdlog/sinks/stdout_color_sinks.h>
+#include <spdlog/sinks/wincolor_sink.h>
 #endif
 
 #ifndef GNOTE_VERSION
@@ -29,6 +30,35 @@
 #endif
 
 #include "ui/MainWindow.h"
+
+#if defined(_WIN32) && !defined(NDEBUG)
+// Custom Qt message handler to route qDebug/qWarning/etc. to our console and debugger
+void qtMessageHandler(QtMsgType type, const QMessageLogContext& context, const QString& msg)
+{
+    const QByteArray localMsg = msg.toLocal8Bit();
+    const char* file = context.file != nullptr ? context.file : "";
+    const char* function = context.function != nullptr ? context.function : "";
+
+    switch (type)
+    {
+    case QtDebugMsg:
+        spdlog::debug("[Qt] {} ({}:{}, {})", localMsg.constData(), file, context.line, function);
+        break;
+    case QtInfoMsg:
+        spdlog::info("[Qt] {} ({}:{}, {})", localMsg.constData(), file, context.line, function);
+        break;
+    case QtWarningMsg:
+        spdlog::warn("[Qt] {} ({}:{}, {})", localMsg.constData(), file, context.line, function);
+        break;
+    case QtCriticalMsg:
+        spdlog::error("[Qt] {} ({}:{}, {})", localMsg.constData(), file, context.line, function);
+        break;
+    case QtFatalMsg:
+        spdlog::critical("[Qt] {} ({}:{}, {})", localMsg.constData(), file, context.line, function);
+        std::abort();
+    }
+}
+#endif
 
 namespace
 {
@@ -40,14 +70,48 @@ namespace GnotePad
 
     Application::Application(int& argc, char** argv) : QApplication(argc, argv)
     {
+        // #if defined(_WIN32) && !defined(NDEBUG)
+        //         // Try to attach to parent console (e.g., when run from terminal).
+        //         // If no parent console exists (e.g., launched from debugger), create our own.
+        //         if (AttachConsole(ATTACH_PARENT_PROCESS) == 0)
+        //         {
+        //             AllocConsole();
+        //             // Redirect stdout/stderr to the new console
+        //             FILE* fp = nullptr;
+        //             freopen_s(&fp, "CONOUT$", "w", stdout);
+        //             freopen_s(&fp, "CONOUT$", "w", stderr);
+        //         }
+        //         // Route logs to both the debugger output window and the console (Windows Terminal).
+        //         auto msvcSink = std::make_shared<spdlog::sinks::msvc_sink_mt>();
+        //         auto consoleSink = std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
+        //         auto dualSinkLogger = std::make_shared<spdlog::logger>("debugger+console", spdlog::sinks_init_list{msvcSink,
+        //         consoleSink}); spdlog::set_default_logger(dualSinkLogger);
+        // #endif
+
 #if defined(_WIN32) && !defined(NDEBUG)
-        AttachConsole(ATTACH_PARENT_PROCESS);
-        // Route logs to both the debugger output window and the console (Windows Terminal).
+        // Try to attach to parent console (e.g., when run from terminal).
+        // If no parent console exists (e.g., launched from debugger), create our own.
+
+        if (AttachConsole(ATTACH_PARENT_PROCESS) == 0)
+        {
+            AllocConsole();
+            // Redirect stdout/stderr to the new console
+            FILE* out = nullptr;
+            FILE* err = nullptr;
+            freopen_s(&out, "CONOUT$", "w", stdout);
+            freopen_s(&err, "CONOUT$", "w", stderr);
+        }
         auto msvcSink = std::make_shared<spdlog::sinks::msvc_sink_mt>();
         auto consoleSink = std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
-        auto dualSinkLogger = std::make_shared<spdlog::logger>("debugger+console", spdlog::sinks_init_list{msvcSink, consoleSink});
-        spdlog::set_default_logger(dualSinkLogger);
+        auto logger = std::make_shared<spdlog::logger>("gnotepad", spdlog::sinks_init_list{msvcSink, consoleSink});
+
+        spdlog::set_default_logger(logger);
+
+        // Install Qt message handler to route qDebug/qWarning/etc. through spdlog
+        qInstallMessageHandler(qtMessageHandler);
+
 #endif
+
 #if !defined(NDEBUG)
         spdlog::set_level(spdlog::level::debug);
         spdlog::flush_on(spdlog::level::debug);
@@ -56,6 +120,7 @@ namespace GnotePad
         QSettings::setDefaultFormat(QSettings::IniFormat);
         configureIcon();
         parseCommandLine(arguments());
+
         spdlog::info("GnotePad Application initialized");
     }
 
@@ -137,6 +202,12 @@ namespace GnotePad
         parser.process(arguments);
 
         m_quitAfterInit = parser.isSet(quitAfterInitOption);
+    }
+
+    bool Application::isHeadlessSmokeMode()
+    {
+        const auto args = QCoreApplication::arguments();
+        return args.contains(QStringLiteral("--quit-after-init")) || args.contains(QStringLiteral("--headless-smoke"));
     }
 
     void Application::configureStyle()

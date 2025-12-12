@@ -3,7 +3,7 @@
     "configurations": [
         // Linux launchers
         {
-            "name": "Run GnotePad (Debug, Linux)",
+            "name": "Debug GnotePad (Debug, Linux)",
             "type": "lldb",
             "request": "launch",
             "program": "${workspaceFolder}/build/debug/GnotePad",
@@ -14,13 +14,14 @@
             },
             "preLaunchTask": "Build Debug (Linux)",
             "terminal": "integrated",
+            "stdio": null,
             "presentation": {
                 "group": "run-linux",
                 "order": 1
             }
         },
         {
-            "name": "Run GnotePad (RelWithDebInfo, Linux)",
+            "name": "Debug GnotePad (RelWithDebInfo, Linux)",
             "type": "lldb",
             "request": "launch",
             "program": "${workspaceFolder}/build/relwithdebinfo/GnotePad",
@@ -28,18 +29,20 @@
             "cwd": "${workspaceFolder}",
             "preLaunchTask": "Build RelWithDebInfo",
             "terminal": "integrated",
+            "stdio": null,
             "presentation": {
                 "group": "run-linux",
                 "order": 2
             }
         },
         {
-            "name": "Run GnotePad (Release, Linux)",
+            "name": "Debug GnotePad (Release, Linux)",
             "type": "lldb",
             "request": "launch",
             "program": "${workspaceFolder}/build/release/GnotePad",
             "cwd": "${workspaceFolder}",
             "preLaunchTask": "Build Release",
+            "stdio": null,
             "presentation": {
                 "group": "run-linux",
                 "order": 3
@@ -55,8 +58,10 @@
             "env": {
                 "LD_LIBRARY_PATH": ""
             },
-            "preLaunchTask": "Build Optimized",
+            "preLaunchTask": "Build Optimized (Linux)",
             "terminal": "integrated",
+            "stdio": null,
+            "noDebug": true,
             "presentation": {
                 "group": "run-linux",
                 "order": 4
@@ -64,7 +69,7 @@
         },
         // Windows launchers
         {
-            "name": "Run GnotePad (Debug, Windows)",
+            "name": "Debug GnotePad (Debug, Windows)",
             "type": "lldb",
             "request": "launch",
             "program": "${workspaceFolder}/build/win-debug/GnotePad.exe",
@@ -73,17 +78,19 @@
                 "PATH": "${env:VCPKG_ROOT}\\installed\\x64-windows\\debug\\bin;${env:VCPKG_ROOT}\\installed\\x64-windows\\bin;${env:PATH}",
                 "QT_PLUGIN_PATH": "${env:VCPKG_ROOT}\\installed\\x64-windows\\debug\\Qt6\\plugins;${env:VCPKG_ROOT}\\installed\\x64-windows\\Qt6\\plugins",
                 "QT_QPA_PLATFORM_PLUGIN_PATH": "${env:VCPKG_ROOT}\\installed\\x64-windows\\debug\\Qt6\\plugins\\platforms;${env:VCPKG_ROOT}\\installed\\x64-windows\\Qt6\\plugins\\platforms",
-                "QT_DEBUG_PLUGINS": "1"
+                "QT_DEBUG_PLUGINS": "1",
+                "QT_LOGGING_RULES": "qt.*.debug=false"
             },
             "preLaunchTask": "Build Debug (Windows)",
             "terminal": "integrated",
+            "stdio": null,
             "presentation": {
                 "group": "run-windows",
                 "order": 1
             }
         },
         {
-            "name": "Run GnotePad (RelWithDebInfo, Windows)",
+            "name": "Debug GnotePad (RelWithDebInfo, Windows)",
             "type": "lldb",
             "request": "launch",
             "program": "${workspaceFolder}/build/win-relwithdebinfo/GnotePad.exe",
@@ -96,13 +103,14 @@
             },
             "preLaunchTask": "Build RelWithDebInfo (Windows)",
             "terminal": "integrated",
+            "stdio": null,
             "presentation": {
                 "group": "run-windows",
                 "order": 2
             }
         },
         {
-            "name": "Run GnotePad (Release, Windows)",
+            "name": "Debug GnotePad (Release, Windows)",
             "type": "lldb",
             "request": "launch",
             "program": "${workspaceFolder}/build/win-release/GnotePad.exe",
@@ -114,6 +122,7 @@
                 "QT_DEBUG_PLUGINS": "1"
             },
             "preLaunchTask": "Build Release (Windows)",
+            "stdio": null,
             "presentation": {
                 "group": "run-windows",
                 "order": 3
@@ -126,13 +135,14 @@
             "program": "${workspaceFolder}/build/win-optimized/GnotePad.exe",
             "cwd": "${workspaceFolder}",
             "env": {
-                "PATH": "${env:VCPKG_ROOT}\\installed\\x64-windows\\debug\\bin;${env:VCPKG_ROOT}\\installed\\x64-windows\\bin;${env:PATH}",
-                "QT_PLUGIN_PATH": "${env:VCPKG_ROOT}\\installed\\x64-windows\\debug\\Qt6\\plugins;${env:VCPKG_ROOT}\\installed\\x64-windows\\Qt6\\plugins",
-                "QT_QPA_PLATFORM_PLUGIN_PATH": "${env:VCPKG_ROOT}\\installed\\x64-windows\\debug\\Qt6\\plugins\\platforms;${env:VCPKG_ROOT}\\installed\\x64-windows\\Qt6\\plugins\\platforms",
-                "QT_DEBUG_PLUGINS": "1"
+                "PATH": "${env:VCPKG_ROOT}\\installed\\x64-windows\\bin;${env:PATH}",
+                "QT_PLUGIN_PATH": "${env:VCPKG_ROOT}\\installed\\x64-windows\\Qt6\\plugins",
+                "QT_QPA_PLATFORM_PLUGIN_PATH": "${env:VCPKG_ROOT}\\installed\\x64-windows\\Qt6\\plugins\\platforms"
             },
             "preLaunchTask": "Build Optimized (Windows)",
             "terminal": "integrated",
+            "stdio": null,
+            "noDebug": true,
             "presentation": {
                 "group": "run-windows",
                 "order": 4
@@ -150,6 +160,7 @@
                 "LD_LIBRARY_PATH": ""
             },
             "terminal": "integrated",
+            "stdio": null,
             "presentation": {
                 "group": "test-linux",
                 "order": 1
@@ -169,6 +180,7 @@
                 "QT_DEBUG_PLUGINS": "1"
             },
             "terminal": "integrated",
+            "stdio": null,
             "presentation": {
                 "group": "test-windows",
                 "order": 1

@@ -109,6 +109,9 @@ namespace GnotePad::ui
 
         QPainter painter(m_lineNumberArea);
         painter.fillRect(event->rect(), palette().alternateBase());
+        painter.setRenderHint(QPainter::TextAntialiasing, true);
+        painter.setRenderHint(QPainter::Antialiasing, true);
+        painter.setRenderHint(QPainter::SmoothPixmapTransform, true);
 
         QTextBlock block = firstVisibleBlock();
         int blockNumber = block.blockNumber();

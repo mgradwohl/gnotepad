@@ -9,7 +9,7 @@ on:
 jobs:
   format-check:
     name: Code Formatting Check
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
 
     steps:
     - name: Checkout code
@@ -46,7 +46,7 @@ jobs:
 
   static-analysis:
     name: Static Analysis (clang-tidy)
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
 
     steps:
     - name: Checkout code
@@ -83,7 +83,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest]
+        os: [ubuntu-24.04]
         build-type: [Debug, Release]
 
     runs-on: ${{ matrix.os }}
@@ -117,5 +117,17 @@ jobs:
     - name: Build
       run: cmake --build build
 
-    - name: Run tests
+    - name: Install Xvfb and GL libs
+      if: runner.os == 'Linux'
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y xvfb mesa-utils mesa-utils-extra libegl-mesa0 libgl1-mesa-dri libgbm1
+
+    - name: Run tests (Linux with Xvfb)
+      if: runner.os == 'Linux'
+      run: |
+        xvfb-run -a -s "-screen 0 1920x1080x24" ctest --test-dir build --output-on-failure
+
+    - name: Run tests (Non-Linux)
+      if: runner.os != 'Linux'
       run: ctest --test-dir build --output-on-failure

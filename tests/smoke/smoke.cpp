@@ -786,22 +786,22 @@ void MainWindowSmokeTests::testUtf8BomDetection()
     QVERIFY2(!noBomPath.isEmpty(), "utf8_no_bom.txt not found in testfiles/encoding-tests directory");
 
     MainWindow window;
-    
+
     // Test file with BOM
     QVERIFY(window.testLoadDocument(bomPath));
     QCOMPARE(window.currentEncodingForTest(), QStringConverter::Utf8);
     QVERIFY(window.currentBomForTest());
-    
+
     auto* editor = window.editorForTest();
     QVERIFY(editor);
     const QString contentWithBom = editor->toPlainText();
     QVERIFY(contentWithBom.contains(QStringLiteral("UTF-8 BOM marker")));
-    
+
     // Test file without BOM
     QVERIFY(window.testLoadDocument(noBomPath));
     QCOMPARE(window.currentEncodingForTest(), QStringConverter::Utf8);
     QVERIFY(!window.currentBomForTest());
-    
+
     const QString contentNoBom = editor->toPlainText();
     QVERIFY(contentNoBom.contains(QStringLiteral("NO BOM marker")));
 }
@@ -813,10 +813,10 @@ void MainWindowSmokeTests::testUtf16LEBomDetection()
 
     MainWindow window;
     QVERIFY(window.testLoadDocument(utf16lePath));
-    
+
     QCOMPARE(window.currentEncodingForTest(), QStringConverter::Utf16LE);
     QVERIFY(window.currentBomForTest());
-    
+
     auto* editor = window.editorForTest();
     QVERIFY(editor);
     const QString content = editor->toPlainText();
@@ -830,10 +830,10 @@ void MainWindowSmokeTests::testUtf16BEBomDetection()
 
     MainWindow window;
     QVERIFY(window.testLoadDocument(utf16bePath));
-    
+
     QCOMPARE(window.currentEncodingForTest(), QStringConverter::Utf16BE);
     QVERIFY(window.currentBomForTest());
-    
+
     auto* editor = window.editorForTest();
     QVERIFY(editor);
     const QString content = editor->toPlainText();
@@ -847,11 +847,11 @@ void MainWindowSmokeTests::testMultilingualContent()
 
     MainWindow window;
     QVERIFY(window.testLoadDocument(multiPath));
-    
+
     auto* editor = window.editorForTest();
     QVERIFY(editor);
     const QString content = editor->toPlainText();
-    
+
     // Verify various languages are present
     QVERIFY(content.contains(QStringLiteral("English")));
     QVERIFY(content.contains(QStringLiteral("Spanish")));
@@ -861,12 +861,12 @@ void MainWindowSmokeTests::testMultilingualContent()
     QVERIFY(content.contains(QStringLiteral("Chinese")));
     QVERIFY(content.contains(QStringLiteral("Japanese")));
     QVERIFY(content.contains(QStringLiteral("Korean")));
-    
+
     // Verify specific Unicode characters
     QVERIFY(content.contains(QStringLiteral("Быстрая"))); // Russian
-    QVERIFY(content.contains(QStringLiteral("敏捷的"))); // Chinese
-    QVERIFY(content.contains(QStringLiteral("素早い"))); // Japanese
-    QVERIFY(content.contains(QStringLiteral("빠른"))); // Korean
+    QVERIFY(content.contains(QStringLiteral("敏捷的")));  // Chinese
+    QVERIFY(content.contains(QStringLiteral("素早い")));  // Japanese
+    QVERIFY(content.contains(QStringLiteral("빠른")));    // Korean
 }
 
 void MainWindowSmokeTests::testUnicodeCharacters()
@@ -876,26 +876,25 @@ void MainWindowSmokeTests::testUnicodeCharacters()
 
     MainWindow window;
     QVERIFY(window.testLoadDocument(unicodePath));
-    
+
     auto* editor = window.editorForTest();
     QVERIFY(editor);
     const QString content = editor->toPlainText();
-    
+
     // Verify various Unicode categories are present
     QVERIFY(content.contains(QStringLiteral("Mathematical Symbols")));
     QVERIFY(content.contains(QStringLiteral("∀∃∄∅"))); // Math symbols
     QVERIFY(content.contains(QStringLiteral("Currency Symbols")));
-    
+
     // Test common currency symbols individually - some platforms may not support all Unicode currency
     const bool hasEuro = content.contains(QStringLiteral("€"));
     const bool hasDollar = content.contains(QStringLiteral("$"));
     const bool hasPound = content.contains(QStringLiteral("£"));
-    QVERIFY2(hasEuro || hasDollar || hasPound, 
-             qPrintable(QString("No currency symbols found. Content length: %1").arg(content.length())));
-    
+    QVERIFY2(hasEuro || hasDollar || hasPound, qPrintable(QString("No currency symbols found. Content length: %1").arg(content.length())));
+
     QVERIFY(content.contains(QStringLiteral("←↑→↓"))); // Arrows
-    QVERIFY(content.contains(QStringLiteral("ΑΒΓ"))); // Greek
-    
+    QVERIFY(content.contains(QStringLiteral("ΑΒΓ")));  // Greek
+
     // Emoji may not be supported on all platforms/fonts, so just verify line exists
     QVERIFY(content.contains(QStringLiteral("Emoji:")));
 }
@@ -907,43 +906,43 @@ void MainWindowSmokeTests::testEncodingRoundTripUtf8ToBom()
 
     MainWindow window;
     QVERIFY(window.testLoadDocument(sourcePath));
-    
+
     auto* editor = window.editorForTest();
     QVERIFY(editor);
     const QString originalContent = editor->toPlainText();
-    
+
     QTemporaryDir tempDir;
     QVERIFY(tempDir.isValid());
-    
+
     // Test UTF-8 without BOM -> UTF-8 with BOM -> reload
     const QString utf8BomPath = tempDir.filePath(QStringLiteral("utf8_added_bom.txt"));
     QVERIFY(window.testSaveDocumentWithEncoding(utf8BomPath, QStringConverter::Utf8, true));
-    
+
     // Verify BOM was written
     QFile bomFile(utf8BomPath);
     QVERIFY(bomFile.open(QIODevice::ReadOnly));
     const QByteArray bomBytes = bomFile.read(3);
     QCOMPARE(bomBytes, QByteArray::fromHex("efbbbf"));
     bomFile.close();
-    
+
     // Reload and verify content
     editor->clear();
     QVERIFY(window.testLoadDocument(utf8BomPath));
     QCOMPARE(editor->toPlainText(), originalContent);
     QCOMPARE(window.currentEncodingForTest(), QStringConverter::Utf8);
     QVERIFY(window.currentBomForTest());
-    
+
     // Test UTF-8 with BOM -> UTF-8 without BOM -> reload
     const QString utf8NoBomPath = tempDir.filePath(QStringLiteral("utf8_removed_bom.txt"));
     QVERIFY(window.testSaveDocumentWithEncoding(utf8NoBomPath, QStringConverter::Utf8, false));
-    
+
     // Verify no BOM
     QFile noBomFile(utf8NoBomPath);
     QVERIFY(noBomFile.open(QIODevice::ReadOnly));
     const QByteArray noBomBytes = noBomFile.read(3);
     QVERIFY(!noBomBytes.startsWith(QByteArray::fromHex("efbbbf")));
     noBomFile.close();
-    
+
     // Reload and verify content
     editor->clear();
     QVERIFY(window.testLoadDocument(utf8NoBomPath));
@@ -959,52 +958,52 @@ void MainWindowSmokeTests::testEncodingRoundTripUtf16Variants()
 
     MainWindow window;
     QVERIFY(window.testLoadDocument(mixedPath));
-    
+
     auto* editor = window.editorForTest();
     QVERIFY(editor);
     const QString originalContent = editor->toPlainText();
-    
+
     QTemporaryDir tempDir;
     QVERIFY(tempDir.isValid());
-    
+
     // UTF-8 -> UTF-16 LE -> reload
     const QString utf16lePath = tempDir.filePath(QStringLiteral("utf16le_roundtrip.txt"));
     QVERIFY(window.testSaveDocumentWithEncoding(utf16lePath, QStringConverter::Utf16LE, true));
-    
+
     // Verify UTF-16 LE BOM
     QFile leFile(utf16lePath);
     QVERIFY(leFile.open(QIODevice::ReadOnly));
     const QByteArray leBom = leFile.read(2);
     QCOMPARE(leBom, QByteArray::fromHex("fffe"));
     leFile.close();
-    
+
     editor->clear();
     QVERIFY(window.testLoadDocument(utf16lePath));
     QCOMPARE(editor->toPlainText(), originalContent);
     QCOMPARE(window.currentEncodingForTest(), QStringConverter::Utf16LE);
     QVERIFY(window.currentBomForTest());
-    
+
     // UTF-16 LE -> UTF-16 BE -> reload
     const QString utf16bePath = tempDir.filePath(QStringLiteral("utf16be_roundtrip.txt"));
     QVERIFY(window.testSaveDocumentWithEncoding(utf16bePath, QStringConverter::Utf16BE, true));
-    
+
     // Verify UTF-16 BE BOM
     QFile beFile(utf16bePath);
     QVERIFY(beFile.open(QIODevice::ReadOnly));
     const QByteArray beBom = beFile.read(2);
     QCOMPARE(beBom, QByteArray::fromHex("feff"));
     beFile.close();
-    
+
     editor->clear();
     QVERIFY(window.testLoadDocument(utf16bePath));
     QCOMPARE(editor->toPlainText(), originalContent);
     QCOMPARE(window.currentEncodingForTest(), QStringConverter::Utf16BE);
     QVERIFY(window.currentBomForTest());
-    
+
     // UTF-16 BE -> UTF-8 -> reload
     const QString utf8Path = tempDir.filePath(QStringLiteral("utf8_from_utf16.txt"));
     QVERIFY(window.testSaveDocumentWithEncoding(utf8Path, QStringConverter::Utf8, false));
-    
+
     editor->clear();
     QVERIFY(window.testLoadDocument(utf8Path));
     QCOMPARE(editor->toPlainText(), originalContent);
@@ -1019,17 +1018,17 @@ void MainWindowSmokeTests::testLargeFileEncodingRoundTrip()
 
     MainWindow window;
     QVERIFY(window.testLoadDocument(largePath));
-    
+
     auto* editor = window.editorForTest();
     QVERIFY(editor);
     const QString originalContent = editor->toPlainText();
     const qsizetype originalLength = originalContent.length();
     constexpr qsizetype MINIMUM_LARGE_FILE_SIZE = 10000;
     QVERIFY(originalLength > MINIMUM_LARGE_FILE_SIZE); // Ensure it's actually large
-    
+
     QTemporaryDir tempDir;
     QVERIFY(tempDir.isValid());
-    
+
     // Test round-trip through different encodings
     struct EncodingTest
     {
@@ -1037,22 +1036,22 @@ void MainWindowSmokeTests::testLargeFileEncodingRoundTrip()
         QStringConverter::Encoding encoding;
         bool bom;
     };
-    
+
     const std::array<EncodingTest, 4> tests{
         EncodingTest{.fileName = QStringLiteral("large_utf8_bom.txt"), .encoding = QStringConverter::Utf8, .bom = true},
         EncodingTest{.fileName = QStringLiteral("large_utf8_nobom.txt"), .encoding = QStringConverter::Utf8, .bom = false},
         EncodingTest{.fileName = QStringLiteral("large_utf16le.txt"), .encoding = QStringConverter::Utf16LE, .bom = true},
         EncodingTest{.fileName = QStringLiteral("large_utf16be.txt"), .encoding = QStringConverter::Utf16BE, .bom = true},
     };
-    
+
     for (const auto& test : tests)
     {
         const QString path = tempDir.filePath(test.fileName);
-        
+
         // Save with specified encoding
         editor->setPlainText(originalContent);
         QVERIFY(window.testSaveDocumentWithEncoding(path, test.encoding, test.bom));
-        
+
         // Reload and verify
         editor->clear();
         QVERIFY(window.testLoadDocument(path));
@@ -1070,11 +1069,11 @@ void MainWindowSmokeTests::testMixedContentPreservation()
 
     MainWindow window;
     QVERIFY(window.testLoadDocument(mixedPath));
-    
+
     auto* editor = window.editorForTest();
     QVERIFY(editor);
     const QString originalContent = editor->toPlainText();
-    
+
     // Verify all languages are present in original
     QVERIFY(originalContent.contains(QStringLiteral("English")));
     QVERIFY(originalContent.contains(QStringLiteral("Español")));
@@ -1085,35 +1084,35 @@ void MainWindowSmokeTests::testMixedContentPreservation()
     QVERIFY(originalContent.contains(QStringLiteral("한국어 테스트")));
     QVERIFY(originalContent.contains(QStringLiteral("Русский")));
     QVERIFY(originalContent.contains(QStringLiteral("العربية")));
-    
+
     QTemporaryDir tempDir;
     QVERIFY(tempDir.isValid());
-    
+
     // Test chain: UTF-8 -> UTF-16 LE -> UTF-16 BE -> UTF-8 with BOM
     const QString utf16lePath = tempDir.filePath(QStringLiteral("mixed_utf16le.txt"));
     QVERIFY(window.testSaveDocumentWithEncoding(utf16lePath, QStringConverter::Utf16LE, true));
-    
+
     editor->clear();
     QVERIFY(window.testLoadDocument(utf16lePath));
     QString utf16leContent = editor->toPlainText();
     QCOMPARE(utf16leContent, originalContent);
-    
+
     const QString utf16bePath = tempDir.filePath(QStringLiteral("mixed_utf16be.txt"));
     QVERIFY(window.testSaveDocumentWithEncoding(utf16bePath, QStringConverter::Utf16BE, true));
-    
+
     editor->clear();
     QVERIFY(window.testLoadDocument(utf16bePath));
     QString utf16beContent = editor->toPlainText();
     QCOMPARE(utf16beContent, originalContent);
-    
+
     const QString utf8BomPath = tempDir.filePath(QStringLiteral("mixed_utf8_bom.txt"));
     QVERIFY(window.testSaveDocumentWithEncoding(utf8BomPath, QStringConverter::Utf8, true));
-    
+
     editor->clear();
     QVERIFY(window.testLoadDocument(utf8BomPath));
     QString finalContent = editor->toPlainText();
     QCOMPARE(finalContent, originalContent);
-    
+
     // Verify all languages survived the encoding chain
     QVERIFY(finalContent.contains(QStringLiteral("中文测试")));
     QVERIFY(finalContent.contains(QStringLiteral("日本語テスト")));
@@ -1363,17 +1362,20 @@ void MainWindowSmokeTests::testFindDialogInvocation()
     QTRY_VERIFY(window.isVisible());
     window.setAutoDismissDialogsForTest(true);
 
+    // Add content so find action is enabled
+    auto* editor = window.editorForTest();
+    QVERIFY(editor);
+    editor->setPlainText(QStringLiteral("Test content for find dialog"));
+    QApplication::processEvents();
+
     const int initialCount = window.findDialogInvocationCountForTest();
 
-    // Invoke find via slot
-    QMetaObject::invokeMethod(&window, "handleFind");
-    QTRY_COMPARE(window.findDialogInvocationCountForTest(), initialCount + 1);
-
-    // Invoke via action
+    // Verify find action exists and can be triggered
     auto* findAction = window.findActionForTest();
     QVERIFY(findAction);
+    QVERIFY(findAction->isEnabled());
     findAction->trigger();
-    QTRY_COMPARE(window.findDialogInvocationCountForTest(), initialCount + 2);
+    QTRY_COMPARE(window.findDialogInvocationCountForTest(), initialCount + 1);
 }
 
 void MainWindowSmokeTests::testReplaceDialogInvocation()
@@ -1383,17 +1385,20 @@ void MainWindowSmokeTests::testReplaceDialogInvocation()
     QTRY_VERIFY(window.isVisible());
     window.setAutoDismissDialogsForTest(true);
 
+    // Add content so replace action is enabled
+    auto* editor = window.editorForTest();
+    QVERIFY(editor);
+    editor->setPlainText(QStringLiteral("Test content for replace dialog"));
+    QApplication::processEvents();
+
     const int initialCount = window.replaceDialogInvocationCountForTest();
 
-    // Invoke replace via slot
-    QMetaObject::invokeMethod(&window, "handleReplace");
-    QTRY_COMPARE(window.replaceDialogInvocationCountForTest(), initialCount + 1);
-
-    // Invoke via action
+    // Verify replace action exists and can be triggered
     auto* replaceAction = window.replaceActionForTest();
     QVERIFY(replaceAction);
+    QVERIFY(replaceAction->isEnabled());
     replaceAction->trigger();
-    QTRY_COMPARE(window.replaceDialogInvocationCountForTest(), initialCount + 2);
+    QTRY_COMPARE(window.replaceDialogInvocationCountForTest(), initialCount + 1);
 }
 
 void MainWindowSmokeTests::testGoToLineDialog()
@@ -1444,18 +1449,10 @@ void MainWindowSmokeTests::testTabSizeDialog()
     QCOMPARE(initialTabSize, 4); // Default
 
     // Tab size dialog is tested indirectly - it uses QInputDialog
-    // Verify the action exists
-    auto actions = window.findChildren<QAction*>();
-    bool hasTabSizeAction = false;
-    for (const auto* action : actions)
-    {
-        if (action->text().contains(QStringLiteral("Tab Size"), Qt::CaseInsensitive))
-        {
-            hasTabSizeAction = true;
-            break;
-        }
-    }
-    QVERIFY(hasTabSizeAction);
+    // Verify the action exists by objectName
+    auto* tabSizeAction = window.findChild<QAction*>(QStringLiteral("actionTabSize"));
+    QVERIFY2(tabSizeAction != nullptr, "Tab Size action should exist with objectName 'actionTabSize'");
+    QVERIFY(tabSizeAction->isEnabled());
 }
 
 void MainWindowSmokeTests::testFontDialogInvocation()
@@ -1591,18 +1588,10 @@ void MainWindowSmokeTests::testEncodingDialogFlow()
     QCOMPARE(window.currentEncodingForTest(), QStringConverter::Utf8);
     QVERIFY(!window.currentBomForTest());
 
-    // Encoding dialog is modal - verify action exists
-    auto actions = window.findChildren<QAction*>();
-    bool hasEncodingAction = false;
-    for (const auto* action : actions)
-    {
-        if (action->text().contains(QStringLiteral("Encoding"), Qt::CaseInsensitive))
-        {
-            hasEncodingAction = true;
-            break;
-        }
-    }
-    QVERIFY(hasEncodingAction);
+    // Encoding dialog is modal - verify action exists by objectName
+    auto* encodingAction = window.findChild<QAction*>(QStringLiteral("actionEncoding"));
+    QVERIFY2(encodingAction != nullptr, "Encoding action should exist with objectName 'actionEncoding'");
+    QVERIFY(encodingAction->isEnabled());
 }
 
 void MainWindowSmokeTests::testActionStateManagement()
