@@ -58,7 +58,6 @@ void MenuActionsTests::testSaveActionEnabledStates()
     QVERIFY(editor);
 
     // Find save action via test hook
-    QAction* saveAction = window.findChild<QAction*>();
     QList<QAction*> allActions = window.findChildren<QAction*>();
     QAction* foundSaveAction = nullptr;
     for (QAction* action : allActions)
@@ -172,7 +171,6 @@ void MenuActionsTests::testCutCopyDeleteEnabledStates()
     QList<QAction*> allActions = window.findChildren<QAction*>();
     bool hasCutAction = false;
     bool hasCopyAction = false;
-    bool hasDeleteAction = false;
 
     for (QAction* action : allActions)
     {
@@ -183,10 +181,6 @@ void MenuActionsTests::testCutCopyDeleteEnabledStates()
         if (action->text().contains(QStringLiteral("Copy")))
         {
             hasCopyAction = true;
-        }
-        if (action->text().contains(QStringLiteral("Delete")))
-        {
-            hasDeleteAction = true;
         }
     }
 
@@ -507,9 +501,9 @@ void MenuActionsTests::testSaveToReadOnlyLocation()
     editor->setPlainText(QStringLiteral("Test content"));
 
     // Try to save to a read-only location (root directory on Unix)
-#if defined(Q_OS_UNIX)
+#ifdef Q_OS_UNIX
     const QString readOnlyPath = QStringLiteral("/root/test_readonly.txt");
-#elif defined(Q_OS_WIN)
+#elifdef Q_OS_WIN
     const QString readOnlyPath = QStringLiteral("C:\\Windows\\System32\\test_readonly.txt");
 #else
     QSKIP("Platform not supported for read-only test");

@@ -7,7 +7,7 @@
 			"command": "bash",
 			"args": [
 				"-lc",
-				"cmake -S . -B build/debug -G Ninja -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_CXX_STANDARD=23 -DCMAKE_CXX_STANDARD_REQUIRED=ON -DCMAKE_CXX_EXTENSIONS=OFF -DCMAKE_PREFIX_PATH=/usr/lib/x86_64-linux-gnu/cmake/Qt6 -DCMAKE_BUILD_TYPE=Debug && cmake --build build/debug"
+				"cmake -S . -B build/debug -G Ninja -DCMAKE_CXX_COMPILER=/usr/lib/llvm-21/bin/clang++ -DCMAKE_CXX_STANDARD=23 -DCMAKE_CXX_STANDARD_REQUIRED=ON -DCMAKE_CXX_EXTENSIONS=OFF -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DCMAKE_PREFIX_PATH=/usr/lib/x86_64-linux-gnu/cmake/Qt6 -DCMAKE_BUILD_TYPE=Debug -DCMAKE_EXE_LINKER_FLAGS=-fuse-ld=lld -DCMAKE_SHARED_LINKER_FLAGS=-fuse-ld=lld && cmake --build build/debug"
 			],
 			"group": {
 				"kind": "build",
@@ -23,7 +23,7 @@
 			"command": "bash",
 			"args": [
 				"-lc",
-				"cmake -S . -B build/relwithdebinfo -G Ninja -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_CXX_STANDARD=23 -DCMAKE_CXX_STANDARD_REQUIRED=ON -DCMAKE_CXX_EXTENSIONS=OFF -DCMAKE_PREFIX_PATH=/usr/lib/x86_64-linux-gnu/cmake/Qt6 -DCMAKE_BUILD_TYPE=RelWithDebInfo && cmake --build build/relwithdebinfo"
+				"cmake -S . -B build/relwithdebinfo -G Ninja -DCMAKE_CXX_COMPILER=/usr/lib/llvm-21/bin/clang++ -DCMAKE_CXX_STANDARD=23 -DCMAKE_CXX_STANDARD_REQUIRED=ON -DCMAKE_CXX_EXTENSIONS=OFF -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DCMAKE_PREFIX_PATH=/usr/lib/x86_64-linux-gnu/cmake/Qt6 -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_EXE_LINKER_FLAGS=-fuse-ld=lld -DCMAKE_SHARED_LINKER_FLAGS=-fuse-ld=lld && cmake --build build/relwithdebinfo"
 			],
 			"group": "build",
 			"problemMatcher": [
@@ -36,7 +36,7 @@
 			"command": "bash",
 			"args": [
 				"-lc",
-				"cmake -S . -B build/release -G Ninja -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_CXX_STANDARD=23 -DCMAKE_CXX_STANDARD_REQUIRED=ON -DCMAKE_CXX_EXTENSIONS=OFF -DCMAKE_PREFIX_PATH=/usr/lib/x86_64-linux-gnu/cmake/Qt6 -DCMAKE_BUILD_TYPE=Release && cmake --build build/release"
+				"cmake -S . -B build/release -G Ninja -DCMAKE_CXX_COMPILER=/usr/lib/llvm-21/bin/clang++ -DCMAKE_CXX_STANDARD=23 -DCMAKE_CXX_STANDARD_REQUIRED=ON -DCMAKE_CXX_EXTENSIONS=OFF -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DCMAKE_PREFIX_PATH=/usr/lib/x86_64-linux-gnu/cmake/Qt6 -DCMAKE_BUILD_TYPE=Release -DCMAKE_EXE_LINKER_FLAGS=-fuse-ld=lld -DCMAKE_SHARED_LINKER_FLAGS=-fuse-ld=lld && cmake --build build/release"
 			],
 			"group": "build",
 			"problemMatcher": [
@@ -49,7 +49,7 @@
 			"command": "bash",
 			"args": [
 				"-lc",
-				"cmake -S . -B build/optimized -G Ninja -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_CXX_STANDARD=23 -DCMAKE_CXX_STANDARD_REQUIRED=ON -DCMAKE_CXX_EXTENSIONS=OFF -DCMAKE_PREFIX_PATH=/usr/lib/x86_64-linux-gnu/cmake/Qt6 -DCMAKE_BUILD_TYPE=Release -DGNOTE_ENABLE_IPO=ON -DCMAKE_INTERPROCEDURAL_OPTIMIZATION=ON -DCMAKE_EXE_LINKER_FLAGS_RELEASE='-s' -DCMAKE_SHARED_LINKER_FLAGS_RELEASE='-s' -DCMAKE_CXX_FLAGS_RELEASE='-O3 -DNDEBUG -march=x86-64-v3 -fomit-frame-pointer' && cmake --build build/optimized"
+				"cmake -S . -B build/optimized -G Ninja -DCMAKE_CXX_COMPILER=/usr/lib/llvm-21/bin/clang++ -DCMAKE_CXX_STANDARD=23 -DCMAKE_CXX_STANDARD_REQUIRED=ON -DCMAKE_CXX_EXTENSIONS=OFF -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DCMAKE_PREFIX_PATH=/usr/lib/x86_64-linux-gnu/cmake/Qt6 -DCMAKE_BUILD_TYPE=Release -DGNOTE_ENABLE_IPO=ON -DCMAKE_INTERPROCEDURAL_OPTIMIZATION=ON -DCMAKE_EXE_LINKER_FLAGS='-fuse-ld=lld' -DCMAKE_SHARED_LINKER_FLAGS='-fuse-ld=lld' -DCMAKE_EXE_LINKER_FLAGS_RELEASE='-s' -DCMAKE_SHARED_LINKER_FLAGS_RELEASE='-s' -DCMAKE_CXX_FLAGS_RELEASE='-O3 -DNDEBUG -march=x86-64-v3 -fomit-frame-pointer' && cmake --build build/optimized"
 			],
 			"group": "build",
 			"problemMatcher": [
@@ -71,6 +71,7 @@
 				"-DCMAKE_CXX_STANDARD=23",
 				"-DCMAKE_CXX_STANDARD_REQUIRED=ON",
 				"-DCMAKE_CXX_EXTENSIONS=OFF",
+				"-DCMAKE_EXPORT_COMPILE_COMMANDS=ON",
 				"-DCMAKE_TOOLCHAIN_FILE=${env:VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake",
 				"-DQt6_DIR=${env:Qt6_DIR}",
 				"-DCMAKE_PREFIX_PATH=${env:QT6_PREFIX_PATH}",
@@ -111,6 +112,7 @@
 				"-DCMAKE_CXX_STANDARD=23",
 				"-DCMAKE_CXX_STANDARD_REQUIRED=ON",
 				"-DCMAKE_CXX_EXTENSIONS=OFF",
+				"-DCMAKE_EXPORT_COMPILE_COMMANDS=ON",
 				"-DCMAKE_TOOLCHAIN_FILE=${env:VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake",
 				"-DQt6_DIR=${env:Qt6_DIR}",
 				"-DCMAKE_PREFIX_PATH=${env:QT6_PREFIX_PATH}",
@@ -151,6 +153,7 @@
 				"-DCMAKE_CXX_STANDARD=23",
 				"-DCMAKE_CXX_STANDARD_REQUIRED=ON",
 				"-DCMAKE_CXX_EXTENSIONS=OFF",
+				"-DCMAKE_EXPORT_COMPILE_COMMANDS=ON",
 				"-DCMAKE_TOOLCHAIN_FILE=${env:VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake",
 				"-DQt6_DIR=${env:Qt6_DIR}",
 				"-DCMAKE_PREFIX_PATH=${env:QT6_PREFIX_PATH}",
@@ -191,6 +194,7 @@
 				"-DCMAKE_CXX_STANDARD=23",
 				"-DCMAKE_CXX_STANDARD_REQUIRED=ON",
 				"-DCMAKE_CXX_EXTENSIONS=OFF",
+				"-DCMAKE_EXPORT_COMPILE_COMMANDS=ON",
 				"-DCMAKE_TOOLCHAIN_FILE=${env:VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake",
 				"-DQt6_DIR=${env:Qt6_DIR}",
 				"-DCMAKE_PREFIX_PATH=${env:QT6_PREFIX_PATH}",
@@ -236,7 +240,7 @@
 			"command": "bash",
 			"args": [
 				"-lc",
-				"cmake -S . -B build/debug -G Ninja -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_CXX_STANDARD=23 -DCMAKE_CXX_STANDARD_REQUIRED=ON -DCMAKE_CXX_EXTENSIONS=OFF -DCMAKE_PREFIX_PATH=/usr/lib/x86_64-linux-gnu/cmake/Qt6 -DCMAKE_BUILD_TYPE=Debug -DGNOTE_ENABLE_CLANG_TIDY=ON && cmake --build build/debug"
+				"cmake -S . -B build/debug -G Ninja -DCMAKE_CXX_COMPILER=/usr/lib/llvm-21/bin/clang++ -DCMAKE_CXX_STANDARD=23 -DCMAKE_CXX_STANDARD_REQUIRED=ON -DCMAKE_CXX_EXTENSIONS=OFF -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DCMAKE_PREFIX_PATH=/usr/lib/x86_64-linux-gnu/cmake/Qt6 -DCMAKE_BUILD_TYPE=Debug && cmake --build build/debug --target copy-compile-commands run-clang-tidy"
 			],
 			"problemMatcher": [
 				"$gcc"
@@ -248,7 +252,7 @@
 			"command": "bash",
 			"args": [
 				"-lc",
-				"cmake -S . -B build/analyze -G Ninja -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_CXX_STANDARD=23 -DCMAKE_CXX_STANDARD_REQUIRED=ON -DCMAKE_CXX_EXTENSIONS=OFF -DCMAKE_PREFIX_PATH=/usr/lib/x86_64-linux-gnu/cmake/Qt6 -DCMAKE_BUILD_TYPE=Debug && scan-build -o scan-build-report --status-bugs cmake --build build/analyze"
+				"cmake -S . -B build/analyze -G Ninja -DCMAKE_CXX_COMPILER=/usr/lib/llvm-21/bin/clang++ -DCMAKE_CXX_STANDARD=23 -DCMAKE_CXX_STANDARD_REQUIRED=ON -DCMAKE_CXX_EXTENSIONS=OFF -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DCMAKE_PREFIX_PATH=/usr/lib/x86_64-linux-gnu/cmake/Qt6 -DCMAKE_BUILD_TYPE=Debug && scan-build -o scan-build-report --status-bugs cmake --build build/analyze"
 			],
 			"problemMatcher": [
 				"$gcc"

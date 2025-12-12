@@ -164,7 +164,7 @@ namespace GnotePad::ui
 
         if (settings.contains("editor/font"))
         {
-            const QFont legacyFont = settings.value("editor/font").value<QFont>();
+            const auto legacyFont = settings.value("editor/font").value<QFont>();
             if (!legacyFont.family().isEmpty())
             {
                 m_editor->applyEditorFont(legacyFont);

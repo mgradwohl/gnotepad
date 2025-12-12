@@ -136,10 +136,10 @@ namespace GnotePad::ui::PrintSupport
         spdlog::info("configurePrinter: applicationName '{}'", QCoreApplication::applicationName().toStdString());
 
         // Set page layout with our default margins (in millimeters)
-        QPageLayout layout(QPageSize(QPageSize::Letter),
-                           QPageLayout::Portrait,
-                           QMarginsF(DefaultMarginMm, DefaultMarginMm, DefaultMarginMm, DefaultMarginMm),
-                           QPageLayout::Millimeter);
+        const QPageLayout layout(QPageSize(QPageSize::Letter),
+                                 QPageLayout::Portrait,
+                                 QMarginsF(DefaultMarginMm, DefaultMarginMm, DefaultMarginMm, DefaultMarginMm),
+                                 QPageLayout::Millimeter);
         printer->setPageLayout(layout);
     }
 
@@ -243,7 +243,7 @@ namespace GnotePad::ui::PrintSupport
             {
                 const qreal textAreaLeftPx = pageRectPx.left();
                 const qreal textAreaWidthPx = pageRectPx.width();
-                QRectF headerRect(textAreaLeftPx, pageRectPx.top(), textAreaWidthPx, lineHeightPx);
+                const QRectF headerRect(textAreaLeftPx, pageRectPx.top(), textAreaWidthPx, lineHeightPx);
 
                 painter.drawText(headerRect, Qt::AlignHCenter | Qt::AlignTop, documentName);
             }
@@ -315,7 +315,7 @@ namespace GnotePad::ui::PrintSupport
             {
                 const qreal textAreaLeftPx = pageRectPx.left();
                 const qreal textAreaWidthPx = pageRectPx.width();
-                QRectF footerRect(textAreaLeftPx, pageRectPx.bottom() - lineHeightPx, textAreaWidthPx, lineHeightPx);
+                const QRectF footerRect(textAreaLeftPx, pageRectPx.bottom() - lineHeightPx, textAreaWidthPx, lineHeightPx);
 
                 painter.drawText(
                     footerRect, Qt::AlignRight | Qt::AlignBottom, QObject::tr("Page %1 of %2").arg(pageIndex + 1).arg(totalPages));

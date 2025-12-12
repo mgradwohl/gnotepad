@@ -96,7 +96,7 @@ namespace GnotePad::ui
             ++digits;
         }
 
-        const int space = 8 + fontMetrics().horizontalAdvance(QLatin1Char('9')) * digits;
+        const int space = 8 + (fontMetrics().horizontalAdvance(QLatin1Char('9')) * digits);
         return space;
     }
 
@@ -200,7 +200,7 @@ namespace GnotePad::ui
     void TextEditor::increaseZoom(int range)
     {
         // Check if we would exceed the maximum zoom percentage
-        const int newPercentage = m_zoomPercentage + range * kZoomStepPercent;
+        const int newPercentage = m_zoomPercentage + (range * kZoomStepPercent);
         if (newPercentage > kMaxZoomPercent)
         {
             return; // Already at maximum zoom
@@ -214,7 +214,7 @@ namespace GnotePad::ui
     void TextEditor::decreaseZoom(int range)
     {
         // Check if we would go below the minimum zoom percentage
-        const int newPercentage = m_zoomPercentage - range * kZoomStepPercent;
+        const int newPercentage = m_zoomPercentage - (range * kZoomStepPercent);
         if (newPercentage < kMinZoomPercent)
         {
             return; // Already at minimum zoom
@@ -291,7 +291,7 @@ namespace GnotePad::ui
 
     void TextEditor::updateZoomPercentageEstimate(int deltaSteps)
     {
-        m_zoomPercentage = std::clamp(m_zoomPercentage + deltaSteps * kZoomStepPercent, kMinZoomPercent, kMaxZoomPercent);
+        m_zoomPercentage = std::clamp(m_zoomPercentage + (deltaSteps * kZoomStepPercent), kMinZoomPercent, kMaxZoomPercent);
         emit zoomPercentageChanged(m_zoomPercentage);
     }
 

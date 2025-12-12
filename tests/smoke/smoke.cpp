@@ -1542,18 +1542,18 @@ void MainWindowSmokeTests::testDateFormatPreference()
     QVERIFY(!inserted.isEmpty());
 
     // Date format actions should exist
-    auto actions = window.findChildren<QAction*>();
-    bool hasDateFormatAction = false;
-    for (const auto* action : actions)
-    {
-        if (action->text().contains(QStringLiteral("Date Format"), Qt::CaseInsensitive) ||
-            action->text().contains(QStringLiteral("Short"), Qt::CaseInsensitive) ||
-            action->text().contains(QStringLiteral("Long"), Qt::CaseInsensitive))
-        {
-            hasDateFormatAction = true;
-            break;
-        }
-    }
+    // auto actions = window.findChildren<QAction*>();
+    // bool hasDateFormatAction = false;
+    // for (const auto* action : actions)
+    // {
+    //     if (action->text().contains(QStringLiteral("Date Format"), Qt::CaseInsensitive) ||
+    //         action->text().contains(QStringLiteral("Short"), Qt::CaseInsensitive) ||
+    //         action->text().contains(QStringLiteral("Long"), Qt::CaseInsensitive))
+    //     {
+    //         hasDateFormatAction = true;
+    //         break;
+    //     }
+    // }
     // Date format may or may not be exposed as menu items
     // The test passes if time/date insertion works
 }

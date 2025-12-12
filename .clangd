@@ -1,6 +1,6 @@
 CompileFlags:
   # Adjust if your compile_commands.json is somewhere else
-  CompilationDatabase: build
+  # CompilationDatabase: build
 
   Add:
     # Language/std + modules
@@ -42,7 +42,7 @@ Hover:
   ShowAKA: true
 
 Completion:
-  AllScopes: true
   ArgumentLists: FullPlaceholders
   HeaderInsertion: IWYU
+  AllScopes: true
   CodePatterns: All

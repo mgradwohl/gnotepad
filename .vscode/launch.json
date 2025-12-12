@@ -10,11 +10,11 @@
             "args": [],
             "cwd": "${workspaceFolder}",
             "env": {
-                "LD_LIBRARY_PATH": ""
+                "LD_LIBRARY_PATH": "",
+                "QT_LOGGING_RULES": "qt.*.debug=false"
             },
             "preLaunchTask": "Build Debug (Linux)",
             "terminal": "integrated",
-            "stdio": null,
             "presentation": {
                 "group": "run-linux",
                 "order": 1
@@ -27,22 +27,25 @@
             "program": "${workspaceFolder}/build/relwithdebinfo/GnotePad",
             "args": [],
             "cwd": "${workspaceFolder}",
-            "preLaunchTask": "Build RelWithDebInfo",
+            "env": {
+                "LD_LIBRARY_PATH": "",
+                "QT_LOGGING_RULES": "qt.*.debug=false"
+            },
+            "preLaunchTask": "Build RelWithDebInfo (Linux)",
             "terminal": "integrated",
-            "stdio": null,
             "presentation": {
                 "group": "run-linux",
                 "order": 2
             }
         },
         {
-            "name": "Debug GnotePad (Release, Linux)",
+            "name": "Run GnotePad (Release, Linux)",
             "type": "lldb",
             "request": "launch",
             "program": "${workspaceFolder}/build/release/GnotePad",
+            "args": [],
             "cwd": "${workspaceFolder}",
-            "preLaunchTask": "Build Release",
-            "stdio": null,
+            "preLaunchTask": "Build Release (Linux)",
             "presentation": {
                 "group": "run-linux",
                 "order": 3
@@ -60,7 +63,6 @@
             },
             "preLaunchTask": "Build Optimized (Linux)",
             "terminal": "integrated",
-            "stdio": null,
             "noDebug": true,
             "presentation": {
                 "group": "run-linux",
@@ -73,6 +75,7 @@
             "type": "lldb",
             "request": "launch",
             "program": "${workspaceFolder}/build/win-debug/GnotePad.exe",
+            "args": [],
             "cwd": "${workspaceFolder}",
             "env": {
                 "PATH": "${env:VCPKG_ROOT}\\installed\\x64-windows\\debug\\bin;${env:VCPKG_ROOT}\\installed\\x64-windows\\bin;${env:PATH}",
@@ -83,7 +86,6 @@
             },
             "preLaunchTask": "Build Debug (Windows)",
             "terminal": "integrated",
-            "stdio": null,
             "presentation": {
                 "group": "run-windows",
                 "order": 1
@@ -94,35 +96,36 @@
             "type": "lldb",
             "request": "launch",
             "program": "${workspaceFolder}/build/win-relwithdebinfo/GnotePad.exe",
+            "args": [],
             "cwd": "${workspaceFolder}",
             "env": {
                 "PATH": "${env:VCPKG_ROOT}\\installed\\x64-windows\\debug\\bin;${env:VCPKG_ROOT}\\installed\\x64-windows\\bin;${env:PATH}",
                 "QT_PLUGIN_PATH": "${env:VCPKG_ROOT}\\installed\\x64-windows\\debug\\Qt6\\plugins;${env:VCPKG_ROOT}\\installed\\x64-windows\\Qt6\\plugins",
                 "QT_QPA_PLATFORM_PLUGIN_PATH": "${env:VCPKG_ROOT}\\installed\\x64-windows\\debug\\Qt6\\plugins\\platforms;${env:VCPKG_ROOT}\\installed\\x64-windows\\Qt6\\plugins\\platforms",
-                "QT_DEBUG_PLUGINS": "1"
+                "QT_DEBUG_PLUGINS": "1",
+                "QT_LOGGING_RULES": "qt.*.debug=false"
             },
             "preLaunchTask": "Build RelWithDebInfo (Windows)",
             "terminal": "integrated",
-            "stdio": null,
             "presentation": {
                 "group": "run-windows",
                 "order": 2
             }
         },
         {
-            "name": "Debug GnotePad (Release, Windows)",
+            "name": "Run GnotePad (Release, Windows)",
             "type": "lldb",
             "request": "launch",
             "program": "${workspaceFolder}/build/win-release/GnotePad.exe",
+            "args": [],
             "cwd": "${workspaceFolder}",
             "env": {
-                "PATH": "${env:VCPKG_ROOT}\\installed\\x64-windows\\debug\\bin;${env:VCPKG_ROOT}\\installed\\x64-windows\\bin;${env:PATH}",
-                "QT_PLUGIN_PATH": "${env:VCPKG_ROOT}\\installed\\x64-windows\\debug\\Qt6\\plugins;${env:VCPKG_ROOT}\\installed\\x64-windows\\Qt6\\plugins",
-                "QT_QPA_PLATFORM_PLUGIN_PATH": "${env:VCPKG_ROOT}\\installed\\x64-windows\\debug\\Qt6\\plugins\\platforms;${env:VCPKG_ROOT}\\installed\\x64-windows\\Qt6\\plugins\\platforms",
-                "QT_DEBUG_PLUGINS": "1"
+                "PATH": "${env:VCPKG_ROOT}\\installed\\x64-windows\\bin;${env:PATH}",
+                "QT_PLUGIN_PATH": "${env:VCPKG_ROOT}\\installed\\x64-windows\\Qt6\\plugins",
+                "QT_QPA_PLATFORM_PLUGIN_PATH": "${env:VCPKG_ROOT}\\installed\\x64-windows\\Qt6\\plugins\\platforms",
+                "QT_LOGGING_RULES": "qt.*.debug=false"
             },
             "preLaunchTask": "Build Release (Windows)",
-            "stdio": null,
             "presentation": {
                 "group": "run-windows",
                 "order": 3
@@ -133,6 +136,7 @@
             "type": "lldb",
             "request": "launch",
             "program": "${workspaceFolder}/build/win-optimized/GnotePad.exe",
+            "args": [],
             "cwd": "${workspaceFolder}",
             "env": {
                 "PATH": "${env:VCPKG_ROOT}\\installed\\x64-windows\\bin;${env:PATH}",
@@ -141,7 +145,6 @@
             },
             "preLaunchTask": "Build Optimized (Windows)",
             "terminal": "integrated",
-            "stdio": null,
             "noDebug": true,
             "presentation": {
                 "group": "run-windows",
@@ -160,7 +163,6 @@
                 "LD_LIBRARY_PATH": ""
             },
             "terminal": "integrated",
-            "stdio": null,
             "presentation": {
                 "group": "test-linux",
                 "order": 1
@@ -180,7 +182,6 @@
                 "QT_DEBUG_PLUGINS": "1"
             },
             "terminal": "integrated",
-            "stdio": null,
             "presentation": {
                 "group": "test-windows",
                 "order": 1

@@ -8,28 +8,33 @@ Checks: >
   portability-*,
   readability-*,
   # Stuff you explicitly don't want:
-  -readability-implicit-bool-conversion,
   -bugprone-easily-swappable-parameters,
   -modernize-use-trailing-return-type,
   -readability-identifier-naming,
   -readability-identifier-length,
   -readability-magic-numbers,
   -readability-implicit-bool-conversion,
+  -bugprone-easily-swappable-parameters,
+  -portability-avoid-pragma-once
   # cppcoreguidelines bits that are often noisy with Qt-ish / real-world code:
   #-cppcoreguidelines-avoid-magic-numbers,
   #-cppcoreguidelines-owning-memory,
   #-cppcoreguidelines-pro-type-reinterpret-cast
 
 WarningsAsErrors: ''
+SystemHeaders: false
 
-# Only run checks on your project code under src/ and tests/,
-# still excluding smoke.cpp as you had.
-HeaderFilterRegex: '^(?!.*smoke\.cpp$)(src|tests)/.*\.(h|hpp|cpp)$'
+# Only report warnings for headers directly under src/ or tests/ (not in build/).
+# Matches paths like /path/to/GnotePad/src/... but not /path/to/GnotePad/build/.../src/...
+HeaderFilterRegex: '^(?!.*(/|^)(build|_deps|vcpkg|Qt6|llvm)/).*(/|^)(src|tests)/.*\.(h|hpp|hh|hxx|inl|ipp)$'
 
 FormatStyle: file
-User: "GnotePad"
 
+# Ignore external libs in include-cleaner
 CheckOptions:
-  # Ignore external libs in include-cleaner:
   - key: misc-include-cleaner.IgnoreHeaders
-    value: '(.*/qt6/.*|.*/qsharedpointer_impl\.h|.*/spdlog/.*|.*/vcpkg/.*)'
+    value: >
+      (.*/Qt6/.*|.*/qt6/.*|.*/QtCore/.*|.*/QtGui/.*|
+       .*/QtWidgets/.*|.*/qsharedpointer_impl\.h|
+       .*/spdlog/.*|.*/vcpkg/.*)
+

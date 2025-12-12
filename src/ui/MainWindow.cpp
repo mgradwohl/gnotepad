@@ -80,11 +80,11 @@ namespace GnotePad::ui
         }
 
         QStringList preferredFamilies;
-#if defined(Q_OS_WIN)
+#ifdef Q_OS_WIN
         preferredFamilies << QStringLiteral("Consolas") << QStringLiteral("Cascadia Mono");
-#elif defined(Q_OS_LINUX)
+#elifdef Q_OS_LINUX
         preferredFamilies << QStringLiteral("Noto Sans Mono") << QStringLiteral("DejaVu Sans Mono");
-#elif defined(Q_OS_MACOS)
+#elifdef Q_OS_MACOS
         preferredFamilies << QStringLiteral("SF Mono") << QStringLiteral("Menlo") << QStringLiteral("Monaco");
 #else
         preferredFamilies << QStringLiteral("Monaco") << QStringLiteral("Menlo");
@@ -375,7 +375,7 @@ namespace GnotePad::ui
 
         // get the icon as a larger image (dialog owns controls below)
         // NOLINTBEGIN(cppcoreguidelines-owning-memory)
-        QLabel* iconLabel = new QLabel(&dialog);
+        auto* iconLabel = new QLabel(&dialog);
         QPixmap aboutPixmap;
         if (!icon.isNull())
         {
@@ -407,7 +407,7 @@ namespace GnotePad::ui
         iconLabel->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
         contentLayout->addWidget(iconLabel, 0, Qt::AlignLeft);
 
-        QLabel* textLabel = new QLabel(details, &dialog);
+        auto* textLabel = new QLabel(details, &dialog);
         textLabel->setTextFormat(Qt::RichText);
         textLabel->setWordWrap(true);
         textLabel->setMinimumWidth(AboutDialogMinTextWidth);

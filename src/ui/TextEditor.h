@@ -23,7 +23,7 @@ namespace GnotePad::ui
 
         void setLineNumbersVisible(bool visible);
 
-        bool lineNumbersVisible() const
+        [[nodiscard]] bool lineNumbersVisible() const
         {
             return m_lineNumbersVisible;
         }
@@ -35,17 +35,17 @@ namespace GnotePad::ui
         void setZoomPercentage(int percent);
         void setTabSizeSpaces(int spaces);
 
-        int tabSizeSpaces() const
+        [[nodiscard]] int tabSizeSpaces() const
         {
             return m_tabSizeSpaces;
         }
 
-        int zoomPercentage() const
+        [[nodiscard]] int zoomPercentage() const
         {
             return m_zoomPercentage;
         }
 
-        int lineNumberAreaWidth() const;
+        [[nodiscard]] int lineNumberAreaWidth() const;
         void lineNumberAreaPaintEvent(QPaintEvent* event);
 
     signals:
@@ -78,7 +78,7 @@ namespace GnotePad::ui
     public:
         explicit LineNumberArea(TextEditor* editor);
 
-        QSize sizeHint() const override;
+        [[nodiscard]] QSize sizeHint() const override;
 
     protected:
         void paintEvent(QPaintEvent* event) override;
