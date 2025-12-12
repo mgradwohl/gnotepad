@@ -290,29 +290,40 @@ Keeping headers tidy shrinks rebuild times and keeps clang-tidy's include-cleane
 2. **Use `#pragma once`.** All project headers already opt in—match that style on any new files.
 3. **Honor the include order:**
    1. This file's matching header first (`.cpp` files only): `#include "ThisFile.h"`
-   2. Project headers (`src/`, `include/`, `tests/`, etc.), alphabetical
-   3. Non-Qt third-party libraries (spdlog, fmt, boost, etc.), alphabetical
-   4. Qt headers, alphabetical
-   5. C++ standard library headers, alphabetical
-   6. Everything else (fallback)
+   2. Platform-specific headers inside `#ifdef` guards (e.g., `<windows.h>`, platform-specific sinks)
+   3. Project headers (`src/`, `ui/`, `app/`, `tests/`, etc.), alphabetical
+   4. Non-Qt third-party libraries (spdlog, fmt, boost, etc.), alphabetical
+   5. Qt headers (`QtCore/...`, `QSignalBlocker`, etc.), alphabetical
+   6. C++ standard library headers (`<memory>`, `<string>`, etc.), alphabetical
+   7. Everything else (fallback)
 
    Separate each group with a blank line and avoid redundant includes.
 
-   **Example** (for a hypothetical `MainWindow.cpp`):
+   **Example** (for a hypothetical `Application.cpp`):
    ```cpp
-   #include "MainWindow.h"                    // 1. Matching header
+   #include "app/Application.h"              // 1. Matching header
 
-   #include "app/Application.h"               // 2. Project headers
+   #ifdef _WIN32                              // 2. Platform-specific (in #ifdef)
+   #include <windows.h>
+   #endif
+
+   #include "ui/MainWindow.h"                // 3. Project headers
    #include "ui/TextEditor.h"
 
-   #include <spdlog/spdlog.h>                 // 3. Third-party non-Qt
+   #include <spdlog/spdlog.h>                 // 4. Third-party non-Qt
+   #ifdef _WIN32
+   #include <spdlog/sinks/msvc_sink.h>       //    (platform-specific third-party OK here)
+   #endif
 
-   #include <QtWidgets/QFileDialog>           // 4. Qt headers
-   #include <QtWidgets/QMessageBox>
+   #include <QtCore/qsettings.h>              // 5. Qt headers
+   #include <QtWidgets/qmainwindow.h>
+   #include <QSignalBlocker>
 
-   #include <memory>                          // 5. C++ standard library
+   #include <memory>                          // 6. C++ standard library
    #include <string>
    ```
+
+   **Note:** Platform-specific includes may appear within `#ifdef` guards at any point after the matching header, but should generally stay near the top. Includes that depend on prior `#define` macros are also valid exceptions to strict ordering.
 
 4. **Use modern preprocessor directives (C++23):**
    - Use `#ifdef X` instead of `#if defined(X)` for simple checks

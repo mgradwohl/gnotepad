@@ -1,5 +1,7 @@
 #pragma once
 
+#include <spdlog/spdlog.h>
+
 #include <QtCore/qobject.h>
 #include <QtCore/qstringlist.h>
 #include <QtGui/qicon.h>

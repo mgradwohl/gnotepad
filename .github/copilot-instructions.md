@@ -91,14 +91,19 @@ The project includes predefined launch configs in `.vscode/launch.json`:
   - Run `cmake --build build/debug --target run-clang-tidy` regularly
 
 ### Include Order
-   1. This file's matching header first (`.cpp` files only): `#include "ThisFile.h"`
-   2. Project headers (`src/`, `include/`, `tests/`, etc.), alphabetical
-   3. Non-Qt third-party libraries (spdlog, fmt, boost, etc.), alphabetical
-   4. Qt headers, alphabetical
-   5. C++ standard library headers, alphabetical
-   6. Everything else (fallback)
 
-Note that `#include <qnamespace.h>` is considered a Qt header.
+See the [Include Guidelines in CONTRIBUTING.md](../CONTRIBUTING.md#include-guidelines) for the authoritative include order.
+
+**Summary:**
+1. Matching header (`.cpp` files only)
+2. Platform-specific headers in `#ifdef` guards
+3. Project headers (`src/`, `ui/`, `app/`, etc.), alphabetical
+4. Third-party libraries (spdlog, fmt, boost), alphabetical
+5. Qt headers, alphabetical
+6. C++ standard library headers, alphabetical
+7. Other (fallback)
+
+Note that `#include <QSignalBlocker>` and `#include <qnamespace.h>` are Qt headers.
 
 Separate each group with a blank line. Use `#pragma once` in all headers. Include what you use.
 

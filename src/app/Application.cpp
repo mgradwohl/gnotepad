@@ -4,6 +4,8 @@
 #include <windows.h>
 #endif
 
+#include "ui/MainWindow.h"
+
 #include <spdlog/spdlog.h>
 #ifdef _WIN32
 #include <spdlog/sinks/msvc_sink.h>
@@ -26,13 +28,11 @@
 #include <memory>
 #include <string>
 
+#ifndef GNOTE_VERSION
 // Do not change to constexpr, this is set and passed in by the build system
 // NOLINTNEXTLINE(cppcoreguidelines-macro-usage)
-#ifndef GNOTE_VERSION
 #define GNOTE_VERSION "0.0.0-dev"
 #endif
-
-#include "ui/MainWindow.h"
 
 #if defined(_WIN32) && !defined(NDEBUG)
 // Custom Qt message handler to route qDebug/qWarning/etc. to our console and debugger

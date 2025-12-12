@@ -1,87 +1,68 @@
-# Run clang static analyzer (scan-build) on the project
-# Usage: .\run-scan-build.ps1 [BuildDir] [ReportDir]
-Set-StrictMode -Version Latest
-$ErrorActionPreference = "Stop"
-
+<#
+.SYNOPSIS
+    Run Clang Static Analyzer (scan-build) on GnotePad (Windows).
+.DESCRIPTION
+    Configures a separate 'analyze' build and runs scan-build.
+.PARAMETER ReportDir
+    Output directory for reports (default: scan-build-report)
+.PARAMETER Verbose
+    Show verbose output
+.EXAMPLE
+    .\run-scan-build.ps1
+.EXAMPLE
+    .\run-scan-build.ps1 -ReportDir "my-report"
+#>
 param(
-    [string]$BuildDir = "build/win-analyze",
-    [string]$ReportDir = "scan-build-report"
+    [string]$ReportDir = "scan-build-report",
+    [switch]$Verbose
 )
 
-$scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
-$projectRoot = Resolve-Path (Join-Path $scriptDir "..")
+$ErrorActionPreference = "Stop"
 
-# Find LLVM tools
-$llvmRoot = if ($env:LLVM_ROOT) { $env:LLVM_ROOT } else { "C:\Program Files\LLVM" }
-$cc = "$llvmRoot\bin\clang.exe"
-$cxx = "$llvmRoot\bin\clang++.exe"
-$scanBuild = "$llvmRoot\bin\scan-build.bat"
+$ScriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
+$ProjectRoot = Split-Path -Parent $ScriptDir
 
-if (-not (Test-Path $cc)) {
-    Write-Error "clang.exe not found at $cc. Please install LLVM or set LLVM_ROOT."
+# Validate environment
+if (-not $env:LLVM_ROOT) {
+    Write-Error "LLVM_ROOT environment variable not set"
     exit 1
 }
 
-if (-not (Test-Path $scanBuild)) {
-    Write-Error "scan-build.bat not found at $scanBuild. Please install LLVM with scan-build."
+# Paths
+$ClangC = "$env:LLVM_ROOT\bin\clang.exe"
+$ClangCXX = "$env:LLVM_ROOT\bin\clang++.exe"
+$ScanBuild = "$env:LLVM_ROOT\bin\scan-build.bat"
+
+if (-not (Test-Path $ScanBuild)) {
+    Write-Error "scan-build.bat not found at $ScanBuild"
     exit 1
 }
 
-# Qt6 paths from environment (set by Devshell scripts)
-$qt6Dir = $env:Qt6_DIR
-$qt6PrefixPath = $env:QT6_PREFIX_PATH
-$vcpkgToolchain = if ($env:VCPKG_ROOT) { "$env:VCPKG_ROOT\scripts\buildsystems\vcpkg.cmake" } else { $null }
+$BuildDir = Join-Path $ProjectRoot "build\win-analyze"
+$ReportPath = Join-Path $ProjectRoot $ReportDir
 
-if (-not $qt6Dir) {
-    Write-Error "Qt6_DIR environment variable not set. Run the Devshell script first."
-    exit 1
+# Configure the analyze build
+if ($Verbose) {
+    Write-Host "Configuring analyze build..."
+}
+$ConfigArgs = @("analyze")
+if ($Verbose) { $ConfigArgs = @("-Verbose") + $ConfigArgs }
+& "$ScriptDir\configure.ps1" @ConfigArgs
+if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+# Run scan-build
+if ($Verbose) {
+    Write-Host "Running scan-build..."
+    Write-Host "Report directory: $ReportPath"
 }
 
-Write-Host "Using LLVM from: $llvmRoot" -ForegroundColor Cyan
-Write-Host "Using Qt6 from: $qt6Dir" -ForegroundColor Cyan
+& $ScanBuild -o $ReportPath --status-bugs `
+    --use-cc="$ClangC" --use-c++="$ClangCXX" `
+    cmake --build $BuildDir
 
-Push-Location $projectRoot
-try {
-    # Configure
-    $cmakeArgs = @(
-        "-S", ".",
-        "-B", $BuildDir,
-        "-G", "Ninja",
-        "-DCMAKE_C_COMPILER=$cc",
-        "-DCMAKE_CXX_COMPILER=$cxx",
-        "-DCMAKE_CXX_STANDARD=23",
-        "-DCMAKE_CXX_STANDARD_REQUIRED=ON",
-        "-DCMAKE_CXX_EXTENSIONS=OFF",
-        "-DCMAKE_EXPORT_COMPILE_COMMANDS=ON",
-        "-DQt6_DIR=$qt6Dir",
-        "-DCMAKE_PREFIX_PATH=$qt6PrefixPath",
-        "-DCMAKE_BUILD_TYPE=Debug",
-        "-DCMAKE_EXE_LINKER_FLAGS=-fuse-ld=lld",
-        "-DCMAKE_SHARED_LINKER_FLAGS=-fuse-ld=lld"
-    )
-
-    if ($vcpkgToolchain -and (Test-Path $vcpkgToolchain)) {
-        $cmakeArgs += "-DCMAKE_TOOLCHAIN_FILE=$vcpkgToolchain"
-    }
-
-    Write-Host "Configuring build..." -ForegroundColor Yellow
-    & cmake @cmakeArgs
-    if ($LASTEXITCODE -ne 0) {
-        throw "CMake configuration failed with exit code $LASTEXITCODE"
-    }
-
-    # Run scan-build
-    Write-Host "Running scan-build..." -ForegroundColor Yellow
-    & $scanBuild -o $ReportDir --status-bugs `
-        --use-cc="$cc" --use-c++="$cxx" `
-        cmake --build $BuildDir
-
-    if ($LASTEXITCODE -ne 0) {
-        Write-Host "scan-build found issues. See report in $ReportDir" -ForegroundColor Red
-        exit $LASTEXITCODE
-    }
-
-    Write-Host "scan-build completed successfully. Report in $ReportDir" -ForegroundColor Green
-} finally {
-    Pop-Location
+if ($LASTEXITCODE -ne 0) {
+    Write-Host "scan-build found issues. See report in $ReportPath" -ForegroundColor Red
+    exit $LASTEXITCODE
 }
+
+Write-Host "scan-build completed successfully. Report in $ReportPath" -ForegroundColor Green

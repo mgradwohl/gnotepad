@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 # Check if all source files adhere to clang-format rules
+# Uses .clang-format configuration from project root
 # Exit with non-zero status if formatting violations are found
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"

@@ -1,9 +1,5 @@
 #pragma once
 
-#ifdef GNOTE_TEST_HOOKS
-#include <deque>
-#endif
-
 #include <QtCore/qbytearray.h>
 #include <QtCore/qnamespace.h>
 #include <QtCore/qobject.h>
@@ -19,6 +15,9 @@
 #include <QtWidgets/qwidget.h>
 
 #include <cstdint>
+#ifdef GNOTE_TEST_HOOKS
+#include <deque>
+#endif
 
 class QAction;
 class QLabel;
