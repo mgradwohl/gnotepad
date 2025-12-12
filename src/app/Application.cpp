@@ -6,7 +6,9 @@
 
 #include "ui/MainWindow.h"
 
+#include <spdlog/common.h>
 #include <spdlog/spdlog.h>
+
 #ifdef _WIN32
 #include <spdlog/sinks/msvc_sink.h>
 #include <spdlog/sinks/stdout_color_sinks.h>
