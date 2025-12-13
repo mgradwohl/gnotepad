@@ -25,7 +25,7 @@
         "**/build/**": true,
         "**/_deps/**": true
     },
-    "clangd.path": "/usr/lib/llvm-21/bin/clangd",
+    "clangd.path": "C:\\Program Files\\LLVM\\bin\\clangd.exe",
     "clangd.arguments": [
         "--compile-commands-dir=${workspaceFolder}",
         "--background-index",
@@ -52,5 +52,6 @@
     },
     "[c]": {
         "editor.defaultFormatter": "llvm-vs-code-extensions.vscode-clangd"
-    }
+    },
+    "clangd.checkUpdates": true
 }

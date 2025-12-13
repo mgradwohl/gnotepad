@@ -69,6 +69,12 @@ categorize_include() {
     local include_line="$1"
     local matching_header="$2"
     
+    # Check if it's a quoted include (local header)
+    local is_quoted=false
+    if [[ $include_line =~ \#include[[:space:]]+\" ]]; then
+        is_quoted=true
+    fi
+    
     # Extract include path
     if [[ $include_line =~ \#include[[:space:]]+[\<\"]([^\>\"]*)[\>\"] ]]; then
         local include_path="${BASH_REMATCH[1]}"
@@ -85,8 +91,8 @@ categorize_include() {
             return
         fi
         
-        # 3. Project headers
-        if [[ "$include_path" =~ ^(src/|include/|tests/|ui/|app/) ]]; then
+        # 3. Project headers - explicit paths OR quoted includes (local headers)
+        if [[ "$include_path" =~ ^(src/|include/|tests/|ui/|app/) ]] || $is_quoted; then
             echo 3
             return
         fi
@@ -200,11 +206,11 @@ check_file_includes() {
     return $violations
 }
 
-# Find all .cpp and .h files in src directory and check include order robustly
+# Find all .cpp and .h files in src and tests directories and check include order robustly
 VIOLATIONS_FOUND=0
 
 # Count files for progress
-FILE_COUNT=$(find src -type f \( -name "*.cpp" -o -name "*.h" \) ! -path "*/build/*" ! -path "*/.git/*" | wc -l)
+FILE_COUNT=$(find src tests -type f \( -name "*.cpp" -o -name "*.h" \) ! -path "*/build/*" ! -path "*/.git/*" | wc -l)
 CHECKED_COUNT=0
 
 while IFS= read -r -d '' file; do
@@ -217,7 +223,7 @@ while IFS= read -r -d '' file; do
         echo ""
         VIOLATIONS_FOUND=1
     fi
-done < <(find src -type f \( -name "*.cpp" -o -name "*.h" \) ! -path "*/build/*" ! -path "*/.git/*" -print0)
+done < <(find src tests -type f \( -name "*.cpp" -o -name "*.h" \) ! -path "*/build/*" ! -path "*/.git/*" -print0)
 
 if [ $VIOLATIONS_FOUND -eq 1 ]; then
     echo "Include order violations found!"

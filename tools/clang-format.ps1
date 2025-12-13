@@ -7,7 +7,7 @@
 .PARAMETER BuildType
     Build type to use (default: debug)
 .PARAMETER ShowDetails
-    Show verbose output
+    Show per-file progress
 .EXAMPLE
     .\clang-format.ps1
 .EXAMPLE
@@ -27,22 +27,40 @@ $ErrorActionPreference = "Stop"
 $ScriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
 $ProjectRoot = Split-Path -Parent $ScriptDir
 
-# Build directory
-$BuildDir = Join-Path $ProjectRoot "build\win-$BuildType"
+Write-Host "Applying clang-format to source files..."
 
-# Configure if needed
-$NinjaFile = Join-Path $BuildDir "build.ninja"
-if (-not (Test-Path $NinjaFile)) {
-    Write-Host "Build not configured. Running configure.ps1 $BuildType..."
-    $ConfigArgs = @($BuildType)
-    if ($ShowDetails) { $ConfigArgs = @("-ShowDetails") + $ConfigArgs }
-    & "$ScriptDir\configure.ps1" @ConfigArgs
-    if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+# Find clang-format
+$ClangFormat = $null
+if ($env:LLVM_ROOT) {
+    $ClangFormat = Join-Path $env:LLVM_ROOT "bin\clang-format.exe"
+    if (-not (Test-Path $ClangFormat)) { $ClangFormat = $null }
+}
+if (-not $ClangFormat) {
+    $ClangFormat = Get-Command clang-format -ErrorAction SilentlyContinue | Select-Object -ExpandProperty Source
+}
+if (-not $ClangFormat) {
+    Write-Error "clang-format not found. Set LLVM_ROOT or add clang-format to PATH."
+    exit 1
 }
 
-if ($ShowDetails) {
-    Write-Host "Applying clang-format to source files..."
+# Find all source files
+$files = Get-ChildItem -Path (Join-Path $ProjectRoot "src"), (Join-Path $ProjectRoot "tests") -Recurse -Include "*.cpp", "*.h" |
+         Where-Object { $_.FullName -notmatch "\\build\\" -and $_.FullName -notmatch "\\.git\\" }
+
+$fileCount = ($files | Measure-Object).Count
+$checkedCount = 0
+
+foreach ($file in $files) {
+    $checkedCount++
+    if ($ShowDetails) {
+        Write-Host "[$checkedCount/$fileCount] Formatting: $($file.Name)"
+    }
+    & $ClangFormat -i $file.FullName
+    if ($LASTEXITCODE -ne 0) {
+        Write-Error "clang-format failed on $($file.Name)"
+        exit $LASTEXITCODE
+    }
 }
 
-& cmake --build $BuildDir --target run-clang-format
-exit $LASTEXITCODE
+Write-Host "Formatted $fileCount files." -ForegroundColor Green
+exit 0

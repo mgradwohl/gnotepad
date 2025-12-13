@@ -71,7 +71,8 @@ function Get-IncludeCategory {
         [string]$matchingHeader
     )
     
-    # Extract include path
+    # Extract include path and bracket type
+    $isQuoted = $includeLine -match '#include\s+"'
     if ($includeLine -match '#include\s+[<"]([^>"]*)[>"]') {
         $includePath = $Matches[1]
         
@@ -85,8 +86,8 @@ function Get-IncludeCategory {
             return 2
         }
         
-        # 3. Project headers
-        if ($includePath -match '^(src/|include/|tests/|ui/|app/)') {
+        # 3. Project headers - explicit paths OR quoted includes (local headers)
+        if ($includePath -match '^(src/|include/|tests/|ui/|app/)' -or $isQuoted) {
             return 3
         }
         
@@ -194,9 +195,9 @@ function Test-FileIncludes {
 
 Push-Location $projectRoot
 try {
-    # Find all .cpp and .h files in src directory
+    # Find all .cpp and .h files in src and tests directories
     $violationsFound = $false
-    $files = Get-ChildItem -Path "src" -Recurse -Include "*.cpp", "*.h" |
+    $files = Get-ChildItem -Path "src", "tests" -Recurse -Include "*.cpp", "*.h" |
              Where-Object { $_.FullName -notmatch "\\build\\" -and $_.FullName -notmatch "\\.git\\" }
 
     $fileCount = ($files | Measure-Object).Count

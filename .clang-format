@@ -72,9 +72,8 @@ IncludeCategories:
   - Regex: '^"([^"]+)\.h"$'
     Priority: 1
 
-  # 2. Project-local headers
-  # Adjust these paths if your tree structure differs
-  - Regex: '^"(src|include|tests)/.*"'
+  # 2. Project-local headers (src/, include/, tests/, ui/, app/)
+  - Regex: '^"(src|include|tests|ui|app)/.*"'
     Priority: 2
 
   # 3. Third-party non-Qt libraries (spdlog, fmt, boost, etc.)
