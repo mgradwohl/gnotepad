@@ -1,3 +1,20 @@
+<#
+.SYNOPSIS
+    Check include order in source files according to project guidelines.
+.DESCRIPTION
+    Validates that #include directives follow the order specified in CONTRIBUTING.md.
+.PARAMETER ShowDetails
+    Show which files are being checked.
+.EXAMPLE
+    .\check-include-order.ps1
+.EXAMPLE
+    .\check-include-order.ps1 -ShowDetails
+#>
+[CmdletBinding()]
+param(
+    [switch]$ShowDetails
+)
+
 # Check include order in source files according to project guidelines
 # See CONTRIBUTING.md#include-guidelines for the authoritative order:
 #   1. Matching header (.cpp files only)
@@ -177,12 +194,19 @@ function Test-FileIncludes {
 
 Push-Location $projectRoot
 try {
-    # Find all .cpp files in src directory
+    # Find all .cpp and .h files in src directory
     $violationsFound = $false
-    $files = Get-ChildItem -Path "src" -Recurse -Filter "*.cpp" |
+    $files = Get-ChildItem -Path "src" -Recurse -Include "*.cpp", "*.h" |
              Where-Object { $_.FullName -notmatch "\\build\\" -and $_.FullName -notmatch "\\.git\\" }
 
+    $fileCount = ($files | Measure-Object).Count
+    $checkedCount = 0
+
     foreach ($file in $files) {
+        $checkedCount++
+        if ($ShowDetails) {
+            Write-Host "[$checkedCount/$fileCount] Checking: $($file.Name)"
+        }
         if (-not (Test-FileIncludes $file.FullName)) {
             Write-Host "Include order violation in: $($file.FullName)" -ForegroundColor Yellow
             Write-Host ""
@@ -195,7 +219,7 @@ try {
         Write-Host "Please review the include order guidelines in CONTRIBUTING.md#include-guidelines"
         exit 1
     } else {
-        Write-Host "All files follow include order guidelines." -ForegroundColor Green
+        Write-Host "All $fileCount files follow include order guidelines." -ForegroundColor Green
         exit 0
     }
 } finally {

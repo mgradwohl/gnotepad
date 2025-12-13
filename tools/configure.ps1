@@ -4,7 +4,7 @@
 .DESCRIPTION
     Runs CMake configure with appropriate settings for the specified build type.
 .PARAMETER BuildType
-    Build type: debug, relwithdebinfo, release, optimized, analyze (default: debug)
+    Build type: debug, relwithdebinfo, release, optimized (default: debug)
 .PARAMETER ShowDetails
     Show verbose CMake output
 .EXAMPLE
@@ -15,7 +15,7 @@
 [CmdletBinding()]
 param(
     [Parameter(Position = 0)]
-    [ValidateSet("debug", "relwithdebinfo", "release", "optimized", "analyze")]
+    [ValidateSet("debug", "relwithdebinfo", "release", "optimized")]
     [string]$BuildType = "debug",
 
     [switch]$ShowDetails

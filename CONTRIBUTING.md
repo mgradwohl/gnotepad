@@ -208,10 +208,6 @@ Or use the VS Code task **Clang-Tidy (Debug)**. You can also call `cmake --build
 
 The profile currently suppresses `readability-implicit-bool-conversion` (pointer guards stay terse) and ignores generated Qt headers plus `qsharedpointer_impl.h` to keep diagnostics focused on project sources.
 
-### scan-build (clang static analyzer)
-
-Use `tools/run-scan-build.sh` (defaults to `build/analyze`) or the VS Code task **Scan-Build (Debug)**. Reports land in `scan-build-report/` and can be opened in a browser.
-
 ### clang-format
 
 Formatting rules live in `.clang-format` (LLVM base, Allman braces). Run:
@@ -240,7 +236,6 @@ The project includes predefined tasks in `.vscode/tasks.json`:
 - **Build Release (Linux)** - Build optimized release version
 - **Build Optimized (Linux)** - Build with LTO, march=x86-64-v3, stripped
 - **Clang-Tidy (Debug, Linux)** - Run static analysis
-- **Scan-Build (Debug, Linux)** - Run clang static analyzer
 - **Clang-Format (Linux)** - Format all source files
 
 ### VS Code Launch Configurations
@@ -409,7 +404,7 @@ GnotePad has comprehensive test coverage across multiple test suites. All functi
 - **Running tests:** Use `ctest --test-dir build/debug` to run all tests, or run specific test suites with `ctest -R <suite_name>`
 
 - **clang-format:** All C++ sources follow the repository `.clang-format` (LLVM base, Allman braces). Run the `run-clang-format` target or the VS Code task before submitting.
-- **clang-tidy / scan-build:** clang-tidy runs on the Debug configuration; scan-build hooks live in `tools/run-scan-build.sh` and the **Scan-Build (Debug)** task. Fix or explain any new warnings.
+- **clang-tidy:** Runs on the Debug configuration. The `.clang-tidy` config includes `clang-analyzer-*` checks (static analysis). Fix or explain any new warnings.
 - **Automated checks:** Before committing, run `./tools/check-format.sh` and `./tools/check-include-order.sh` to verify formatting and include order.
 - For detailed information on static analysis tooling and CI checks, see [`docs/STATIC_ANALYSIS.md`](docs/STATIC_ANALYSIS.md).
 

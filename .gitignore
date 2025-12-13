@@ -13,7 +13,6 @@
 /.flatpak-builder/
 /build-dir/
 /build-dir-flathub/
-/scan-build-report/
 /packaging/logs/
 
 # Packaging artifacts

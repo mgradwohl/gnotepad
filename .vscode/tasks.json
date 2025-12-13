@@ -309,22 +309,9 @@
 			"type": "shell",
 			"command": "${workspaceFolder}/tools/clang-tidy.sh",
 			"args": [
+				"-v",
 				"debug"
 			],
-			"group": "test",
-			"problemMatcher": [
-				"$gcc"
-			],
-			"presentation": {
-				"reveal": "always",
-				"panel": "shared",
-				"clear": true
-			}
-		},
-		{
-			"label": "Scan-Build (Linux)",
-			"type": "shell",
-			"command": "${workspaceFolder}/tools/run-scan-build.sh",
 			"group": "test",
 			"problemMatcher": [
 				"$gcc"
@@ -339,6 +326,9 @@
 			"label": "Clang-Format (Linux)",
 			"type": "shell",
 			"command": "${workspaceFolder}/tools/clang-format.sh",
+			"args": [
+				"-v"
+			],
 			"group": "test",
 			"problemMatcher": [],
 			"presentation": {
@@ -351,6 +341,9 @@
 			"label": "Check Include Order (Linux)",
 			"type": "shell",
 			"command": "${workspaceFolder}/tools/check-include-order.sh",
+			"args": [
+				"-v"
+			],
 			"group": "test",
 			"problemMatcher": [],
 			"presentation": {
@@ -367,25 +360,8 @@
 			"args": [
 				"-File",
 				"${workspaceFolder}/tools/clang-tidy.ps1",
+				"-ShowDetails",
 				"debug"
-			],
-			"group": "test",
-			"problemMatcher": [
-				"$gcc"
-			],
-			"presentation": {
-				"reveal": "always",
-				"panel": "shared",
-				"clear": true
-			}
-		},
-		{
-			"label": "Scan-Build (Windows)",
-			"type": "shell",
-			"command": "pwsh",
-			"args": [
-				"-File",
-				"${workspaceFolder}/tools/run-scan-build.ps1"
 			],
 			"group": "test",
 			"problemMatcher": [
@@ -403,7 +379,8 @@
 			"command": "pwsh",
 			"args": [
 				"-File",
-				"${workspaceFolder}/tools/clang-format.ps1"
+				"${workspaceFolder}/tools/clang-format.ps1",
+				"-ShowDetails"
 			],
 			"group": "test",
 			"problemMatcher": [],
@@ -419,7 +396,8 @@
 			"command": "pwsh",
 			"args": [
 				"-File",
-				"${workspaceFolder}/tools/check-include-order.ps1"
+				"${workspaceFolder}/tools/check-include-order.ps1",
+				"-ShowDetails"
 			],
 			"group": "test",
 			"problemMatcher": [],

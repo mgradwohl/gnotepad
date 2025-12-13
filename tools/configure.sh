@@ -27,7 +27,6 @@ BUILD_TYPE:
   relwithdebinfo  Release with debug info
   release         Release build
   optimized       Optimized build (LTO, march=x86-64-v3, stripped)
-  analyze         Build for scan-build analysis
 
 Options:
   -v, --verbose   Show verbose output
@@ -41,7 +40,7 @@ while [[ $# -gt 0 ]]; do
     case "$1" in
         -v|--verbose) VERBOSE=true; shift ;;
         -h|--help) usage ;;
-        debug|relwithdebinfo|release|optimized|analyze)
+        debug|relwithdebinfo|release|optimized)
             BUILD_TYPE="$1"; shift ;;
         *) echo "Error: Unknown argument: $1" >&2; usage ;;
     esac

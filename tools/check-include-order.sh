@@ -14,8 +14,25 @@
 #
 # Exit with non-zero status if violations are found
 
+set -e
+
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
+
+VERBOSE=false
+
+# Parse arguments
+while [[ $# -gt 0 ]]; do
+    case "$1" in
+        -v|--verbose) VERBOSE=true; shift ;;
+        -h|--help)
+            echo "Usage: $0 [-v|--verbose]"
+            echo "  -v, --verbose   Show which files are being checked"
+            exit 0
+            ;;
+        *) shift ;;
+    esac
+done
 
 echo "Checking include order in source files..."
 
@@ -183,22 +200,30 @@ check_file_includes() {
     return $violations
 }
 
-# Find all .cpp files in src directory and check include order robustly
+# Find all .cpp and .h files in src directory and check include order robustly
 VIOLATIONS_FOUND=0
 
+# Count files for progress
+FILE_COUNT=$(find src -type f \( -name "*.cpp" -o -name "*.h" \) ! -path "*/build/*" ! -path "*/.git/*" | wc -l)
+CHECKED_COUNT=0
+
 while IFS= read -r -d '' file; do
+    CHECKED_COUNT=$((CHECKED_COUNT + 1))
+    if $VERBOSE; then
+        echo "[$CHECKED_COUNT/$FILE_COUNT] Checking: $(basename "$file")"
+    fi
     if ! check_file_includes "$file"; then
         echo "Include order violation in: $file"
         echo ""
         VIOLATIONS_FOUND=1
     fi
-done < <(find src -type f -name "*.cpp" ! -path "*/build/*" ! -path "*/.git/*" -print0)
+done < <(find src -type f \( -name "*.cpp" -o -name "*.h" \) ! -path "*/build/*" ! -path "*/.git/*" -print0)
 
 if [ $VIOLATIONS_FOUND -eq 1 ]; then
     echo "Include order violations found!"
     echo "Please review the include order guidelines in CONTRIBUTING.md#include-guidelines"
     exit 1
 else
-    echo "All files follow include order guidelines."
+    echo "All $FILE_COUNT files follow include order guidelines."
     exit 0
 fi

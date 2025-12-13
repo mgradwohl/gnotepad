@@ -71,7 +71,6 @@ The project includes predefined tasks in `.vscode/tasks.json`:
 - **Build Release (Linux)** - Build optimized release version
 - **Build Optimized (Linux)** - Build with LTO, march=x86-64-v3, stripped
 - **Clang-Tidy (Debug, Linux)** - Run static analysis
-- **Scan-Build (Debug, Linux)** - Run clang static analyzer
 - **Clang-Format (Linux)** - Format all source files
 
 ### VS Code Launch Configurations

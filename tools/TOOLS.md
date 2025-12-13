@@ -29,7 +29,6 @@ Configures the CMake build for a specified build type.
 | `relwithdebinfo` | Release with debug info |
 | `release` | Release build |
 | `optimized` | Optimized build (LTO, march=x86-64-v3, stripped) |
-| `analyze` | Build for scan-build analysis |
 
 **Options:**
 | Option | Description |
@@ -185,40 +184,6 @@ Verifies that `#include` statements follow the project's ordering guidelines:
 
 ---
 
-### run-scan-build
-
-Runs the Clang Static Analyzer (scan-build) on the project to detect potential bugs.
-
-| Platform | Script |
-|----------|--------|
-| Linux | `run-scan-build.sh` |
-| Windows | `run-scan-build.ps1` |
-
-**Usage:**
-```bash
-# Linux
-./tools/run-scan-build.sh [OPTIONS]
-
-# Windows
-.\tools\run-scan-build.ps1 [-ReportDir <path>] [-Verbose]
-```
-
-**Options:**
-| Option | Default | Description |
-|--------|---------|-------------|
-| `-o`, `--output` | `scan-build-report` | HTML report output directory |
-| `-v`, `--verbose` | | Show verbose output |
-
-**Notes:**
-- Automatically configures an `analyze` build
-- Report is generated in HTML format
-
-**Exit codes:**
-- `0` - No issues found
-- Non-zero - Issues found (see report)
-
----
-
 ## Packaging & Distribution
 
 ### publish-win.ps1
@@ -349,11 +314,10 @@ Builds and optionally installs a Flatpak package.
 |------|-------|---------|---------|
 | configure | ✅ | ✅ | Configure CMake build |
 | build | ✅ | ✅ | Build the project |
-| clang-tidy | ✅ | ✅ | Run clang-tidy analysis |
+| clang-tidy | ✅ | ✅ | Run clang-tidy analysis (includes clang-analyzer checks) |
 | clang-format | ✅ | ✅ | Apply clang-format |
 | check-format | ✅ | ✅ | Verify clang-format compliance |
 | check-include-order | ✅ | ✅ | Verify include ordering |
-| run-scan-build | ✅ | ✅ | Static analysis |
 | publish-win | ❌ | ✅ | Package Windows release |
 | package-appimage | ✅ | ❌ | Create Linux AppImage |
 | install-local | ✅ | ❌ | Local Linux installation |
