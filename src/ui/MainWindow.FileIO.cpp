@@ -229,7 +229,7 @@ namespace GnotePad::ui
             return true;
         }
 
-#if defined(GNOTE_TEST_HOOKS)
+#ifdef GNOTE_TEST_HOOKS
         if (!m_testPromptResponses.empty())
         {
             const auto response = m_testPromptResponses.front();
@@ -277,10 +277,10 @@ namespace GnotePad::ui
         };
 
         const std::array<EncodingChoice, 4> choices{
-            EncodingChoice{tr("UTF-8 (no BOM)"), QStringConverter::Utf8, false},
-            EncodingChoice{tr("UTF-8 with BOM"), QStringConverter::Utf8, true},
-            EncodingChoice{tr("UTF-16 LE"), QStringConverter::Utf16LE, true},
-            EncodingChoice{tr("UTF-16 BE"), QStringConverter::Utf16BE, true},
+            EncodingChoice{.label = tr("UTF-8 (no BOM)"), .encoding = QStringConverter::Utf8, .includeBom = false},
+            EncodingChoice{.label = tr("UTF-8 with BOM"), .encoding = QStringConverter::Utf8, .includeBom = true},
+            EncodingChoice{.label = tr("UTF-16 LE"), .encoding = QStringConverter::Utf16LE, .includeBom = true},
+            EncodingChoice{.label = tr("UTF-16 BE"), .encoding = QStringConverter::Utf16BE, .includeBom = true},
         };
 
         QStringList labels;

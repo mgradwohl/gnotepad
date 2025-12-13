@@ -1,9 +1,5 @@
 #pragma once
 
-#if defined(GNOTE_TEST_HOOKS)
-#include <deque>
-#endif
-
 #include <QtCore/qbytearray.h>
 #include <QtCore/qnamespace.h>
 #include <QtCore/qobject.h>
@@ -17,6 +13,11 @@
 #include <QtWidgets/qmainwindow.h>
 #include <QtWidgets/qmessagebox.h>
 #include <QtWidgets/qwidget.h>
+
+#include <cstdint>
+#ifdef GNOTE_TEST_HOOKS
+#include <deque>
+#endif
 
 class QAction;
 class QLabel;
@@ -37,7 +38,7 @@ namespace GnotePad::ui
     public:
         explicit MainWindow(QWidget* parent = nullptr);
 
-#if defined(GNOTE_TEST_HOOKS)
+#ifdef GNOTE_TEST_HOOKS
         bool testLoadDocument(const QString& path)
         {
             return loadDocumentFromPath(path);
@@ -204,8 +205,8 @@ namespace GnotePad::ui
         void updateDocumentStats();
         void updateZoomLabel(int percentage);
         void updateActionStates();
-        bool documentHasContent() const;
-        bool editorHasSelection() const;
+        [[nodiscard]] bool documentHasContent() const;
+        [[nodiscard]] bool editorHasSelection() const;
         void applyDefaultEditorFont();
 
         bool loadDocumentFromPath(const QString& filePath);
@@ -216,11 +217,11 @@ namespace GnotePad::ui
         bool promptEncodingSelection(QStringConverter::Encoding& encoding, bool& bom);
         void applyEncodingSelection(QStringConverter::Encoding encoding, bool bom);
         void resetDocumentState();
-        QTextDocument::FindFlags buildFindFlags(QTextDocument::FindFlags baseFlags = {}) const;
+        [[nodiscard]] QTextDocument::FindFlags buildFindFlags(QTextDocument::FindFlags baseFlags = {}) const;
         bool performFind(const QString& term, QTextDocument::FindFlags flags = {});
         bool replaceNextOccurrence(const QString& term, const QString& replacement, QTextDocument::FindFlags flags = {});
         int replaceAllOccurrences(const QString& term, const QString& replacement, QTextDocument::FindFlags flags = {});
-        QIcon brandIcon() const;
+        [[nodiscard]] QIcon brandIcon() const;
         void loadSettings();
         void saveSettings() const;
         void loadWindowGeometrySettings(QSettings& settings);
@@ -239,14 +240,14 @@ namespace GnotePad::ui
         static void clearLegacySettings(QSettings& settings);
         void addRecentFile(const QString& path);
         void refreshRecentFilesMenu();
-        QString dialogDirectory(const QString& lastDir) const;
+        [[nodiscard]] QString dialogDirectory(const QString& lastDir) const;
         static QString defaultDocumentsDirectory();
         void setDateFormatPreference(DateFormatPreference preference);
         void updateDateFormatActionState();
 
         void closeEvent(QCloseEvent* event) override;
 
-        QString encodingLabel() const;
+        [[nodiscard]] QString encodingLabel() const;
         static QByteArray viewBomForEncoding(QStringConverter::Encoding encoding);
         static QStringConverter::Encoding detectEncodingFromData(const QByteArray& data, int& bomLength);
 
@@ -291,7 +292,7 @@ namespace GnotePad::ui
         int m_tabSizeSpaces{DefaultTabSizeSpaces};
         int m_currentZoomPercent{DefaultZoomPercent};
         DateFormatPreference m_dateFormatPreference{DateFormatPreference::Short};
-#if defined(GNOTE_TEST_HOOKS)
+#ifdef GNOTE_TEST_HOOKS
         std::deque<QMessageBox::StandardButton> m_testPromptResponses;
         bool m_testAutoDismissDialogs{false};
         int m_testFindDialogInvocations{0};

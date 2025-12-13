@@ -1,223 +1,296 @@
 {
 	"version": "2.0.0",
 	"tasks": [
+		// ===== Configure (Linux) =====
+		{
+			"label": "Configure Debug (Linux)",
+			"type": "shell",
+			"command": "${workspaceFolder}/tools/configure.sh",
+			"args": [
+				"debug"
+			],
+			"group": "build",
+			"problemMatcher": [
+				"$gcc"
+			],
+			"presentation": {
+				"reveal": "silent",
+				"panel": "shared",
+				"clear": true
+			}
+		},
+		{
+			"label": "Configure RelWithDebInfo (Linux)",
+			"type": "shell",
+			"command": "${workspaceFolder}/tools/configure.sh",
+			"args": [
+				"relwithdebinfo"
+			],
+			"group": "build",
+			"problemMatcher": [
+				"$gcc"
+			],
+			"presentation": {
+				"reveal": "silent",
+				"panel": "shared",
+				"clear": true
+			}
+		},
+		{
+			"label": "Configure Release (Linux)",
+			"type": "shell",
+			"command": "${workspaceFolder}/tools/configure.sh",
+			"args": [
+				"release"
+			],
+			"group": "build",
+			"problemMatcher": [
+				"$gcc"
+			],
+			"presentation": {
+				"reveal": "silent",
+				"panel": "shared",
+				"clear": true
+			}
+		},
+		{
+			"label": "Configure Optimized (Linux)",
+			"type": "shell",
+			"command": "${workspaceFolder}/tools/configure.sh",
+			"args": [
+				"optimized"
+			],
+			"group": "build",
+			"problemMatcher": [
+				"$gcc"
+			],
+			"presentation": {
+				"reveal": "silent",
+				"panel": "shared",
+				"clear": true
+			}
+		},
+		// ===== Build (Linux) =====
 		{
 			"label": "Build Debug (Linux)",
 			"type": "shell",
-			"command": "bash",
+			"command": "${workspaceFolder}/tools/build.sh",
 			"args": [
-				"-lc",
-				"cmake -S . -B build/debug -G Ninja -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_CXX_STANDARD=23 -DCMAKE_CXX_STANDARD_REQUIRED=ON -DCMAKE_CXX_EXTENSIONS=OFF -DCMAKE_PREFIX_PATH=/usr/lib/x86_64-linux-gnu/cmake/Qt6 -DCMAKE_BUILD_TYPE=Debug && cmake --build build/debug"
+				"debug"
 			],
 			"group": {
 				"kind": "build",
 				"isDefault": true
 			},
+			"dependsOn": "Configure Debug (Linux)",
 			"problemMatcher": [
 				"$gcc"
-			]
+			],
+			"presentation": {
+				"reveal": "silent",
+				"panel": "shared"
+			}
 		},
 		{
 			"label": "Build RelWithDebInfo (Linux)",
 			"type": "shell",
-			"command": "bash",
+			"command": "${workspaceFolder}/tools/build.sh",
 			"args": [
-				"-lc",
-				"cmake -S . -B build/relwithdebinfo -G Ninja -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_CXX_STANDARD=23 -DCMAKE_CXX_STANDARD_REQUIRED=ON -DCMAKE_CXX_EXTENSIONS=OFF -DCMAKE_PREFIX_PATH=/usr/lib/x86_64-linux-gnu/cmake/Qt6 -DCMAKE_BUILD_TYPE=RelWithDebInfo && cmake --build build/relwithdebinfo"
+				"relwithdebinfo"
 			],
 			"group": "build",
+			"dependsOn": "Configure RelWithDebInfo (Linux)",
 			"problemMatcher": [
 				"$gcc"
-			]
+			],
+			"presentation": {
+				"reveal": "silent",
+				"panel": "shared"
+			}
 		},
 		{
 			"label": "Build Release (Linux)",
 			"type": "shell",
-			"command": "bash",
+			"command": "${workspaceFolder}/tools/build.sh",
 			"args": [
-				"-lc",
-				"cmake -S . -B build/release -G Ninja -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_CXX_STANDARD=23 -DCMAKE_CXX_STANDARD_REQUIRED=ON -DCMAKE_CXX_EXTENSIONS=OFF -DCMAKE_PREFIX_PATH=/usr/lib/x86_64-linux-gnu/cmake/Qt6 -DCMAKE_BUILD_TYPE=Release && cmake --build build/release"
+				"release"
 			],
 			"group": "build",
+			"dependsOn": "Configure Release (Linux)",
 			"problemMatcher": [
 				"$gcc"
-			]
+			],
+			"presentation": {
+				"reveal": "silent",
+				"panel": "shared"
+			}
 		},
 		{
 			"label": "Build Optimized (Linux)",
 			"type": "shell",
-			"command": "bash",
+			"command": "${workspaceFolder}/tools/build.sh",
 			"args": [
-				"-lc",
-				"cmake -S . -B build/optimized -G Ninja -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_CXX_STANDARD=23 -DCMAKE_CXX_STANDARD_REQUIRED=ON -DCMAKE_CXX_EXTENSIONS=OFF -DCMAKE_PREFIX_PATH=/usr/lib/x86_64-linux-gnu/cmake/Qt6 -DCMAKE_BUILD_TYPE=Release -DGNOTE_ENABLE_IPO=ON -DCMAKE_INTERPROCEDURAL_OPTIMIZATION=ON -DCMAKE_EXE_LINKER_FLAGS_RELEASE='-s' -DCMAKE_SHARED_LINKER_FLAGS_RELEASE='-s' -DCMAKE_CXX_FLAGS_RELEASE='-O3 -DNDEBUG -march=x86-64-v3 -fomit-frame-pointer' && cmake --build build/optimized"
+				"optimized"
 			],
 			"group": "build",
+			"dependsOn": "Configure Optimized (Linux)",
 			"problemMatcher": [
 				"$gcc"
-			]
+			],
+			"presentation": {
+				"reveal": "silent",
+				"panel": "shared"
+			}
 		},
+		// ===== Configure (Windows) =====
 		{
 			"label": "Configure Debug (Windows)",
 			"type": "shell",
-			"command": "cmake",
+			"command": "pwsh",
 			"args": [
-				"-S",
-				".",
-				"-B",
-				"build/win-debug",
-				"-G",
-				"Ninja",
-				"-DCMAKE_CXX_COMPILER=${env:LLVM_ROOT}/bin/clang++.exe",
-				"-DCMAKE_CXX_STANDARD=23",
-				"-DCMAKE_CXX_STANDARD_REQUIRED=ON",
-				"-DCMAKE_CXX_EXTENSIONS=OFF",
-				"-DCMAKE_TOOLCHAIN_FILE=${env:VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake",
-				"-DQt6_DIR=${env:Qt6_DIR}",
-				"-DCMAKE_PREFIX_PATH=${env:QT6_PREFIX_PATH}",
-				"-DCMAKE_BUILD_TYPE=Debug",
-				"-DCMAKE_EXE_LINKER_FLAGS=-fuse-ld=lld",
-				"-DCMAKE_SHARED_LINKER_FLAGS=-fuse-ld=lld"
+				"-File",
+				"${workspaceFolder}/tools/configure.ps1",
+				"debug"
 			],
 			"group": "build",
 			"problemMatcher": [
 				"$gcc"
-			]
-		},
-		{
-			"label": "Build Debug (Windows)",
-			"type": "shell",
-			"command": "cmake",
-			"args": [
-				"--build",
-				"build/win-debug"
 			],
-			"dependsOn": "Configure Debug (Windows)",
-			"problemMatcher": [
-				"$gcc"
-			]
+			"presentation": {
+				"reveal": "silent",
+				"panel": "shared",
+				"clear": true
+			}
 		},
 		{
 			"label": "Configure RelWithDebInfo (Windows)",
 			"type": "shell",
-			"command": "cmake",
+			"command": "pwsh",
 			"args": [
-				"-S",
-				".",
-				"-B",
-				"build/win-relwithdebinfo",
-				"-G",
-				"Ninja",
-				"-DCMAKE_CXX_COMPILER=${env:LLVM_ROOT}/bin/clang++.exe",
-				"-DCMAKE_CXX_STANDARD=23",
-				"-DCMAKE_CXX_STANDARD_REQUIRED=ON",
-				"-DCMAKE_CXX_EXTENSIONS=OFF",
-				"-DCMAKE_TOOLCHAIN_FILE=${env:VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake",
-				"-DQt6_DIR=${env:Qt6_DIR}",
-				"-DCMAKE_PREFIX_PATH=${env:QT6_PREFIX_PATH}",
-				"-DCMAKE_BUILD_TYPE=RelWithDebInfo",
-				"-DCMAKE_EXE_LINKER_FLAGS=-fuse-ld=lld",
-				"-DCMAKE_SHARED_LINKER_FLAGS=-fuse-ld=lld"
+				"-File",
+				"${workspaceFolder}/tools/configure.ps1",
+				"relwithdebinfo"
 			],
 			"group": "build",
 			"problemMatcher": [
 				"$gcc"
-			]
-		},
-		{
-			"label": "Build RelWithDebInfo (Windows)",
-			"type": "shell",
-			"command": "cmake",
-			"args": [
-				"--build",
-				"build/win-relwithdebinfo"
 			],
-			"dependsOn": "Configure RelWithDebInfo (Windows)",
-			"problemMatcher": [
-				"$gcc"
-			]
+			"presentation": {
+				"reveal": "silent",
+				"panel": "shared",
+				"clear": true
+			}
 		},
 		{
 			"label": "Configure Release (Windows)",
 			"type": "shell",
-			"command": "cmake",
+			"command": "pwsh",
 			"args": [
-				"-S",
-				".",
-				"-B",
-				"build/win-release",
-				"-G",
-				"Ninja",
-				"-DCMAKE_CXX_COMPILER=${env:LLVM_ROOT}/bin/clang++.exe",
-				"-DCMAKE_CXX_STANDARD=23",
-				"-DCMAKE_CXX_STANDARD_REQUIRED=ON",
-				"-DCMAKE_CXX_EXTENSIONS=OFF",
-				"-DCMAKE_TOOLCHAIN_FILE=${env:VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake",
-				"-DQt6_DIR=${env:Qt6_DIR}",
-				"-DCMAKE_PREFIX_PATH=${env:QT6_PREFIX_PATH}",
-				"-DCMAKE_BUILD_TYPE=Release",
-				"-DCMAKE_EXE_LINKER_FLAGS=-fuse-ld=lld",
-				"-DCMAKE_SHARED_LINKER_FLAGS=-fuse-ld=lld"
+				"-File",
+				"${workspaceFolder}/tools/configure.ps1",
+				"release"
 			],
 			"group": "build",
 			"problemMatcher": [
 				"$gcc"
-			]
-		},
-		{
-			"label": "Build Release (Windows)",
-			"type": "shell",
-			"command": "cmake",
-			"args": [
-				"--build",
-				"build/win-release"
 			],
-			"dependsOn": "Configure Release (Windows)",
-			"problemMatcher": [
-				"$gcc"
-			]
+			"presentation": {
+				"reveal": "silent",
+				"panel": "shared",
+				"clear": true
+			}
 		},
 		{
 			"label": "Configure Optimized (Windows)",
 			"type": "shell",
-			"command": "cmake",
+			"command": "pwsh",
 			"args": [
-				"-S",
-				".",
-				"-B",
-				"build/win-optimized",
-				"-G",
-				"Ninja",
-				"-DCMAKE_CXX_COMPILER=${env:LLVM_ROOT}/bin/clang++.exe",
-				"-DCMAKE_CXX_STANDARD=23",
-				"-DCMAKE_CXX_STANDARD_REQUIRED=ON",
-				"-DCMAKE_CXX_EXTENSIONS=OFF",
-				"-DCMAKE_TOOLCHAIN_FILE=${env:VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake",
-				"-DQt6_DIR=${env:Qt6_DIR}",
-				"-DCMAKE_PREFIX_PATH=${env:QT6_PREFIX_PATH}",
-				"-DCMAKE_BUILD_TYPE=Release",
-				"-DGNOTE_ENABLE_IPO=ON",
-				"-DCMAKE_INTERPROCEDURAL_OPTIMIZATION=ON",
-				"-DCMAKE_EXE_LINKER_FLAGS=-fuse-ld=lld",
-				"-DCMAKE_SHARED_LINKER_FLAGS=-fuse-ld=lld",
-				"-DCMAKE_CXX_FLAGS_RELEASE=-O3 -DNDEBUG -march=x86-64-v3 -fomit-frame-pointer"
+				"-File",
+				"${workspaceFolder}/tools/configure.ps1",
+				"optimized"
 			],
 			"group": "build",
 			"problemMatcher": [
 				"$gcc"
-			]
+			],
+			"presentation": {
+				"reveal": "silent",
+				"panel": "shared",
+				"clear": true
+			}
+		},
+		// ===== Build (Windows) =====
+		{
+			"label": "Build Debug (Windows)",
+			"type": "shell",
+			"command": "pwsh",
+			"args": [
+				"-File",
+				"${workspaceFolder}/tools/build.ps1",
+				"debug"
+			],
+			"dependsOn": "Configure Debug (Windows)",
+			"problemMatcher": [
+				"$gcc"
+			],
+			"presentation": {
+				"reveal": "silent",
+				"panel": "shared"
+			}
+		},
+		{
+			"label": "Build RelWithDebInfo (Windows)",
+			"type": "shell",
+			"command": "pwsh",
+			"args": [
+				"-File",
+				"${workspaceFolder}/tools/build.ps1",
+				"relwithdebinfo"
+			],
+			"dependsOn": "Configure RelWithDebInfo (Windows)",
+			"problemMatcher": [
+				"$gcc"
+			],
+			"presentation": {
+				"reveal": "silent",
+				"panel": "shared"
+			}
+		},
+		{
+			"label": "Build Release (Windows)",
+			"type": "shell",
+			"command": "pwsh",
+			"args": [
+				"-File",
+				"${workspaceFolder}/tools/build.ps1",
+				"release"
+			],
+			"dependsOn": "Configure Release (Windows)",
+			"problemMatcher": [
+				"$gcc"
+			],
+			"presentation": {
+				"reveal": "silent",
+				"panel": "shared"
+			}
 		},
 		{
 			"label": "Build Optimized (Windows)",
 			"type": "shell",
-			"command": "cmake",
+			"command": "pwsh",
 			"args": [
-				"--build",
-				"build/win-optimized"
+				"-File",
+				"${workspaceFolder}/tools/build.ps1",
+				"optimized"
 			],
 			"dependsOn": "Configure Optimized (Windows)",
 			"problemMatcher": [
 				"$gcc"
-			]
+			],
+			"presentation": {
+				"reveal": "silent",
+				"panel": "shared"
+			}
 		},
 		{
 			"label": "Run GnotePad (Optimized, Windows, No Debugger)",
@@ -230,50 +303,148 @@
 				"panel": "shared"
 			}
 		},
+		// ===== Static Analysis (Linux) =====
 		{
-			"label": "Clang-Tidy (Debug, Linux)",
+			"label": "Clang-Tidy (Linux)",
 			"type": "shell",
-			"command": "bash",
+			"command": "${workspaceFolder}/tools/clang-tidy.sh",
 			"args": [
-				"-lc",
-				"cmake -S . -B build/debug -G Ninja -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_CXX_STANDARD=23 -DCMAKE_CXX_STANDARD_REQUIRED=ON -DCMAKE_CXX_EXTENSIONS=OFF -DCMAKE_PREFIX_PATH=/usr/lib/x86_64-linux-gnu/cmake/Qt6 -DCMAKE_BUILD_TYPE=Debug -DGNOTE_ENABLE_CLANG_TIDY=ON && cmake --build build/debug"
+				"debug"
 			],
+			"group": "test",
 			"problemMatcher": [
 				"$gcc"
-			]
+			],
+			"presentation": {
+				"reveal": "always",
+				"panel": "shared",
+				"clear": true
+			}
 		},
 		{
-			"label": "Scan-Build (Debug, Linux)",
+			"label": "Scan-Build (Linux)",
 			"type": "shell",
-			"command": "bash",
-			"args": [
-				"-lc",
-				"cmake -S . -B build/analyze -G Ninja -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_CXX_STANDARD=23 -DCMAKE_CXX_STANDARD_REQUIRED=ON -DCMAKE_CXX_EXTENSIONS=OFF -DCMAKE_PREFIX_PATH=/usr/lib/x86_64-linux-gnu/cmake/Qt6 -DCMAKE_BUILD_TYPE=Debug && scan-build -o scan-build-report --status-bugs cmake --build build/analyze"
-			],
+			"command": "${workspaceFolder}/tools/run-scan-build.sh",
+			"group": "test",
 			"problemMatcher": [
 				"$gcc"
-			]
+			],
+			"presentation": {
+				"reveal": "always",
+				"panel": "shared",
+				"clear": true
+			}
 		},
 		{
 			"label": "Clang-Format (Linux)",
 			"type": "shell",
-			"command": "bash",
-			"args": [
-				"-lc",
-				"cmake --build build/debug --target run-clang-format"
-			],
-			"problemMatcher": []
+			"command": "${workspaceFolder}/tools/clang-format.sh",
+			"group": "test",
+			"problemMatcher": [],
+			"presentation": {
+				"reveal": "always",
+				"panel": "shared",
+				"clear": true
+			}
 		},
+		{
+			"label": "Check Include Order (Linux)",
+			"type": "shell",
+			"command": "${workspaceFolder}/tools/check-include-order.sh",
+			"group": "test",
+			"problemMatcher": [],
+			"presentation": {
+				"reveal": "always",
+				"panel": "shared",
+				"clear": true
+			}
+		},
+		// ===== Static Analysis (Windows) =====
+		{
+			"label": "Clang-Tidy (Windows)",
+			"type": "shell",
+			"command": "pwsh",
+			"args": [
+				"-File",
+				"${workspaceFolder}/tools/clang-tidy.ps1",
+				"debug"
+			],
+			"group": "test",
+			"problemMatcher": [
+				"$gcc"
+			],
+			"presentation": {
+				"reveal": "always",
+				"panel": "shared",
+				"clear": true
+			}
+		},
+		{
+			"label": "Scan-Build (Windows)",
+			"type": "shell",
+			"command": "pwsh",
+			"args": [
+				"-File",
+				"${workspaceFolder}/tools/run-scan-build.ps1"
+			],
+			"group": "test",
+			"problemMatcher": [
+				"$gcc"
+			],
+			"presentation": {
+				"reveal": "always",
+				"panel": "shared",
+				"clear": true
+			}
+		},
+		{
+			"label": "Clang-Format (Windows)",
+			"type": "shell",
+			"command": "pwsh",
+			"args": [
+				"-File",
+				"${workspaceFolder}/tools/clang-format.ps1"
+			],
+			"group": "test",
+			"problemMatcher": [],
+			"presentation": {
+				"reveal": "always",
+				"panel": "shared",
+				"clear": true
+			}
+		},
+		{
+			"label": "Check Include Order (Windows)",
+			"type": "shell",
+			"command": "pwsh",
+			"args": [
+				"-File",
+				"${workspaceFolder}/tools/check-include-order.ps1"
+			],
+			"group": "test",
+			"problemMatcher": [],
+			"presentation": {
+				"reveal": "always",
+				"panel": "shared",
+				"clear": true
+			}
+		},
+		// ===== Publish =====
 		{
 			"label": "Publish (Windows)",
 			"type": "shell",
 			"command": "pwsh",
 			"args": [
 				"-File",
-				"tools/publish-win.ps1"
+				"${workspaceFolder}/tools/publish-win.ps1"
 			],
 			"dependsOn": "Build Optimized (Windows)",
-			"problemMatcher": []
+			"problemMatcher": [],
+			"presentation": {
+				"reveal": "always",
+				"panel": "dedicated",
+				"clear": true
+			}
 		}
 	]
 }

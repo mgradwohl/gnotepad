@@ -10,7 +10,7 @@ Always use the **optimized** build configuration for releases:
 
 ```bash
 cmake -S . -B build/optimized -G Ninja \
-  -DCMAKE_CXX_COMPILER=clang++ \
+  -DCMAKE_CXX_COMPILER=/usr/lib/llvm-21/bin/clang++ \
   -DCMAKE_PREFIX_PATH=/usr/lib/x86_64-linux-gnu/cmake/Qt6 \
   -DCMAKE_BUILD_TYPE=Release \
   -DGNOTE_ENABLE_IPO=ON \

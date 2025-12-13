@@ -18,6 +18,8 @@
 #include <QtWidgets/qplaintextedit.h>
 #include <QtWidgets/qpushbutton.h>
 
+#include <algorithm>
+
 namespace GnotePad::ui
 {
 
@@ -28,7 +30,7 @@ namespace GnotePad::ui
             return;
         }
 
-#if defined(GNOTE_TEST_HOOKS)
+#ifdef GNOTE_TEST_HOOKS
         ++m_testFindDialogInvocations;
 #endif
 
@@ -54,7 +56,7 @@ namespace GnotePad::ui
         connect(buttons, &QDialogButtonBox::rejected, &dialog, &QDialog::reject);
 
         bool shouldAutoDismiss = false;
-#if defined(GNOTE_TEST_HOOKS)
+#ifdef GNOTE_TEST_HOOKS
         shouldAutoDismiss = m_testAutoDismissDialogs;
 #endif
         if (!shouldAutoDismiss && GnotePad::Application::isHeadlessSmokeMode())
@@ -64,7 +66,7 @@ namespace GnotePad::ui
 
         if (shouldAutoDismiss)
         {
-#if defined(GNOTE_TEST_HOOKS)
+#ifdef GNOTE_TEST_HOOKS
             if (m_testAutoDismissDialogs)
             {
                 QTimer::singleShot(0, &dialog, &QDialog::reject);
@@ -140,7 +142,7 @@ namespace GnotePad::ui
             return;
         }
 
-#if defined(GNOTE_TEST_HOOKS)
+#ifdef GNOTE_TEST_HOOKS
         ++m_testReplaceDialogInvocations;
 #endif
 
@@ -241,7 +243,7 @@ namespace GnotePad::ui
         connect(closeButton, &QPushButton::clicked, &dialog, &QDialog::reject);
 
         bool shouldAutoDismiss = false;
-#if defined(GNOTE_TEST_HOOKS)
+#ifdef GNOTE_TEST_HOOKS
         shouldAutoDismiss = m_testAutoDismissDialogs;
 #endif
         if (!shouldAutoDismiss && GnotePad::Application::isHeadlessSmokeMode())
@@ -378,7 +380,7 @@ namespace GnotePad::ui
         return replacedCount;
     }
 
-#if defined(GNOTE_TEST_HOOKS)
+#ifdef GNOTE_TEST_HOOKS
     void MainWindow::setSearchStateForTest(const QString& term, Qt::CaseSensitivity sensitivity, const QString& replacement)
     {
         m_lastSearchTerm = term;

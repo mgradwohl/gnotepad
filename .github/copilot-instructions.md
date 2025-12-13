@@ -14,19 +14,26 @@ GnotePad is a cross-platform Qt 6 clone of Windows 10 Notepad built with modern 
 ## Development Environment
 
 ### Required Tools
-- **Compiler:** Clang 15+ (or Apple Clang 15+ on macOS)
+- **Compiler:** Clang 21+ with lld linker (or Apple Clang 15+ on macOS)
 - **Build System:** CMake 3.26+ with Ninja (recommended)
 - **Qt:** Qt 6.5+ (Core, Gui, Widgets, PrintSupport, Svg, SvgWidgets, Test)
 - **Logging:** spdlog (via CMake FetchContent)
+- **Static Analysis:** clang-tidy 21+, clang-format 21+
 
 ### Build Commands
 
-Configure and build (Linux/macOS):
+Configure and build (Linux):
 ```bash
 cmake -S . -B build/debug -G Ninja \
-  -DCMAKE_CXX_COMPILER=clang++ \
+  -DCMAKE_CXX_COMPILER=/usr/lib/llvm-21/bin/clang++ \
+  -DCMAKE_CXX_STANDARD=23 \
+  -DCMAKE_CXX_STANDARD_REQUIRED=ON \
+  -DCMAKE_CXX_EXTENSIONS=OFF \
+  -DCMAKE_EXPORT_COMPILE_COMMANDS=ON \
   -DCMAKE_PREFIX_PATH=/usr/lib/x86_64-linux-gnu/cmake/Qt6 \
-  -DCMAKE_BUILD_TYPE=Debug
+  -DCMAKE_BUILD_TYPE=Debug \
+  -DCMAKE_EXE_LINKER_FLAGS=-fuse-ld=lld \
+  -DCMAKE_SHARED_LINKER_FLAGS=-fuse-ld=lld
 cmake --build build/debug
 ```
 
@@ -59,11 +66,19 @@ QT_QPA_PLATFORM=offscreen ./GnotePad --quit-after-init
 
 ### VS Code Tasks
 The project includes predefined tasks in `.vscode/tasks.json`:
-- **Debug Build** - Build with debug symbols
-- **Release Build** - Build optimized release version
-- **Clang-Tidy (Debug)** - Run static analysis
-- **Scan-Build (Debug)** - Run clang static analyzer
-- **Clang-Format** - Format all source files
+- **Build Debug (Linux)** - Build with debug symbols (default)
+- **Build RelWithDebInfo (Linux)** - Build with optimizations + debug info
+- **Build Release (Linux)** - Build optimized release version
+- **Build Optimized (Linux)** - Build with LTO, march=x86-64-v3, stripped
+- **Clang-Tidy (Debug, Linux)** - Run static analysis
+- **Scan-Build (Debug, Linux)** - Run clang static analyzer
+- **Clang-Format (Linux)** - Format all source files
+
+### VS Code Launch Configurations
+The project includes predefined launch configs in `.vscode/launch.json`:
+- **Debug GnotePad (Debug, Linux)** - Debug build with full symbols
+- **Debug GnotePad (RelWithDebInfo, Linux)** - Optimized with debug info
+- **Run GnotePad (Release/Optimized, Linux)** - Production builds
 
 ## Coding Standards
 
@@ -76,29 +91,42 @@ The project includes predefined tasks in `.vscode/tasks.json`:
   - Run `cmake --build build/debug --target run-clang-tidy` regularly
 
 ### Include Order
-   1. This file's matching header first (`.cpp` files only): `#include "ThisFile.h"`
-   2. Project headers (`src/`, `include/`, `tests/`, etc.), alphabetical
-   3. Non-Qt third-party libraries (spdlog, fmt, boost, etc.), alphabetical
-   4. Qt headers, alphabetical
-   5. C++ standard library headers, alphabetical
-   6. Everything else (fallback)
 
-Note that #include <qnamespace.h> is considered a Qt header.
+See the [Include Guidelines in CONTRIBUTING.md](../CONTRIBUTING.md#include-guidelines) for the authoritative include order.
+
+**Summary:**
+1. Matching header (`.cpp` files only)
+2. Platform-specific headers in `#ifdef` guards
+3. Project headers (`src/`, `ui/`, `app/`, etc.), alphabetical
+4. Third-party libraries (spdlog, fmt, boost), alphabetical
+5. Qt headers, alphabetical
+6. C++ standard library headers, alphabetical
+7. Other (fallback)
+
+Note that `#include <QSignalBlocker>` and `#include <qnamespace.h>` are Qt headers.
 
 Separate each group with a blank line. Use `#pragma once` in all headers. Include what you use.
+
+### Preprocessor Directives
+- Use `#ifdef X` instead of `#if defined(X)` for simple checks
+- Use `#ifndef X` instead of `#if !defined(X)`
+- Use `#elifdef X` instead of `#elif defined(X)` (C++23)
+- Compound conditions like `#if defined(X) && !defined(Y)` stay as-is
 
 **Example:**
 ```cpp
 #include "MainWindow.h"
 
-#include <algorithm>
-#include <memory>
-
-#include <QFileDialog>
-#include <spdlog/spdlog.h>
-
 #include "app/Application.h"
 #include "ui/TextEditor.h"
+
+#include <spdlog/spdlog.h>
+
+#include <QtWidgets/qfiledialog.h>
+#include <QtWidgets/qmessagebox.h>
+
+#include <memory>
+#include <string>
 ```
 
 ### Naming Conventions
@@ -131,6 +159,10 @@ resources/
 tests/
 ├── smoke/                # Smoke tests using Qt Test framework
 ├── cmdline/              # Command-line parsing tests
+├── menuactions/          # Menu action state and behavior tests
+├── encoding/             # Encoding edge case tests
+├── style/                # Qt style configuration tests
+├── tooling/              # Clang tooling configuration tests
 └── testfiles/            # Test data files with various encodings
 
 packaging/
@@ -249,8 +281,10 @@ private slots:
 
 - **README.md:** Project overview, installation, and quick start
 - **CONTRIBUTING.md:** Development environment setup, build instructions, workflow, and contribution guidelines
-- **tests/README.md:** Comprehensive testing guide, test file documentation, and test coverage
+- **TESTING.md:** Comprehensive testing guide and best practices
+- **tests/README.md:** Test file documentation and test coverage details
 - **packaging/README.md:** Packaging and release guide for all platforms
+- **docs/STATIC_ANALYSIS.md:** Static analysis tooling and CI checks
 - **CMakeLists.txt:** Build configuration and options
 - **.clang-tidy:** Static analysis rules
 - **.clang-format:** Code formatting rules

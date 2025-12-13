@@ -1,10 +1,19 @@
 #include "app/Application.h"
 
-#if defined(_WIN32)
+#ifdef _WIN32
 #include <windows.h>
 #endif
 
+#include "ui/MainWindow.h"
+
+#include <spdlog/common.h>
 #include <spdlog/spdlog.h>
+
+#ifdef _WIN32
+#include <spdlog/sinks/msvc_sink.h>
+#include <spdlog/sinks/stdout_color_sinks.h>
+#include <spdlog/sinks/wincolor_sink.h>
+#endif
 
 #include <QtCore/qcommandlineoption.h>
 #include <QtCore/qcommandlineparser.h>
@@ -19,17 +28,13 @@
 #include <QtWidgets/qstylefactory.h>
 
 #include <memory>
-#if defined(_WIN32)
-#include <spdlog/sinks/msvc_sink.h>
-#include <spdlog/sinks/stdout_color_sinks.h>
-#include <spdlog/sinks/wincolor_sink.h>
-#endif
+#include <string>
 
 #ifndef GNOTE_VERSION
+// Do not change to constexpr, this is set and passed in by the build system
+// NOLINTNEXTLINE(cppcoreguidelines-macro-usage)
 #define GNOTE_VERSION "0.0.0-dev"
 #endif
-
-#include "ui/MainWindow.h"
 
 #if defined(_WIN32) && !defined(NDEBUG)
 // Custom Qt message handler to route qDebug/qWarning/etc. to our console and debugger
@@ -70,23 +75,6 @@ namespace GnotePad
 
     Application::Application(int& argc, char** argv) : QApplication(argc, argv)
     {
-        // #if defined(_WIN32) && !defined(NDEBUG)
-        //         // Try to attach to parent console (e.g., when run from terminal).
-        //         // If no parent console exists (e.g., launched from debugger), create our own.
-        //         if (AttachConsole(ATTACH_PARENT_PROCESS) == 0)
-        //         {
-        //             AllocConsole();
-        //             // Redirect stdout/stderr to the new console
-        //             FILE* fp = nullptr;
-        //             freopen_s(&fp, "CONOUT$", "w", stdout);
-        //             freopen_s(&fp, "CONOUT$", "w", stderr);
-        //         }
-        //         // Route logs to both the debugger output window and the console (Windows Terminal).
-        //         auto msvcSink = std::make_shared<spdlog::sinks::msvc_sink_mt>();
-        //         auto consoleSink = std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
-        //         auto dualSinkLogger = std::make_shared<spdlog::logger>("debugger+console", spdlog::sinks_init_list{msvcSink,
-        //         consoleSink}); spdlog::set_default_logger(dualSinkLogger);
-        // #endif
 
 #if defined(_WIN32) && !defined(NDEBUG)
         // Try to attach to parent console (e.g., when run from terminal).
@@ -112,7 +100,7 @@ namespace GnotePad
 
 #endif
 
-#if !defined(NDEBUG)
+#ifndef NDEBUG
         spdlog::set_level(spdlog::level::debug);
         spdlog::flush_on(spdlog::level::debug);
 #endif
@@ -161,7 +149,7 @@ namespace GnotePad
         QCoreApplication::setOrganizationDomain("gnotepad.app");
         QCoreApplication::setApplicationName("GnotePad");
         QCoreApplication::setApplicationVersion(QString::fromLatin1(GNOTE_VERSION));
-#if defined(Q_OS_LINUX)
+#ifdef Q_OS_LINUX
         // Qt warns if the desktop file name includes the ".desktop" suffix; provide the id only.
         QGuiApplication::setDesktopFileName(QStringLiteral("app.gnotepad.GnotePad"));
 #endif
@@ -169,7 +157,7 @@ namespace GnotePad
 
     void Application::configureIcon()
     {
-#if defined(Q_OS_LINUX)
+#ifdef Q_OS_LINUX
         m_applicationIcon = QIcon::fromTheme(QStringLiteral("gnotepad"));
         if (m_applicationIcon.isNull())
         {
@@ -195,8 +183,8 @@ namespace GnotePad
         parser.addHelpOption();
         parser.addVersionOption();
         parser.setSingleDashWordOptionMode(QCommandLineParser::ParseAsLongOptions);
-        QCommandLineOption quitAfterInitOption({QStringLiteral("quit-after-init"), QStringLiteral("headless-smoke")},
-                                               QStringLiteral("Quit shortly after startup (useful for headless smoke tests)."));
+        const QCommandLineOption quitAfterInitOption({QStringLiteral("quit-after-init"), QStringLiteral("headless-smoke")},
+                                                     QStringLiteral("Quit shortly after startup (useful for headless smoke tests)."));
 
         parser.addOption(quitAfterInitOption);
         parser.process(arguments);
@@ -214,7 +202,7 @@ namespace GnotePad
     {
         const QStringList availableStyles = QStyleFactory::keys();
 
-#if defined(_WIN32)
+#ifdef _WIN32
         // Windows: prefer windows11, fallback to fusion, then default
         if (availableStyles.contains(QStringLiteral("windows11"), Qt::CaseInsensitive))
         {
@@ -230,7 +218,7 @@ namespace GnotePad
         {
             spdlog::debug("Qt styles 'windows11' and 'fusion' not available; using default style");
         }
-#elif defined(Q_OS_LINUX)
+#elifdef Q_OS_LINUX
         // Linux: prefer fusion, fallback to windows, then default
         if (availableStyles.contains(QStringLiteral("fusion"), Qt::CaseInsensitive))
         {

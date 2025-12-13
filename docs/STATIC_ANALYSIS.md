@@ -20,13 +20,9 @@ Defines code formatting rules based on LLVM style with Allman braces:
 - Allman brace style (braces on new lines)
 - Automatic include sorting and grouping
 
-**Include Order (enforced by clang-format):**
-1. Matching header (for `.cpp` files): `#include "ThisFile.h"`
-2. Project headers: `src/`, `include/`, `tests/`
-3. Third-party libraries: `spdlog/`, `fmt/`, `boost/`
-4. Qt headers: `Qt*/...`, `q*.h`
-5. C++ standard library: `<algorithm>`, `<memory>`, etc.
-6. Other headers
+**Include Order:**
+
+See [CONTRIBUTING.md Include Guidelines](../CONTRIBUTING.md#include-guidelines) for the authoritative include order rules.
 
 Each group should be separated by a blank line.
 

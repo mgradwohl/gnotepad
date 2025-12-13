@@ -22,7 +22,6 @@ endif()
 
 option(GNOTE_ENABLE_IPO "Enable interprocedural optimization" ON)
 option(GNOTE_ENABLE_WARNINGS "Enable extra compiler warnings" ON)
-option(GNOTE_ENABLE_CLANG_TIDY "Run clang-tidy during builds" OFF)
 
 function(gnote_apply_default_warnings target_name)
     if(NOT GNOTE_ENABLE_WARNINGS)
@@ -44,25 +43,20 @@ function(gnote_apply_default_warnings target_name)
 endfunction()
 
 find_program(CLANG_TIDY_EXE NAMES clang-tidy
-    HINTS "$ENV{LLVM_ROOT}/bin" "$ENV{ProgramFiles}/LLVM/bin" "C:/Program Files/LLVM/bin"
+    HINTS
+        "/usr/lib/llvm-21/bin"
+        "$ENV{LLVM_ROOT}/bin"
+        "$ENV{ProgramFiles}/LLVM/bin"
+        "C:/Program Files/LLVM/bin"
 )
+
 find_program(CLANG_FORMAT_EXE NAMES clang-format
-    HINTS "$ENV{LLVM_ROOT}/bin" "$ENV{ProgramFiles}/LLVM/bin" "C:/Program Files/LLVM/bin"
+    HINTS
+        "/usr/lib/llvm-21/bin"
+        "$ENV{LLVM_ROOT}/bin"
+        "$ENV{ProgramFiles}/LLVM/bin"
+        "C:/Program Files/LLVM/bin"
 )
-
-if(GNOTE_ENABLE_CLANG_TIDY)
-    if(NOT CLANG_TIDY_EXE)
-        message(FATAL_ERROR "GNOTE_ENABLE_CLANG_TIDY is ON but clang-tidy was not found.")
-    endif()
-endif()
-
-if(GNOTE_ENABLE_CLANG_TIDY AND CLANG_TIDY_EXE)
-    set(CMAKE_CXX_CLANG_TIDY
-        ${CLANG_TIDY_EXE}
-        --config-file=${CMAKE_SOURCE_DIR}/.clang-tidy
-        -p ${CMAKE_BINARY_DIR}
-    )
-endif()
 
 if(GNOTE_ENABLE_IPO)
     include(CheckIPOSupported)
@@ -142,7 +136,9 @@ if(CLANG_TIDY_EXE)
         WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
         COMMENT "Running clang-tidy on project sources"
     )
+    add_dependencies(run-clang-tidy copy-compile-commands)
 endif()
+
 
 if(CLANG_FORMAT_EXE)
     add_custom_target(run-clang-format
