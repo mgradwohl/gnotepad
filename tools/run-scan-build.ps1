@@ -5,16 +5,17 @@
     Configures a separate 'analyze' build and runs scan-build.
 .PARAMETER ReportDir
     Output directory for reports (default: scan-build-report)
-.PARAMETER Verbose
+.PARAMETER ShowDetails
     Show verbose output
 .EXAMPLE
     .\run-scan-build.ps1
 .EXAMPLE
     .\run-scan-build.ps1 -ReportDir "my-report"
 #>
+[CmdletBinding()]
 param(
     [string]$ReportDir = "scan-build-report",
-    [switch]$Verbose
+    [switch]$ShowDetails
 )
 
 $ErrorActionPreference = "Stop"
@@ -42,16 +43,16 @@ $BuildDir = Join-Path $ProjectRoot "build\win-analyze"
 $ReportPath = Join-Path $ProjectRoot $ReportDir
 
 # Configure the analyze build
-if ($Verbose) {
+if ($ShowDetails) {
     Write-Host "Configuring analyze build..."
 }
 $ConfigArgs = @("analyze")
-if ($Verbose) { $ConfigArgs = @("-Verbose") + $ConfigArgs }
+if ($ShowDetails) { $ConfigArgs = @("-ShowDetails") + $ConfigArgs }
 & "$ScriptDir\configure.ps1" @ConfigArgs
 if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
 # Run scan-build
-if ($Verbose) {
+if ($ShowDetails) {
     Write-Host "Running scan-build..."
     Write-Host "Report directory: $ReportPath"
 }

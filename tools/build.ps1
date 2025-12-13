@@ -7,15 +7,16 @@
     Build type: debug, relwithdebinfo, release, optimized, analyze (default: debug)
 .PARAMETER Target
     Build specific target(s)
-.PARAMETER Verbose
+.PARAMETER ShowDetails
     Show verbose build output
 .EXAMPLE
     .\build.ps1 debug
 .EXAMPLE
     .\build.ps1 -Target run-clang-tidy debug
 .EXAMPLE
-    .\build.ps1 -Verbose optimized
+    .\build.ps1 -ShowDetails optimized
 #>
+[CmdletBinding()]
 param(
     [Parameter(Position = 0)]
     [ValidateSet("debug", "relwithdebinfo", "release", "optimized", "analyze")]
@@ -23,7 +24,7 @@ param(
 
     [string]$Target = "",
 
-    [switch]$Verbose
+    [switch]$ShowDetails
 )
 
 $ErrorActionPreference = "Stop"
@@ -48,7 +49,7 @@ if ($Target) {
     $CMakeArgs += @("--target", $Target)
 }
 
-if ($Verbose) {
+if ($ShowDetails) {
     $CMakeArgs += "--verbose"
     Write-Host "Building $BuildType in $BuildDir"
     if ($Target) {

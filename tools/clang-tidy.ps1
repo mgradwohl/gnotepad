@@ -6,19 +6,20 @@
     Uses .clang-tidy configuration from project root.
 .PARAMETER BuildType
     Build type to use: debug, relwithdebinfo (default: debug)
-.PARAMETER Verbose
+.PARAMETER ShowDetails
     Show verbose output
 .EXAMPLE
     .\clang-tidy.ps1
 .EXAMPLE
-    .\clang-tidy.ps1 -Verbose debug
+    .\clang-tidy.ps1 -ShowDetails debug
 #>
+[CmdletBinding()]
 param(
     [Parameter(Position = 0)]
     [ValidateSet("debug", "relwithdebinfo")]
     [string]$BuildType = "debug",
 
-    [switch]$Verbose
+    [switch]$ShowDetails
 )
 
 $ErrorActionPreference = "Stop"
@@ -34,12 +35,12 @@ $NinjaFile = Join-Path $BuildDir "build.ninja"
 if (-not (Test-Path $NinjaFile)) {
     Write-Host "Build not configured. Running configure.ps1 $BuildType..."
     $ConfigArgs = @($BuildType)
-    if ($Verbose) { $ConfigArgs = @("-Verbose") + $ConfigArgs }
+    if ($ShowDetails) { $ConfigArgs = @("-ShowDetails") + $ConfigArgs }
     & "$ScriptDir\configure.ps1" @ConfigArgs
     if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 }
 
-if ($Verbose) {
+if ($ShowDetails) {
     Write-Host "Running clang-tidy for $BuildType build..."
 }
 

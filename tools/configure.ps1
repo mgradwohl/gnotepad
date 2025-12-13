@@ -5,19 +5,20 @@
     Runs CMake configure with appropriate settings for the specified build type.
 .PARAMETER BuildType
     Build type: debug, relwithdebinfo, release, optimized, analyze (default: debug)
-.PARAMETER Verbose
-    Show verbose output
+.PARAMETER ShowDetails
+    Show verbose CMake output
 .EXAMPLE
     .\configure.ps1 debug
 .EXAMPLE
-    .\configure.ps1 -Verbose optimized
+    .\configure.ps1 -ShowDetails optimized
 #>
+[CmdletBinding()]
 param(
     [Parameter(Position = 0)]
     [ValidateSet("debug", "relwithdebinfo", "release", "optimized", "analyze")]
     [string]$BuildType = "debug",
 
-    [switch]$Verbose
+    [switch]$ShowDetails
 )
 
 $ErrorActionPreference = "Stop"
@@ -95,7 +96,7 @@ switch ($BuildType) {
     }
 }
 
-if ($Verbose) {
+if ($ShowDetails) {
     Write-Host "Configuring $BuildType build in $BuildDir"
     Write-Host "CMake args:"
     $CMakeArgs | ForEach-Object { Write-Host "  $_" }

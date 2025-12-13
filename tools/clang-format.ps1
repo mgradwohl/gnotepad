@@ -6,19 +6,20 @@
     Uses .clang-format configuration from project root.
 .PARAMETER BuildType
     Build type to use (default: debug)
-.PARAMETER Verbose
+.PARAMETER ShowDetails
     Show verbose output
 .EXAMPLE
     .\clang-format.ps1
 .EXAMPLE
-    .\clang-format.ps1 -Verbose
+    .\clang-format.ps1 -ShowDetails
 #>
+[CmdletBinding()]
 param(
     [Parameter(Position = 0)]
     [ValidateSet("debug")]
     [string]$BuildType = "debug",
 
-    [switch]$Verbose
+    [switch]$ShowDetails
 )
 
 $ErrorActionPreference = "Stop"
@@ -34,12 +35,12 @@ $NinjaFile = Join-Path $BuildDir "build.ninja"
 if (-not (Test-Path $NinjaFile)) {
     Write-Host "Build not configured. Running configure.ps1 $BuildType..."
     $ConfigArgs = @($BuildType)
-    if ($Verbose) { $ConfigArgs = @("-Verbose") + $ConfigArgs }
+    if ($ShowDetails) { $ConfigArgs = @("-ShowDetails") + $ConfigArgs }
     & "$ScriptDir\configure.ps1" @ConfigArgs
     if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 }
 
-if ($Verbose) {
+if ($ShowDetails) {
     Write-Host "Applying clang-format to source files..."
 }
 
